@@ -136,9 +136,8 @@ module NelderMead =
                 |> Array.minBy snd
             Some ((solution, updatedSimplex), updatedSimplex)
             )
-        |> Seq.takeWhile (fun (solution, simplex) ->
+        |> Seq.skipWhile (fun (solution, simplex) ->
             simplex |> terminate tolerance f |> not
             )
-        |> Seq.iter (fun ((solution, evaluation), _) ->
-            printfn "%A: %.4f" solution evaluation
-            )
+        |> Seq.head
+        |> fst
