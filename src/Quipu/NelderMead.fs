@@ -29,11 +29,6 @@ module NelderMead =
         let dim = objective.Dimension
         let f = objective.Value
 
-        let alpha = config.Alpha
-        let gamma = config.Gamma
-        let rho = config.Rho
-        let sigma = config.Sigma
-
         // 1) order the values, from best to worst
         let ordered =
             simplex
@@ -55,7 +50,7 @@ module NelderMead =
 
         let reflected =
             Array.init dim (fun col ->
-                centroid[col] + alpha * (centroid[col] - worst[col])
+                centroid[col] + config.Alpha * (centroid[col] - worst[col])
                 )
         let secondWorst = ordered[size - 2]
         let best = ordered[0]
@@ -74,7 +69,7 @@ module NelderMead =
         then
             let expanded =
                 Array.init dim (fun col ->
-                    centroid[col] + gamma * (reflected[col] - centroid[col])
+                    centroid[col] + config.Gamma * (reflected[col] - centroid[col])
                     )
             if f expanded < f reflected
             then
@@ -88,7 +83,7 @@ module NelderMead =
         then
             let contractedOutside =
                 Array.init dim (fun col ->
-                    centroid[col] + rho * (reflected[col] - centroid[col])
+                    centroid[col] + config.Rho * (reflected[col] - centroid[col])
                     )
             if f contractedOutside < f reflected
             then
@@ -100,7 +95,7 @@ module NelderMead =
                     ordered
                     |> Array.map (fun pt ->
                         Array.init dim (fun col ->
-                            best[col] + sigma * (pt[col] - best[col])
+                            best[col] + config.Sigma * (pt[col] - best[col])
                             )
                         )
                 shrunk
@@ -108,7 +103,7 @@ module NelderMead =
         then
             let contractedInside =
                 Array.init dim (fun col ->
-                    centroid[col] + rho * (worst[col] - centroid[col])
+                    centroid[col] + config.Rho * (worst[col] - centroid[col])
                     )
             if f contractedInside < f worst
             then
@@ -120,7 +115,7 @@ module NelderMead =
                     ordered
                     |> Array.map (fun pt ->
                         Array.init dim (fun col ->
-                            best[col] + sigma * (pt[col] - best[col])
+                            best[col] + config.Sigma * (pt[col] - best[col])
                             )
                         )
                 shrunk
