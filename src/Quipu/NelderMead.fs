@@ -2,7 +2,30 @@
 
 module NelderMead =
 
-    let update (dim: int, f: float [] -> float) (simplex: (float []) []) =
+    type Configuration = {
+        /// Reflection parameter, Alpha > 0.0
+        Alpha: float
+        /// Expansion parameter, Gamma > 1.0
+        Gamma: float
+        /// Contraction parameter, 0.0 < Rho <= 1.0
+        Rho: float
+        /// Shrink parameter
+        Sigma: float
+        }
+        with
+        static member defaultValue = {
+            Alpha = 1.0
+            Gamma = 2.0
+            Rho = 0.5
+            Sigma = 0.5
+            }
+
+    let update (config: Configuration) (dim: int, f: float [] -> float) (simplex: (float []) []) =
+
+        let alpha = config.Alpha
+        let gamma = config.Gamma
+        let rho = config.Rho
+        let sigma = config.Sigma
 
         // 1) order the values, from best to worst
         let ordered =
@@ -22,7 +45,7 @@ module NelderMead =
 
         // 3) reflection
         let worst = ordered[size - 1]
-        let alpha = 1.0
+
         let reflected =
             Array.init dim (fun col ->
                 centroid[col] + alpha * (centroid[col] - worst[col])
@@ -42,7 +65,6 @@ module NelderMead =
         elif
             f reflected < f best
         then
-            let gamma = 2.0
             let expanded =
                 Array.init dim (fun col ->
                     centroid[col] + gamma * (reflected[col] - centroid[col])
@@ -57,7 +79,6 @@ module NelderMead =
         // 5) contraction
         elif f reflected < f worst
         then
-            let rho = 0.5
             let contractedOutside =
                 Array.init dim (fun col ->
                     centroid[col] + rho * (reflected[col] - centroid[col])
@@ -68,7 +89,6 @@ module NelderMead =
                 ordered
             else
             // 6) shrink
-                let sigma = 0.5
                 let shrunk =
                     ordered
                     |> Array.map (fun pt ->
@@ -79,7 +99,6 @@ module NelderMead =
                 shrunk
         elif f reflected >= f worst
         then
-            let rho = 0.5
             let contractedInside =
                 Array.init dim (fun col ->
                     centroid[col] + rho * (worst[col] - centroid[col])
@@ -90,7 +109,6 @@ module NelderMead =
                 ordered
             else
             // 6) shrink
-                let sigma = 0.5
                 let shrunk =
                     ordered
                     |> Array.map (fun pt ->
@@ -123,13 +141,18 @@ module NelderMead =
                 x
         |]
 
-    let solve (tolerance: float) (dim: int, f: float [] -> float) (start: float []) =
+    let solve
+        (config: Configuration)
+        (tolerance: float)
+        (dim: int, f: float [] -> float)
+        (start: float []) =
+
         if start.Length <> dim
         then failwith $"Invalid starting point dimension: {start.Length}, expected {dim}."
         let simplex = initialize (dim, f) start
         simplex
         |> Seq.unfold (fun simplex ->
-            let updatedSimplex = update (dim, f) simplex
+            let updatedSimplex = update config (dim, f) simplex
             let solution =
                 updatedSimplex
                 |> Array.map (fun pt -> pt, f pt)
