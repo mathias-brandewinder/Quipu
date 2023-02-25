@@ -9,7 +9,7 @@ module NelderMead =
         Gamma: float
         /// Contraction parameter, 0.0 < Rho <= 1.0
         Rho: float
-        /// Shrink parameter
+        /// Shrink parameter, 0.0 < Sigma < 1.0
         Sigma: float
         }
         with
@@ -20,7 +20,14 @@ module NelderMead =
             Sigma = 0.5
             }
 
-    let update (config: Configuration) (dim: int, f: float [] -> float) (simplex: (float []) []) =
+    type IObjective =
+        abstract member Dimension: int
+        abstract member Value: float [] -> float
+
+    let update (config: Configuration) (objective: IObjective) (simplex: (float []) []) =
+
+        let dim = objective.Dimension
+        let f = objective.Value
 
         let alpha = config.Alpha
         let gamma = config.Gamma
@@ -128,7 +135,8 @@ module NelderMead =
         let max = evaluations |> Seq.max
         max - min < tolerance
 
-    let initialize (dim: int, f: float [] -> float) (startingPoint: float []) =
+    let initialize (objective: IObjective) (startingPoint: float []) =
+        let dim = objective.Dimension
         [|
             yield startingPoint
             for d in 0 .. (dim - 1) ->
@@ -144,15 +152,18 @@ module NelderMead =
     let solve
         (config: Configuration)
         (tolerance: float)
-        (dim: int, f: float [] -> float)
+        (objective: IObjective)
         (start: float []) =
+
+        let dim = objective.Dimension
+        let f = objective.Value
 
         if start.Length <> dim
         then failwith $"Invalid starting point dimension: {start.Length}, expected {dim}."
-        let simplex = initialize (dim, f) start
+        let simplex = initialize objective start
         simplex
         |> Seq.unfold (fun simplex ->
-            let updatedSimplex = update config (dim, f) simplex
+            let updatedSimplex = update config objective simplex
             let solution =
                 updatedSimplex
                 |> Array.map (fun pt -> pt, f pt)
