@@ -40,6 +40,11 @@ module NelderMead =
                 member this.Dimension = 3
                 member this.Value x = f (x.[0], x.[1], x.[2])
             }
+        static member from (dim: int, f: float[] -> float) =
+            { new IObjective with
+                member this.Dimension = dim
+                member this.Value x = f x
+            }
 
     let update (config: Configuration) (objective: IObjective) (simplex: (float []) []) =
 
@@ -165,8 +170,9 @@ module NelderMead =
         (config: Configuration)
         (tolerance: float)
         (objective: IObjective)
-        (start: float []) =
+        (start: seq<float>) =
 
+        let start = start |> Array.ofSeq
         let dim = objective.Dimension
         let f = objective.Value
 
