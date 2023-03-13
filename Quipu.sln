@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{AD607682-FF2D-4034-B18A-157F85BE1B09}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Quipu", "src\Quipu\Quipu.fsproj", "{1F640F6A-D50B-4D6F-BDB4-BF513ED24721}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Quipu.Tests", "tests\Quipu.Tests.fsproj", "{091B784C-3A5E-41E0-A7AD-B09B3084B384}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1F640F6A-D50B-4D6F-BDB4-BF513ED24721}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F640F6A-D50B-4D6F-BDB4-BF513ED24721}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F640F6A-D50B-4D6F-BDB4-BF513ED24721}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F640F6A-D50B-4D6F-BDB4-BF513ED24721}.Release|Any CPU.Build.0 = Release|Any CPU
+		{091B784C-3A5E-41E0-A7AD-B09B3084B384}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{091B784C-3A5E-41E0-A7AD-B09B3084B384}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{091B784C-3A5E-41E0-A7AD-B09B3084B384}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{091B784C-3A5E-41E0-A7AD-B09B3084B384}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1F640F6A-D50B-4D6F-BDB4-BF513ED24721} = {AD607682-FF2D-4034-B18A-157F85BE1B09}
+	EndGlobalSection
+EndGlobal

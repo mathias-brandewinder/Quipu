@@ -46,6 +46,12 @@ module NelderMead =
                 member this.Value x = f x
             }
 
+    type Solution =
+        | Optimal of (float * float [])
+        | SubOptimal of (float * float [])
+        | Unbounded of float []
+        | Abnormal of float []
+
     let update (config: Configuration) (objective: IObjective) (simplex: (float []) []) =
 
         let dim = objective.Dimension
