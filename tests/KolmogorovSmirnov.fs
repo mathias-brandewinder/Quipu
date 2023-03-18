@@ -34,3 +34,10 @@ module KolmogorovSmirnov =
             let sample1 = [| 0.0; 1.0; 2.0; 3.0 |]
             let sample2 = [| 0.0; 1.0; 1.0; 3.0 |]
             Assert.Equal(0.25, Samples.maximumDifference(sample1, sample2))
+
+        [<Fact>]
+        let ``max difference of non overlapping functions should be 1.0`` () =
+
+            let sample1 = [| 0.0; 1.0; 2.0; 3.0 |]
+            let sample2 = [| 4.0; 5.0; 6.0; 7.0 |]
+            Assert.Equal(1.0, Samples.maximumDifference(sample1, sample2))
