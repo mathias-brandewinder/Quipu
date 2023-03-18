@@ -26,10 +26,6 @@ module KolmogorovSmirnov =
         let errorCorrection x n =
             x + (1.0 / (6.0 * sqrt (float n))) + ((x - 1.0) / (4.0 * float n))
 
-        let proba (x, n) =
-            let corrected = errorCorrection x n
-            kolmogorovCumulative corrected
-
         /// Returns the largest difference observed between the empirical and
         /// theoretical cumulative distributions,
         /// and the probability to observe a difference that large,
@@ -49,8 +45,12 @@ module KolmogorovSmirnov =
                     )
                 |> Seq.max
 
+            let correctedDifference =
+                let reference = (sqrt (float size) * maxDifference)
+                errorCorrection reference size
+
             maxDifference,
-            1.0 - kolmogorovCumulative 0.001 (sqrt (float size) * maxDifference)
+            1.0 - kolmogorovCumulative 0.001 correctedDifference
 
     [<RequireQualifiedAccess>]
     module Samples =
