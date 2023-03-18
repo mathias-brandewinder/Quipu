@@ -6,19 +6,34 @@ module KolmogorovSmirnov =
     [<RequireQualifiedAccess>]
     module Reference =
 
-        // probability of kolmogorov value < x
-        let q x =
+        // probability of kolmogorov value <= x
+        let kolmogorovCumulative precision x =
+            let minChange = 0.5 * precision
             let sum =
-                Seq.init 10_000 (fun i ->
-                    let j = i + 1
-                    (pown (-1.0) (j - 1))
-                    *
-                    (exp (-2.0 * (float j) * (float j) * x * x))
+                1
+                |> Seq.unfold (fun i ->
+                    let value =
+                        (pown (-1.0) (i - 1))
+                        *
+                        (exp (-2.0 * (float i) * (float i) * x * x))
+                    if abs value < minChange
+                    then None
+                    else Some (value, i + 1)
                     )
                 |> Seq.sum
-                |> (*) 2.0
-            1.0 - sum
+            1.0 - 2.0 * sum
 
+        let errorCorrection x n =
+            x + (1.0 / (6.0 * sqrt (float n))) + ((x - 1.0) / (4.0 * float n))
+
+        let proba (x, n) =
+            let corrected = errorCorrection x n
+            kolmogorovCumulative corrected
+
+        /// Returns the largest difference observed between the empirical and
+        /// theoretical cumulative distributions,
+        /// and the probability to observe a difference that large,
+        /// assuming the samples come from the provided underlying distribution.
         let compare (sample: float [], cumulative: float -> float) =
 
             let sample =
@@ -26,7 +41,7 @@ module KolmogorovSmirnov =
                 |> Array.sort
             let size = sample.Length
 
-            let d =
+            let maxDifference =
                 sample
                 |> Seq.mapi (fun i x ->
                     let p = float (i + 1) / float size
@@ -34,7 +49,8 @@ module KolmogorovSmirnov =
                     )
                 |> Seq.max
 
-            d, q(sqrt (float size) * d)
+            maxDifference,
+            1.0 - kolmogorovCumulative 0.001 (sqrt (float size) * maxDifference)
 
     [<RequireQualifiedAccess>]
     module Samples =
@@ -91,6 +107,12 @@ module KolmogorovSmirnov =
 
             walk 0.0 (0.0, 0.0) (-1, -1)
 
+        /// Test: are the two samples drawn from the sample underlying
+        /// distribution?
+        /// Returns the largest difference observed between the empirical
+        /// cumulative distributions, and the probability to observe a
+        /// difference that large, assuming the 2 samples come from the same
+        /// underlying distribution.
         let compare (sample1: float [], sample2: float []) =
 
             let maxDifference = maximumDifference (sample1, sample2)
@@ -100,4 +122,4 @@ module KolmogorovSmirnov =
 
             let criticalAlpha = findAlpha maxDifference (size1, size2)
 
-            maxDifference, (1.0 - criticalAlpha)
+            maxDifference, criticalAlpha
