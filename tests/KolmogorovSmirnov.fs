@@ -2,15 +2,8 @@ namespace Quipu.Tests
 
 module KolmogorovSmirnov =
 
-    open System
     open Xunit
-
     open Quipu.KolmogorovSmirnov
-
-    let isWithin (target: float, tolerance: float) (value: float) =
-        value <= target + tolerance
-        &&
-        value >= target - tolerance
 
     module Samples =
 
@@ -27,4 +20,4 @@ module KolmogorovSmirnov =
         let ``c(alpha)`` (alpha, expected) =
 
             let actual = Samples.criticalValue alpha
-            Assert.True(actual |> isWithin (expected, 0.001))
+            Assert.InRange(actual, expected - 0.001, expected + 0.001)
