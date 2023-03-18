@@ -3,6 +3,8 @@ namespace Quipu.Tests
 module KolmogorovSmirnov =
 
     open Xunit
+    open FsCheck
+    open FsCheck.Xunit
     open Quipu.KolmogorovSmirnov
 
     module Samples =
@@ -42,14 +44,23 @@ module KolmogorovSmirnov =
             let sample2 = [| 4.0; 5.0; 6.0; 7.0 |]
             Assert.Equal(1.0, Samples.maximumDifference(sample1, sample2))
 
-        [<Fact>]
-        let ``critical should match`` () =
+        [<Property>]
+        let ``estimated alpha for critical error should match alpha used to generate error `` (alpha: NormalFloat, size1: PositiveInt, size2: PositiveInt) =
 
-            let alpha = 0.01
+            let alpha = alpha.Get
+            let size1 = size1.Get
+            let size2 = size2.Get
+
+            let alpha =
+                alpha
+                |> abs
+                |> fun x -> x - floor x
+
+            // compute the critical value for a level alpha
             let c = Samples.c alpha
-            let n1 = 100
-            let n2 = 50
-            let correction = Samples.sampleCorrection (n1, n2)
+            let correction = Samples.sampleCorrection (size1, size2)
             let critical = c * correction
-            let estimated = Samples.findAlpha critical (n1, n2)
-            Assert.InRange(alpha, estimated - 0.001, estimated + 0.001)
+            // compute estimated alpha for the observed difference
+            let estimated = Samples.findAlpha critical (size1, size2)
+
+            estimated < alpha + 0.001 && alpha - 0.001 < estimated
