@@ -19,7 +19,7 @@ module KolmogorovSmirnov =
         // See https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test#Two-sample_Kolmogorov%E2%80%93Smirnov_test
         let ``c(alpha)`` (alpha, expected) =
 
-            let actual = Samples.criticalValue alpha
+            let actual = Samples.c alpha
             Assert.InRange(actual, expected - 0.001, expected + 0.001)
 
         [<Fact>]
@@ -41,3 +41,15 @@ module KolmogorovSmirnov =
             let sample1 = [| 0.0; 1.0; 2.0; 3.0 |]
             let sample2 = [| 4.0; 5.0; 6.0; 7.0 |]
             Assert.Equal(1.0, Samples.maximumDifference(sample1, sample2))
+
+        [<Fact>]
+        let ``critical should match`` () =
+
+            let alpha = 0.01
+            let c = Samples.c alpha
+            let n1 = 100
+            let n2 = 50
+            let correction = Samples.sampleCorrection (n1, n2)
+            let critical = c * correction
+            let estimated = Samples.findAlpha critical (n1, n2)
+            Assert.InRange(alpha, estimated - 0.001, estimated + 0.001)

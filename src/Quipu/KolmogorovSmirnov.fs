@@ -39,16 +39,16 @@ module KolmogorovSmirnov =
     [<RequireQualifiedAccess>]
     module Samples =
 
-        let criticalValue alpha =
+        let c alpha =
             sqrt (0.5 * (- log (alpha / 2.0)))
 
         let sampleCorrection (size1, size2) =
             sqrt (float (size1 + size2) / float (size1 * size2))
 
-        let findCritical diff (size1, size2) =
+        let findAlpha diff (size1, size2) =
             let corr = sampleCorrection (size1, size2)
             let startSearch =
-                let x = criticalValue 0.5 * corr < diff
+                let x = c 0.5 * corr < diff
                 if x
                 then 0.0, 0.5
                 else 0.5, 1.0
@@ -57,7 +57,7 @@ module KolmogorovSmirnov =
                 if abs (low - high) < 0.001
                 then midpoint
                 else
-                    let x = criticalValue midpoint * corr < diff
+                    let x = c midpoint * corr < diff
                     if x
                     then binSearch (low, midpoint)
                     else binSearch (midpoint, high)
@@ -98,6 +98,6 @@ module KolmogorovSmirnov =
             let size1 = sample1.Length
             let size2 = sample2.Length
 
-            let criticalValue = findCritical maxDifference (size1, size2)
+            let criticalAlpha = findAlpha maxDifference (size1, size2)
 
-            maxDifference, (1.0 - criticalValue)
+            maxDifference, (1.0 - criticalAlpha)
