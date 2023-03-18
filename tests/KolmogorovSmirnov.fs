@@ -21,3 +21,16 @@ module KolmogorovSmirnov =
 
             let actual = Samples.criticalValue alpha
             Assert.InRange(actual, expected - 0.001, expected + 0.001)
+
+        [<Fact>]
+        let ``identical samples should have a difference of 0.0`` () =
+
+            let sample = [| 0.0; 1.0; 2.0 |]
+            Assert.Equal(0.0, Samples.maximumDifference(sample, sample))
+
+        [<Fact>]
+        let ``max difference should return largest observed CDF difference`` () =
+
+            let sample1 = [| 0.0; 1.0; 2.0; 3.0 |]
+            let sample2 = [| 0.0; 1.0; 1.0; 3.0 |]
+            Assert.Equal(0.25, Samples.maximumDifference(sample1, sample2))

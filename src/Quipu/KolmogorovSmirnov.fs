@@ -63,7 +63,8 @@ module KolmogorovSmirnov =
                     else binSearch (midpoint, high)
             binSearch startSearch
 
-        let compare (sample1: float [], sample2: float []) =
+        /// Identify the largest difference between two empirical distributions.
+        let maximumDifference (sample1: float [], sample2: float []) =
 
             let sample1 = sample1 |> Array.sort
             let sample2 = sample2 |> Array.sort
@@ -88,7 +89,15 @@ module KolmogorovSmirnov =
                     let acc = max acc (abs (cumul1 - cumul2))
                     walk acc (cumul1, cumul2) (index1, index2)
 
-            let maxDifference = walk 0.0 (0.0, 0.0) (-1, -1)
+            walk 0.0 (0.0, 0.0) (-1, -1)
+
+        let compare (sample1: float [], sample2: float []) =
+
+            let maxDifference = maximumDifference (sample1, sample2)
+
+            let size1 = sample1.Length
+            let size2 = sample2.Length
+
             let criticalValue = findCritical maxDifference (size1, size2)
 
             maxDifference, (1.0 - criticalValue)
