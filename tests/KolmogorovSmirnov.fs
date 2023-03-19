@@ -2,10 +2,29 @@ namespace Quipu.Tests
 
 module KolmogorovSmirnov =
 
+    open System
     open Xunit
     open FsCheck
     open FsCheck.Xunit
     open Quipu.KolmogorovSmirnov
+
+    type IDistribution =
+        abstract member Simulate : unit -> float
+        abstract member Cumulative : float -> float
+
+    let uniform (rng: Random) (lower, upper) =
+        let diff = upper - lower
+        { new IDistribution with
+            member this.Cumulative(arg1: float): float =
+                (arg1 - lower) / diff
+                |> min 1.0
+                |> max 0.0
+            member this.Simulate(): float =
+                diff * rng.NextDouble() + lower
+        }
+
+    let sample n (density: unit -> float) =
+        Array.init n (fun _ -> density())
 
     module Samples =
 
@@ -64,3 +83,32 @@ module KolmogorovSmirnov =
             let estimated = Samples.findAlpha critical (size1, size2)
 
             estimated < alpha + 0.001 && alpha - 0.001 < estimated
+
+        [<Fact>]
+        let ``test accuracy`` () =
+
+            let tests = 100
+            let sampleSize = 100
+
+            let samples =
+                [ 1 .. tests ]
+                |> List.map (fun seed ->
+                    let uniform1 = uniform (Random seed) (0.0, 100.0)
+                    let uniform2 = uniform (Random (seed + 1)) (0.0, 100.0)
+                    let sample1 = sample sampleSize (uniform1.Simulate)
+                    let sample2 = sample sampleSize (uniform2.Simulate)
+                    let (_, test) = Samples.compare (sample1, sample2)
+                    test
+                    )
+
+            let alphas = [ 0.1; 0.2; 0.3; 0.4; 0.5 ]
+
+            alphas
+            |> List.iter (fun alpha ->
+                let failures =
+                    samples
+                    |> List.filter (fun test -> test < alpha)
+                    |> List.length
+                let limit = alpha + 0.01
+                Assert.True(failures <= int (limit * float sampleSize))
+                )
