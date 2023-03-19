@@ -97,8 +97,7 @@ module KolmogorovSmirnov =
                     let uniform2 = uniform (Random (seed + 1)) (0.0, 100.0)
                     let sample1 = sample sampleSize (uniform1.Simulate)
                     let sample2 = sample sampleSize (uniform2.Simulate)
-                    let (_, test) = Samples.compare (sample1, sample2)
-                    test
+                    Samples.compare (sample1, sample2)
                     )
 
             let alphas = [ 0.1; 0.2; 0.3; 0.4; 0.5 ]
@@ -107,7 +106,7 @@ module KolmogorovSmirnov =
             |> List.iter (fun alpha ->
                 let failures =
                     samples
-                    |> List.filter (fun test -> test < alpha)
+                    |> List.filter (fun test -> test.ProbaDifferenceIfEqual < alpha)
                     |> List.length
                 let limit = alpha + 0.01
                 Assert.True(failures <= int (limit * float sampleSize))

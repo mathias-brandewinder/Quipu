@@ -2,6 +2,13 @@ namespace Quipu
 
 module KolmogorovSmirnov =
 
+    type Test = {
+        /// Largest difference observed between cumulative distributions.
+        Difference: float
+        /// Probability to observe a difference that large if distributions are identical.
+        ProbaDifferenceIfEqual: float
+        }
+
     /// Compare a sample of observations to a reference distribution
     [<RequireQualifiedAccess>]
     module Reference =
@@ -49,8 +56,10 @@ module KolmogorovSmirnov =
                 let reference = (sqrt (float size) * maxDifference)
                 errorCorrection reference size
 
-            maxDifference,
-            1.0 - kolmogorovCumulative 0.001 correctedDifference
+            {
+                Difference = maxDifference
+                ProbaDifferenceIfEqual = 1.0 - kolmogorovCumulative 0.001 correctedDifference
+            }
 
     [<RequireQualifiedAccess>]
     module Samples =
@@ -122,4 +131,7 @@ module KolmogorovSmirnov =
 
             let criticalAlpha = findAlpha maxDifference (size1, size2)
 
-            maxDifference, criticalAlpha
+            {
+                Difference = maxDifference
+                ProbaDifferenceIfEqual = criticalAlpha
+            }
