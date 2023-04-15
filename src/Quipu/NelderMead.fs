@@ -46,12 +46,6 @@ module NelderMead =
                 member this.Value x = f x
             }
 
-    type Solution =
-        | Optimal of (float * float [])
-        | SubOptimal of (float * float [])
-        | Unbounded of float []
-        | Abnormal of float []
-
     exception Unbounded
     exception Abnormal of float [][]
 
@@ -179,6 +173,12 @@ module NelderMead =
                 x
         |]
 
+    type Solution =
+        | Optimal of (float * float [])
+        | SubOptimal of (float * float [])
+        | Unbounded
+        | Abnormal of (float [][])
+
     let solve
         (config: Configuration)
         (tolerance: float)
@@ -192,17 +192,21 @@ module NelderMead =
         if start.Length <> dim
         then failwith $"Invalid starting point dimension: {start.Length}, expected {dim}."
         let simplex = initialize objective start
-        simplex
-        |> Seq.unfold (fun simplex ->
-            let updatedSimplex = update config objective simplex
-            let solution =
-                updatedSimplex
-                |> Array.map (fun pt -> pt, f pt)
-                |> Array.minBy snd
-            Some ((solution, updatedSimplex), updatedSimplex)
-            )
-        |> Seq.skipWhile (fun (solution, simplex) ->
-            simplex |> terminate tolerance f |> not
-            )
-        |> Seq.head
-        |> fst
+        try
+            simplex
+            |> Seq.unfold (fun simplex ->
+                let updatedSimplex = update config objective simplex
+                let solution =
+                    updatedSimplex
+                    |> Array.map (fun pt -> pt, f pt)
+                    |> Array.minBy snd
+                Some ((solution, updatedSimplex), updatedSimplex)
+                )
+            |> Seq.skipWhile (fun (solution, simplex) ->
+                simplex |> terminate tolerance f |> not
+                )
+            |> Seq.head
+            |> fun ((args, value), _) -> Solution.Optimal (value, args)
+        with
+        | :? Unbounded -> Solution.Unbounded
+        | :? Abnormal -> Solution.Abnormal simplex
