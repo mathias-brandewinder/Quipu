@@ -2,22 +2,46 @@
 
 module NelderMead =
 
+    module Updates =
+
+        type Configuration = {
+            /// Reflection parameter, Alpha > 0.0
+            Alpha: float
+            /// Expansion parameter, Gamma > 1.0
+            Gamma: float
+            /// Contraction parameter, 0.0 < Rho <= 1.0
+            Rho: float
+            /// Shrink parameter, 0.0 < Sigma < 1.0
+            Sigma: float
+            }
+            with
+            static member defaultValue = {
+                Alpha = 1.0
+                Gamma = 2.0
+                Rho = 0.5
+                Sigma = 0.5
+                }
+
+    module Termination =
+
+        type Configuration = {
+            Tolerance: float
+            MaximumIterations: Option<int>
+            }
+            with
+            static member defaultValue = {
+                Tolerance = 0.001
+                MaximumIterations = None
+                }
+
     type Configuration = {
-        /// Reflection parameter, Alpha > 0.0
-        Alpha: float
-        /// Expansion parameter, Gamma > 1.0
-        Gamma: float
-        /// Contraction parameter, 0.0 < Rho <= 1.0
-        Rho: float
-        /// Shrink parameter, 0.0 < Sigma < 1.0
-        Sigma: float
+        Updates: Updates.Configuration
+        Termination: Termination.Configuration
         }
         with
         static member defaultValue = {
-            Alpha = 1.0
-            Gamma = 2.0
-            Rho = 0.5
-            Sigma = 0.5
+            Updates = Updates.Configuration.defaultValue
+            Termination = Termination.Configuration.defaultValue
             }
 
     type IObjective =
@@ -49,7 +73,10 @@ module NelderMead =
     exception Unbounded
     exception Abnormal of float [][]
 
-    let update (config: Configuration) (objective: IObjective) (simplex: (float []) []) =
+    let update
+        (config: Updates.Configuration)
+        (objective: IObjective)
+        (simplex: (float []) []) =
 
         let dim = objective.Dimension
         let f = objective.Value
@@ -181,7 +208,6 @@ module NelderMead =
 
     let solve
         (config: Configuration)
-        (tolerance: float)
         (objective: IObjective)
         (start: seq<float>) =
 
@@ -195,18 +221,30 @@ module NelderMead =
         try
             simplex
             |> Seq.unfold (fun simplex ->
-                let updatedSimplex = update config objective simplex
+                let updatedSimplex = update config.Updates objective simplex
                 let solution =
                     updatedSimplex
                     |> Array.map (fun pt -> pt, f pt)
                     |> Array.minBy snd
                 Some ((solution, updatedSimplex), updatedSimplex)
                 )
-            |> Seq.skipWhile (fun (solution, simplex) ->
-                simplex |> terminate tolerance f |> not
+            |> Seq.mapi (fun i x -> i, x)
+            |> Seq.skipWhile (fun (iter, (solution, simplex)) ->
+                simplex |> terminate config.Termination.Tolerance f |> not
+                &&
+                config.Termination.MaximumIterations
+                |> Option.map (fun maxIter -> iter < maxIter)
+                |> Option.defaultValue true
                 )
             |> Seq.head
-            |> fun ((args, value), _) -> Solution.Optimal (value, args)
+            |> fun (iter, ((args, value), _)) ->
+                match config.Termination.MaximumIterations with
+                | None -> Solution.Optimal (value, args)
+                | Some maxIters ->
+                    if iter < maxIters
+                    then Solution.Optimal (value, args)
+                    else Solution.SubOptimal (value, args)
         with
         | :? Unbounded -> Solution.Unbounded
         | :? Abnormal -> Solution.Abnormal simplex
+        | _ -> Solution.Abnormal simplex
