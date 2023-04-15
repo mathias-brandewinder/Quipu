@@ -52,6 +52,9 @@ module NelderMead =
         | Unbounded of float []
         | Abnormal of float []
 
+    exception Unbounded
+    exception Abnormal of float [][]
+
     let update (config: Configuration) (objective: IObjective) (simplex: (float []) []) =
 
         let dim = objective.Dimension
@@ -61,6 +64,10 @@ module NelderMead =
         let ordered =
             simplex
             |> Array.sortBy f
+
+        // if the lowest value is -infinity, there is no solution
+        let best = f ordered.[0]
+        if best = -infinity then raise Unbounded
 
         // 2) calculate centroid
         let size = simplex.Length
@@ -148,7 +155,7 @@ module NelderMead =
                         )
                 shrunk
         else
-            failwith "All cases should have been covered"
+            raise (Abnormal simplex)
 
     let terminate (tolerance: float) (f: float [] -> float) (simplex: float [][]) =
         // We stop when for every point in the simplex,

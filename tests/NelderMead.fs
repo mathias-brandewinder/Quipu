@@ -76,9 +76,47 @@ module NelderMead =
 
     module Unbounded =
 
-        [<Fact(Skip="TODO")>]
+        [<Fact>]
         let ``function, 1 argument`` () =
 
             let f x = x
-            let (_, actual) = NelderMead.solve Configuration.defaultValue 0.01 (Objective.from f) [ 100.0 ]
-            ignore ()
+            Assert.Throws<Unbounded>(fun _ ->
+                NelderMead.solve Configuration.defaultValue 0.01 (Objective.from f) [ 100.0 ]
+                |> ignore
+                )
+
+        [<Fact>]
+        let ``function returning nan`` () =
+
+            let f (x: float) = nan
+            Assert.Throws<Abnormal>(fun _ ->
+                NelderMead.solve Configuration.defaultValue 0.01 (Objective.from f) [ 100.0 ]
+                |> ignore
+                )
+
+        [<Fact(Skip="Todo")>]
+        let ``function returning +infinity`` () =
+
+            let f (x: float) = +infinity
+            Assert.Throws<Abnormal>(fun _ ->
+                NelderMead.solve Configuration.defaultValue 0.01 (Objective.from f) [ 100.0 ]
+                |> ignore
+                )
+
+        [<Fact(Skip="Todo")>]
+        let ``function returning infinity`` () =
+
+            let f (x: float) = infinity
+            Assert.Throws<Abnormal>(fun _ ->
+                NelderMead.solve Configuration.defaultValue 0.01 (Objective.from f) [ 100.0 ]
+                |> ignore
+                )
+
+        [<Fact(Skip="Todo")>]
+        let ``function throwing`` () =
+
+            let f (x: float) : float = failwith "some exception"
+            Assert.Throws<Abnormal>(fun _ ->
+                NelderMead.solve Configuration.defaultValue 0.01 (Objective.from f) [ 100.0 ]
+                |> ignore
+                )
