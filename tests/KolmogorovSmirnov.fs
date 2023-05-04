@@ -63,6 +63,27 @@ module KolmogorovSmirnov =
             let sample2 = [| 4.0; 5.0; 6.0; 7.0 |]
             Assert.Equal(1.0, Samples.maximumDifference(sample1, sample2))
 
+        [<Fact>]
+        let ``difference with repeats, case 1`` () =
+
+            let sample1 = [| 0.0; 1.0; 2.0; 3.0; 4.0 |]
+            let sample2 = [| 0.0; 1.0; 1.0; 1.0; 4.0 |]
+            Assert.Equal(0.4, Samples.maximumDifference(sample1, sample2), 4)
+
+        [<Fact>]
+        let ``difference with repeats, case 2`` () =
+
+            let sample1 = [| 0.0; 1.0; 1.0; 3.0; 4.0 |]
+            let sample2 = [| 0.0; 1.0; 1.0; 1.0; 4.0 |]
+            Assert.Equal(0.2, Samples.maximumDifference(sample1, sample2), 4)
+
+        [<Fact>]
+        let ``difference with repeats, case 3`` () =
+
+            let sample1 = [| 0.0; 2.0; 3.0; 4.0; 5.0 |]
+            let sample2 = [| 0.0; 1.0; 1.0; 1.0; 4.0 |]
+            Assert.Equal(0.6, Samples.maximumDifference(sample1, sample2), 4)
+
         [<Property>]
         let ``estimated alpha for critical error should match alpha used to generate error `` (alpha: NormalFloat, size1: PositiveInt, size2: PositiveInt) =
 
