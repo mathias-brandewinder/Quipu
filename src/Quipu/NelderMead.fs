@@ -185,10 +185,21 @@ module NelderMead =
         (minimum, maximum)
 
     let terminate (tolerance: float) (f: float [] -> float) (simplex: float [][]) =
-        // We stop when for every point in the simplex,
-        // the function values are all close to each other.
+        // The function value must be within the tolerance bounds
+        // for every candidate in the simplex.
         let min, max = simplex |> minMax f
         max - min < tolerance
+        &&
+        // Every argument must be within the tolerance bounds
+        // for every candidate in the simplex.
+        let dim = simplex.[0].Length
+        seq { 0 .. dim - 1 }
+        |> Seq.forall (fun i ->
+            let min, max =
+                simplex
+                |> minMax (fun point -> point.[i])
+            max - min < tolerance
+            )
 
     let initialize (objective: IObjective) (startingPoint: float []) =
         let dim = objective.Dimension

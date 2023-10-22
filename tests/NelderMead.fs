@@ -195,3 +195,50 @@ module NelderMead =
                 | Abnormal _ -> true
                 | _ -> false
             Assert.True(isAbnormal)
+
+    module TerminationCriteria =
+
+        [<Fact>]
+        let ``when function values are not within bounds termination should not occur`` () =
+
+            // simplex within bounds, but function values are not
+            let tolerance = 0.5
+            let f (x: float[]) = pown x.[0] 2 + x.[1]
+            let simplex =
+                [|
+                    [| 1.0; 0.0 |] // f = 1.0
+                    [| 1.4; 0.0 |] // f = 1.96
+                |]
+
+            let shouldTerminate = NelderMead.terminate tolerance f simplex
+            Assert.False(shouldTerminate)
+
+        [<Fact>]
+        let ``when argument values are not within bounds termination should not occur`` () =
+
+            // function values within bounds, but simplex values are not
+            let tolerance = 0.5
+            let f (x: float[]) = 0.1 * x.[0] + 0.1 * x.[1]
+            let simplex =
+                [|
+                    [| 1.0; 0.0 |] // f = 0.1
+                    [| 2.0; 0.0 |] // f = 0.2
+                |]
+
+            let shouldTerminate = NelderMead.terminate tolerance f simplex
+            Assert.False(shouldTerminate)
+
+        [<Fact>]
+        let ``when function and argument values are within bounds termination should occur`` () =
+
+            // function values and simplex values are within bounds
+            let tolerance = 0.5
+            let f (x: float[]) = 0.1 * x.[0] + 0.1 * x.[1]
+            let simplex =
+                [|
+                    [| 0.0; 0.0 |] // f = 0.0
+                    [| 0.1; 0.0 |] // f = 0.01
+                |]
+
+            let shouldTerminate = NelderMead.terminate tolerance f simplex
+            Assert.True(shouldTerminate)
