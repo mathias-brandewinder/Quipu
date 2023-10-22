@@ -178,12 +178,16 @@ module NelderMead =
         else
             raise (Abnormal simplex)
 
+    let private minMax f xs =
+        let projection = xs |> Seq.map f
+        let minimum = projection |> Seq.min
+        let maximum = projection |> Seq.max
+        (minimum, maximum)
+
     let terminate (tolerance: float) (f: float [] -> float) (simplex: float [][]) =
         // We stop when for every point in the simplex,
         // the function values are all close to each other.
-        let evaluations = simplex |> Seq.map f
-        let min = evaluations |> Seq.min
-        let max = evaluations |> Seq.max
+        let min, max = simplex |> minMax f
         max - min < tolerance
 
     let initialize (objective: IObjective) (startingPoint: float []) =
