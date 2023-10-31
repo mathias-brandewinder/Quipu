@@ -32,7 +32,11 @@ module NelderMead =
         let ``function, 1 argument`` () =
 
             let f x = pown x 2
-            let solution = NelderMead.solve config (Objective.from f) [ 100.0 ]
+            let solution =
+                NelderMead.Solver.minimize f
+                |> Solver.withConfiguration config
+                |> Solver.startFrom (StartingPoint.original [ 100.0 ])
+                |> Solver.solve
             let actual =
                 match solution with
                 | Optimal (x, _) -> x
@@ -43,7 +47,11 @@ module NelderMead =
         let ``function, tuple`` () =
 
             let f (x, y) = pown x 2 + pown y 2
-            let solution = NelderMead.solve config (Objective.from f) [ 100.0; 100.0 ]
+            let solution =
+                NelderMead.Solver.minimize f
+                |> Solver.withConfiguration config
+                |> Solver.startFrom (StartingPoint.original [ 100.0; 100.0 ])
+                |> Solver.solve
             let actual =
                 match solution with
                 | Optimal (x, _) -> x
@@ -54,7 +62,11 @@ module NelderMead =
         let ``function, truple`` () =
 
             let f (x, y, z) = pown x 2 + pown y 2 + pown z 2
-            let solution = NelderMead.solve config (Objective.from f) [ 100.0; 100.0; 100.0 ]
+            let solution =
+                NelderMead.Solver.minimize f
+                |> Solver.withConfiguration config
+                |> Solver.startFrom (StartingPoint.original [ 100.0; 100.0; 100.0 ])
+                |> Solver.solve
             let actual =
                 match solution with
                 | Optimal (x, _) -> x
@@ -65,7 +77,11 @@ module NelderMead =
         let ``function, array of arguments`` () =
 
             let f (x: float []) = pown x.[0] 2 + pown x.[1] 2
-            let solution = NelderMead.solve config (Objective.from (2, f)) [ 100.0; 100.0 ]
+            let solution =
+                NelderMead.Solver.minimize (2, f)
+                |> Solver.withConfiguration config
+                |> Solver.startFrom (StartingPoint.original [ 100.0; 100.0 ])
+                |> Solver.solve
             let actual =
                 match solution with
                 | Optimal (x, _) -> x
@@ -76,7 +92,11 @@ module NelderMead =
         let ``method, 1 argument`` () =
 
             let testClass = TestClass()
-            let solution = NelderMead.solve config (Objective.from testClass.OneParameter) [ 100.0 ]
+            let solution =
+                NelderMead.Solver.minimize testClass.OneParameter
+                |> Solver.withConfiguration config
+                |> Solver.startFrom (StartingPoint.original [ 100.0 ])
+                |> Solver.solve
             let actual =
                 match solution with
                 | Optimal (x, _) -> x
@@ -87,7 +107,11 @@ module NelderMead =
         let ``method, 2 arguments`` () =
 
             let testClass = TestClass()
-            let solution = NelderMead.solve config (Objective.from testClass.TwoParameters) [ 100.0; 100.0 ]
+            let solution =
+                NelderMead.Solver.minimize testClass.TwoParameters
+                |> Solver.withConfiguration config
+                |> Solver.startFrom (StartingPoint.original [ 100.0; 100.0 ])
+                |> Solver.solve
             let actual =
                 match solution with
                 | Optimal (x, _) -> x
@@ -98,7 +122,11 @@ module NelderMead =
         let ``method, 3 arguments`` () =
 
             let testClass = TestClass()
-            let solution = NelderMead.solve config (Objective.from testClass.ThreeParameters) [ 100.0; 100.0; 100.0 ]
+            let solution =
+                NelderMead.Solver.minimize testClass.ThreeParameters
+                |> Solver.withConfiguration config
+                |> Solver.startFrom (StartingPoint.original [ 100.0; 100.0; 100.0 ])
+                |> Solver.solve
             let actual =
                 match solution with
                 | Optimal (x, _) -> x
@@ -108,7 +136,11 @@ module NelderMead =
         [<Fact>]
         let ``static method, 1 argument`` () =
 
-            let solution = NelderMead.solve config (Objective.from TestClass.StaticOne) [ 100.0 ]
+            let solution =
+                NelderMead.Solver.minimize TestClass.StaticOne
+                |> Solver.withConfiguration config
+                |> Solver.startFrom (StartingPoint.original [ 100.0 ])
+                |> Solver.solve
             let actual =
                 match solution with
                 | Optimal (x, _) -> x
@@ -119,7 +151,11 @@ module NelderMead =
         let ``constant function, 1 argument`` () =
 
             let f (x: float) = 0.0
-            let solution = NelderMead.solve config (Objective.from f) [ 100.0 ]
+            let solution =
+                NelderMead.Solver.minimize f
+                |> Solver.withConfiguration config
+                |> Solver.startFrom (StartingPoint.original [ 100.0 ])
+                |> Solver.solve
             let actual =
                 match solution with
                 | Optimal (x, _) -> x
@@ -140,7 +176,12 @@ module NelderMead =
         let ``function, 1 argument`` () =
 
             let f x = pown x 2
-            let solution = NelderMead.solve config (Objective.from f) [ 100.0 ]
+            let solution =
+                NelderMead.Solver.minimize f
+                |> Solver.withConfiguration config
+                |> Solver.startFrom (StartingPoint.original [ 100.0 ])
+                |> Solver.solve
+
             let isSuboptimal =
                 match solution with
                 | SubOptimal _ -> true
@@ -153,14 +194,22 @@ module NelderMead =
         let ``unbounded function`` () =
 
             let f x = x
-            let solution = NelderMead.solve config (Objective.from f) [ 100.0 ]
+            let solution =
+                NelderMead.Solver.minimize f
+                |> Solver.withConfiguration config
+                |> Solver.startFrom (StartingPoint.original [ 100.0 ])
+                |> Solver.solve
             Assert.Equal(Unbounded, solution)
 
         [<Fact>]
         let ``function returning nan`` () =
 
             let f (x: float) = nan
-            let solution = NelderMead.solve config (Objective.from f) [ 100.0 ]
+            let solution =
+                NelderMead.Solver.minimize f
+                |> Solver.withConfiguration config
+                |> Solver.startFrom (StartingPoint.original [ 100.0 ])
+                |> Solver.solve
             let isAbnormal =
                 match solution with
                 | Abnormal _ -> true
@@ -172,7 +221,10 @@ module NelderMead =
 
             let f (x: float) = +infinity
             Assert.Throws<Abnormal>(fun _ ->
-                NelderMead.solve config (Objective.from f) [ 100.0 ]
+                NelderMead.Solver.minimize f
+                |> Solver.withConfiguration config
+                |> Solver.startFrom (StartingPoint.original [ 100.0 ])
+                |> Solver.solve
                 |> ignore
                 )
 
@@ -181,7 +233,10 @@ module NelderMead =
 
             let f (x: float) = infinity
             Assert.Throws<Abnormal>(fun _ ->
-                NelderMead.solve config (Objective.from f) [ 100.0 ]
+                NelderMead.Solver.minimize f
+                |> Solver.withConfiguration config
+                |> Solver.startFrom (StartingPoint.original [ 100.0 ])
+                |> Solver.solve
                 |> ignore
                 )
 
@@ -189,7 +244,11 @@ module NelderMead =
         let ``function throwing`` () =
 
             let f (x: float) : float = failwith "some exception"
-            let solution = NelderMead.solve config (Objective.from f) [ 100.0 ]
+            let solution =
+                NelderMead.Solver.minimize f
+                |> Solver.withConfiguration config
+                |> Solver.startFrom (StartingPoint.original [ 100.0 ])
+                |> Solver.solve
             let isAbnormal =
                 match solution with
                 | Abnormal _ -> true

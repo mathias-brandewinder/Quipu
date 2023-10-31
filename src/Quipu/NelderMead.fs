@@ -221,18 +221,8 @@ module NelderMead =
         | Unbounded
         | Abnormal of (float [][])
 
-    let solve
-        (config: Configuration)
-        (objective: IObjective)
-        (start: seq<float>) =
-
-        let start = start |> Array.ofSeq
-        let dim = objective.Dimension
+    let private coreSolve (objective: IObjective) simplex config =
         let f = objective.Value
-
-        if start.Length <> dim
-        then failwith $"Invalid starting point dimension: {start.Length}, expected {dim}."
-        let simplex = initialize objective start
         try
             simplex
             |> Seq.unfold (fun simplex ->
@@ -263,3 +253,101 @@ module NelderMead =
         | :? Unbounded -> Solution.Unbounded
         | :? Abnormal -> Solution.Abnormal simplex
         | _ -> Solution.Abnormal simplex
+
+    let solve
+        (config: Configuration)
+        (objective: IObjective)
+        (start: seq<float>) =
+
+        let start = start |> Array.ofSeq
+        let dim = objective.Dimension
+        let f = objective.Value
+
+        if start.Length <> dim
+        then failwith $"Invalid starting point dimension: {start.Length}, expected {dim}."
+        let simplex = initialize objective start
+        coreSolve objective simplex config
+
+    type StartingPoint =
+        abstract member create: int -> float[][]
+
+    module StartingPoint =
+
+        let zero =
+            { new StartingPoint with
+                member this.create(dim: int): float array array =
+                    let startingPoint = Array.init dim (fun _ -> 0.0)
+                    [|
+                        yield startingPoint
+                        for d in 0 .. (dim - 1) ->
+                            let x = startingPoint |> Array.copy
+                            x.[d] <- startingPoint.[d] + 1.0
+                            x
+                        for d in 0 .. (dim - 1) ->
+                            let x = startingPoint |> Array.copy
+                            x.[d] <- startingPoint.[d] - 1.0
+                            x
+                    |]
+            }
+
+        let original (startingPoint: seq<float>) =
+            { new StartingPoint with
+                member this.create (dim: int): float[][] =
+                    let startingPoint = startingPoint |> Array.ofSeq
+                    if startingPoint.Length <> dim
+                    then failwith $"Invalid starting point dimension: {startingPoint.Length}, expected {dim}."
+                    [|
+                        yield startingPoint
+                        for d in 0 .. (dim - 1) ->
+                            let x = startingPoint |> Array.copy
+                            x.[d] <- startingPoint.[d] + 1.0
+                            x
+                        for d in 0 .. (dim - 1) ->
+                            let x = startingPoint |> Array.copy
+                            x.[d] <- startingPoint.[d] - 1.0
+                            x
+                    |]
+            }
+
+    type Problem = {
+        Objective: IObjective
+        Configuration: Configuration
+        StartingPoint: StartingPoint
+        }
+        with
+        member this.Dimension =
+            this.Objective.Dimension
+        static member defaultCreate(objective: IObjective) =
+            {
+                Objective = objective
+                StartingPoint = StartingPoint.zero
+                Configuration = Configuration.defaultValue
+            }
+
+    type Solver =
+
+        static member solve (problem: Problem) =
+            let simplex = problem.StartingPoint.create(problem.Dimension)
+            coreSolve problem.Objective simplex problem.Configuration
+
+        static member minimize (f: float -> float) =
+            Objective.from f
+            |> Problem.defaultCreate
+
+        static member minimize (f: (float * float) -> float) =
+            Objective.from f
+            |> Problem.defaultCreate
+
+        static member minimize (f: (float * float * float) -> float) =
+            Objective.from f
+            |> Problem.defaultCreate
+
+        static member minimize (dim: int, f: float[] -> float) =
+            Objective.from (dim, f)
+            |> Problem.defaultCreate
+
+        static member withConfiguration (config: Configuration) (problem: Problem) =
+            { problem with Configuration = config }
+
+        static member startFrom (start: StartingPoint) (problem: Problem) =
+            { problem with StartingPoint = start }
