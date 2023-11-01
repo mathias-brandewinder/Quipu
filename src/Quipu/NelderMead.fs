@@ -1,77 +1,83 @@
-﻿namespace Quipu
+﻿namespace Quipu.NelderMead
 
-module NelderMead =
-
-    module Updates =
-
-        type Configuration = {
-            /// Reflection parameter, Alpha > 0.0
-            Alpha: float
-            /// Expansion parameter, Gamma > 1.0
-            Gamma: float
-            /// Contraction parameter, 0.0 < Rho <= 1.0
-            Rho: float
-            /// Shrink parameter, 0.0 < Sigma < 1.0
-            Sigma: float
-            }
-            with
-            static member defaultValue = {
-                Alpha = 1.0
-                Gamma = 2.0
-                Rho = 0.5
-                Sigma = 0.5
-                }
-
-    module Termination =
-
-        type Configuration = {
-            Tolerance: float
-            MaximumIterations: Option<int>
-            }
-            with
-            static member defaultValue = {
-                Tolerance = 0.001
-                MaximumIterations = None
-                }
+module Updates =
 
     type Configuration = {
-        Updates: Updates.Configuration
-        Termination: Termination.Configuration
+        /// Reflection parameter, Alpha > 0.0
+        Alpha: float
+        /// Expansion parameter, Gamma > 1.0
+        Gamma: float
+        /// Contraction parameter, 0.0 < Rho <= 1.0
+        Rho: float
+        /// Shrink parameter, 0.0 < Sigma < 1.0
+        Sigma: float
         }
         with
         static member defaultValue = {
-            Updates = Updates.Configuration.defaultValue
-            Termination = Termination.Configuration.defaultValue
+            Alpha = 1.0
+            Gamma = 2.0
+            Rho = 0.5
+            Sigma = 0.5
             }
 
-    type IObjective =
-        abstract member Dimension: int
-        abstract member Value: float [] -> float
+module Termination =
 
-    type Objective () =
-        static member from (f: float -> float) =
-            { new IObjective with
-                member this.Dimension = 1
-                member this.Value x = f(x.[0])
-            }
-        static member from (f: (float * float) -> float) =
-            { new IObjective with
-                member this.Dimension = 2
-                member this.Value x = f (x.[0], x.[1])
-            }
-        static member from (f: (float * float * float) -> float) =
-            { new IObjective with
-                member this.Dimension = 3
-                member this.Value x = f (x.[0], x.[1], x.[2])
-            }
-        static member from (dim: int, f: float[] -> float) =
-            { new IObjective with
-                member this.Dimension = dim
-                member this.Value x = f x
+    type Configuration = {
+        Tolerance: float
+        MaximumIterations: Option<int>
+        }
+        with
+        static member defaultValue = {
+            Tolerance = 0.001
+            MaximumIterations = None
             }
 
-    exception Unbounded
-    exception Abnormal of float [][]
+type Configuration = {
+    Updates: Updates.Configuration
+    Termination: Termination.Configuration
+    }
+    with
+    static member defaultValue = {
+        Updates = Updates.Configuration.defaultValue
+        Termination = Termination.Configuration.defaultValue
+        }
+
+type IObjective =
+    abstract member Dimension: int
+    abstract member Value: float [] -> float
+
+type Objective () =
+    static member from (f: float -> float) =
+        { new IObjective with
+            member this.Dimension = 1
+            member this.Value x = f(x.[0])
+        }
+    static member from (f: (float * float) -> float) =
+        { new IObjective with
+            member this.Dimension = 2
+            member this.Value x = f (x.[0], x.[1])
+        }
+    static member from (f: (float * float * float) -> float) =
+        { new IObjective with
+            member this.Dimension = 3
+            member this.Value x = f (x.[0], x.[1], x.[2])
+        }
+    static member from (dim: int, f: float[] -> float) =
+        { new IObjective with
+            member this.Dimension = dim
+            member this.Value x = f x
+        }
+
+exception UnboundedObjective
+exception AbnormalConditions of float [][]
+
+type Solution =
+    | Optimal of (float * float [])
+    | SubOptimal of (float * float [])
+    | Unbounded
+    | Abnormal of (float [][])
+
+module Algorithm =
 
     let update
         (config: Updates.Configuration)
@@ -88,7 +94,7 @@ module NelderMead =
 
         // if the lowest value is -infinity, there is no solution
         let best = f ordered.[0]
-        if best = -infinity then raise Unbounded
+        if best = -infinity then raise UnboundedObjective
 
         // 2) calculate centroid
         let size = simplex.Length
@@ -176,7 +182,7 @@ module NelderMead =
                         )
                 shrunk
         else
-            raise (Abnormal simplex)
+            raise (AbnormalConditions simplex)
 
     let private minMax f xs =
         let projection = xs |> Seq.map f
@@ -201,27 +207,7 @@ module NelderMead =
             max - min < tolerance
             )
 
-    let initialize (objective: IObjective) (startingPoint: float []) =
-        let dim = objective.Dimension
-        [|
-            yield startingPoint
-            for d in 0 .. (dim - 1) ->
-                let x = startingPoint |> Array.copy
-                x[d] <- startingPoint[d] + 1.0
-                x
-            for d in 0 .. (dim - 1) ->
-                let x = startingPoint |> Array.copy
-                x[d] <- startingPoint[d] - 1.0
-                x
-        |]
-
-    type Solution =
-        | Optimal of (float * float [])
-        | SubOptimal of (float * float [])
-        | Unbounded
-        | Abnormal of (float [][])
-
-    let private coreSolve (objective: IObjective) simplex config =
+    let search (objective: IObjective) simplex config =
         let f = objective.Value
         try
             simplex
@@ -250,104 +236,84 @@ module NelderMead =
                     then Solution.Optimal (value, args)
                     else Solution.SubOptimal (value, args)
         with
-        | :? Unbounded -> Solution.Unbounded
-        | :? Abnormal -> Solution.Abnormal simplex
+        | :? UnboundedObjective -> Solution.Unbounded
+        | :? AbnormalConditions -> Solution.Abnormal simplex
         | _ -> Solution.Abnormal simplex
 
-    let solve
-        (config: Configuration)
-        (objective: IObjective)
-        (start: seq<float>) =
+type StartingPoint =
+    abstract member create: int -> float[][]
 
-        let start = start |> Array.ofSeq
-        let dim = objective.Dimension
-        let f = objective.Value
+module StartingPoint =
 
-        if start.Length <> dim
-        then failwith $"Invalid starting point dimension: {start.Length}, expected {dim}."
-        let simplex = initialize objective start
-        coreSolve objective simplex config
+    // To be deprecated / replaced with a better function
+    let private initialize (dim: int) (startingPoint: float []) =
+        [|
+            yield startingPoint
+            for d in 0 .. (dim - 1) ->
+                let x = startingPoint |> Array.copy
+                x[d] <- startingPoint[d] + 1.0
+                x
+            for d in 0 .. (dim - 1) ->
+                let x = startingPoint |> Array.copy
+                x[d] <- startingPoint[d] - 1.0
+                x
+        |]
 
-    type StartingPoint =
-        abstract member create: int -> float[][]
-
-    module StartingPoint =
-
-        let zero =
-            { new StartingPoint with
-                member this.create(dim: int): float array array =
-                    let startingPoint = Array.init dim (fun _ -> 0.0)
-                    [|
-                        yield startingPoint
-                        for d in 0 .. (dim - 1) ->
-                            let x = startingPoint |> Array.copy
-                            x.[d] <- startingPoint.[d] + 1.0
-                            x
-                        for d in 0 .. (dim - 1) ->
-                            let x = startingPoint |> Array.copy
-                            x.[d] <- startingPoint.[d] - 1.0
-                            x
-                    |]
-            }
-
-        let original (startingPoint: seq<float>) =
-            { new StartingPoint with
-                member this.create (dim: int): float[][] =
-                    let startingPoint = startingPoint |> Array.ofSeq
-                    if startingPoint.Length <> dim
-                    then failwith $"Invalid starting point dimension: {startingPoint.Length}, expected {dim}."
-                    [|
-                        yield startingPoint
-                        for d in 0 .. (dim - 1) ->
-                            let x = startingPoint |> Array.copy
-                            x.[d] <- startingPoint.[d] + 1.0
-                            x
-                        for d in 0 .. (dim - 1) ->
-                            let x = startingPoint |> Array.copy
-                            x.[d] <- startingPoint.[d] - 1.0
-                            x
-                    |]
-            }
-
-    type Problem = {
-        Objective: IObjective
-        Configuration: Configuration
-        StartingPoint: StartingPoint
+    let zero =
+        { new StartingPoint with
+            member this.create(dim: int): float array array =
+                let startingPoint = Array.init dim (fun _ -> 0.0)
+                initialize dim startingPoint
         }
-        with
-        member this.Dimension =
-            this.Objective.Dimension
-        static member defaultCreate(objective: IObjective) =
-            {
-                Objective = objective
-                StartingPoint = StartingPoint.zero
-                Configuration = Configuration.defaultValue
-            }
 
-    type Solver =
+    let original (startingPoint: seq<float>) =
+        { new StartingPoint with
+            member this.create (dim: int): float[][] =
+                let startingPoint = startingPoint |> Array.ofSeq
+                if startingPoint.Length <> dim
+                then failwith $"Invalid starting point dimension: {startingPoint.Length}, expected {dim}."
+                initialize dim startingPoint
+        }
 
-        static member solve (problem: Problem) =
-            let simplex = problem.StartingPoint.create(problem.Dimension)
-            coreSolve problem.Objective simplex problem.Configuration
+type Problem = {
+    Objective: IObjective
+    Configuration: Configuration
+    StartingPoint: StartingPoint
+    }
+    with
+    member this.Dimension =
+        this.Objective.Dimension
+    static member defaultCreate(objective: IObjective) =
+        {
+            Objective = objective
+            StartingPoint = StartingPoint.zero
+            Configuration = Configuration.defaultValue
+        }
 
-        static member minimize (f: float -> float) =
-            Objective.from f
-            |> Problem.defaultCreate
+type NelderMead =
 
-        static member minimize (f: (float * float) -> float) =
-            Objective.from f
-            |> Problem.defaultCreate
+    static member solve (problem: Problem) =
+        let simplex = problem.StartingPoint.create(problem.Dimension)
+        Algorithm.search problem.Objective simplex problem.Configuration
 
-        static member minimize (f: (float * float * float) -> float) =
-            Objective.from f
-            |> Problem.defaultCreate
+    static member minimize (f: float -> float) =
+        Objective.from f
+        |> Problem.defaultCreate
 
-        static member minimize (dim: int, f: float[] -> float) =
-            Objective.from (dim, f)
-            |> Problem.defaultCreate
+    static member minimize (f: (float * float) -> float) =
+        Objective.from f
+        |> Problem.defaultCreate
 
-        static member withConfiguration (config: Configuration) (problem: Problem) =
-            { problem with Configuration = config }
+    static member minimize (f: (float * float * float) -> float) =
+        Objective.from f
+        |> Problem.defaultCreate
 
-        static member startFrom (start: StartingPoint) (problem: Problem) =
-            { problem with StartingPoint = start }
+    static member minimize (dim: int, f: float[] -> float) =
+        Objective.from (dim, f)
+        |> Problem.defaultCreate
+
+    static member withConfiguration (config: Configuration) (problem: Problem) =
+        { problem with Configuration = config }
+
+    static member startFrom (start: StartingPoint) (problem: Problem) =
+        { problem with StartingPoint = start }
