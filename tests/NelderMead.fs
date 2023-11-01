@@ -139,7 +139,7 @@ module NelderMead =
             let solution =
                 NelderMead.minimize TestClass.StaticOne
                 |> NelderMead.withConfiguration config
-                |> NelderMead.startFrom (StartingPoint.fromValue [ 100.0 ])
+                |> NelderMead.startFrom (StartingPoint.fromValue 100.0)
                 |> NelderMead.solve
             let actual =
                 match solution with
@@ -154,7 +154,28 @@ module NelderMead =
             let solution =
                 NelderMead.minimize f
                 |> NelderMead.withConfiguration config
-                |> NelderMead.startFrom (StartingPoint.fromValue [ 100.0 ])
+                |> NelderMead.startFrom (StartingPoint.fromValue 100.0)
+                |> NelderMead.solve
+            let actual =
+                match solution with
+                | Optimal (x, _) -> x
+                | _ -> failwith "unexpected"
+            Assert.InRange(actual, 0.0 - tolerance, 0.0 + tolerance)
+
+        [<Fact>]
+        let ``function, tuple, starting from simplex`` () =
+
+            let f (x, y) = pown x 2 + pown y 2
+            let solution =
+                NelderMead.minimize f
+                |> NelderMead.withConfiguration config
+                |> NelderMead.startFrom (
+                    StartingPoint.fromValue [
+                        [ 100.0; 100.0 ]
+                        [ 110.0; 100.0 ]
+                        [ 105.0; 105.0 ]
+                        ]
+                    )
                 |> NelderMead.solve
             let actual =
                 match solution with
