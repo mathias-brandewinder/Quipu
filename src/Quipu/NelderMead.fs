@@ -240,13 +240,13 @@ module Algorithm =
         | :? AbnormalConditions -> Solution.Abnormal simplex
         | _ -> Solution.Abnormal simplex
 
-type StartingPoint =
+type IStartingPoint =
     abstract member create: int -> float[][]
 
-module StartingPoint =
+type StartingPoint =
 
     // To be deprecated / replaced with a better function
-    let private initialize (dim: int) (startingPoint: float []) =
+    static member initialize (dim: int) (startingPoint: float []) =
         [|
             yield startingPoint
             for d in 0 .. (dim - 1) ->
@@ -259,26 +259,35 @@ module StartingPoint =
                 x
         |]
 
-    let zero =
-        { new StartingPoint with
+    static member zero =
+        { new IStartingPoint with
             member this.create(dim: int): float array array =
                 let startingPoint = Array.init dim (fun _ -> 0.0)
-                initialize dim startingPoint
+                StartingPoint.initialize dim startingPoint
         }
 
-    let original (startingPoint: seq<float>) =
-        { new StartingPoint with
+    static member fromValue (startingPoint: seq<float>) =
+        { new IStartingPoint with
             member this.create (dim: int): float[][] =
                 let startingPoint = startingPoint |> Array.ofSeq
                 if startingPoint.Length <> dim
                 then failwith $"Invalid starting point dimension: {startingPoint.Length}, expected {dim}."
-                initialize dim startingPoint
+                StartingPoint.initialize dim startingPoint
+        }
+
+    static member fromValue (startingPoint: float) =
+        { new IStartingPoint with
+            member this.create (dim: int): float[][] =
+                let startingPoint = Array.singleton startingPoint
+                if startingPoint.Length <> dim
+                then failwith $"Invalid starting point dimension: {startingPoint.Length}, expected {dim}."
+                StartingPoint.initialize dim startingPoint
         }
 
 type Problem = {
     Objective: IObjective
     Configuration: Configuration
-    StartingPoint: StartingPoint
+    StartingPoint: IStartingPoint
     }
     with
     member this.Dimension =
@@ -315,5 +324,5 @@ type NelderMead =
     static member withConfiguration (config: Configuration) (problem: Problem) =
         { problem with Configuration = config }
 
-    static member startFrom (start: StartingPoint) (problem: Problem) =
+    static member startFrom (start: IStartingPoint) (problem: Problem) =
         { problem with StartingPoint = start }
