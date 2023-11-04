@@ -1,5 +1,46 @@
 ﻿namespace Quipu.NelderMead
 
+type Simplex =
+    private | Vectors of dim: int * vectors: float [][]
+    with
+    member this.dimension =
+        match this with
+        | Vectors (dim, _) -> dim
+    member this.size =
+        match this with
+        | Vectors (_, vectors) -> vectors.Length
+    static member vertices (this: Simplex)=
+        match this with
+        | Vectors (_, vectors) ->
+            vectors
+            |> Array.copy
+    static member create (origin: float[]) =
+        // create n+1 vectors of dim n
+        // each column contains 1.0 or v
+        // barycenter = (1 + v) / n + 1
+        // x -> x - barycenter
+        let dim = origin.Length
+        let v = (1.0 / (float dim)) * (1.0 + (sqrt (float dim + 1.0)))
+        let barycenter = (1.0 + v) / (float (dim + 1))
+        let vectors =
+            Array.init (dim + 1) (
+                fun i ->
+                    if i < dim
+                    then
+                        Array.init dim (fun j ->
+                            if j = i
+                            then 1.0
+                            else 0.0
+                            )
+                    else
+                        Array.init dim (fun _ -> v)
+                    |> Array.mapi (fun i x -> x - barycenter + origin.[i])
+                    )
+        Vectors (dim, vectors)
+    static member create (dim: int) =
+        let origin = Array.init dim (fun _ -> 0.0)
+        Simplex.create origin
+
 module Updates =
 
     type Configuration = {
@@ -247,23 +288,18 @@ type StartingPoint =
 
     // To be deprecated / replaced with a better function
     static member initialize (dim: int) (startingPoint: float []) =
-        [|
-            yield startingPoint
-            for d in 0 .. (dim - 1) ->
-                let x = startingPoint |> Array.copy
-                x[d] <- startingPoint[d] + 1.0
-                x
-            for d in 0 .. (dim - 1) ->
-                let x = startingPoint |> Array.copy
-                x[d] <- startingPoint[d] - 1.0
-                x
-        |]
+        Simplex.create dim
+        |> Simplex.vertices
+        |> Array.map (fun vector ->
+            (startingPoint, vector)
+            ||> Array.map2 (fun x1 x2 -> x1 + x2)
+            )
 
     static member zero =
         { new IStartingPoint with
             member this.create(dim: int): float array array =
-                let startingPoint = Array.init dim (fun _ -> 0.0)
-                StartingPoint.initialize dim startingPoint
+                Simplex.create dim
+                |> Simplex.vertices
         }
 
     static member fromValue (startingPoint: seq<float>) =
@@ -272,7 +308,8 @@ type StartingPoint =
                 let startingPoint = startingPoint |> Array.ofSeq
                 if startingPoint.Length <> dim
                 then failwith $"Invalid starting point dimension: {startingPoint.Length}, expected {dim}."
-                StartingPoint.initialize dim startingPoint
+                Simplex.create startingPoint
+                |> Simplex.vertices
         }
 
     static member fromValue (startingPoint: float) =
@@ -281,7 +318,8 @@ type StartingPoint =
                 let startingPoint = Array.singleton startingPoint
                 if startingPoint.Length <> dim
                 then failwith $"Invalid starting point dimension: {startingPoint.Length}, expected {dim}."
-                StartingPoint.initialize dim startingPoint
+                Simplex.create startingPoint
+                |> Simplex.vertices
         }
 
     static member fromValue (startingPoint: #seq<#seq<float>>) =
