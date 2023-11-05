@@ -16,28 +16,33 @@ type Simplex =
             |> Array.copy
     /// Create a Simplex centered on the origin point, with a set outer radius.
     static member create (origin: float[], radius: float) =
-        // create n+1 vectors of dim n
-        // each column contains 1.0 or v
-        // barycenter = (1 + v) / n + 1
-        // x -> x - barycenter
+        // Source:
+        // https://en.wikipedia.org/wiki/Simplex#Cartesian_coordinates_for_a_regular_n-dimensional_simplex_in_Rn
         let dim = origin.Length
-        let v = (1.0 / (float dim)) * (1.0 + (sqrt (float dim + 1.0)))
-        let barycenter = (1.0 + v) / (float (dim + 1))
-        let r = sqrt (float dim / float (2 * (dim + 1))) * sqrt 2.0
-        let scale = radius / r
+        // Coordinates of the last, non-basis vertex
+        let lastValue = (1.0 / (float dim)) * (1.0 + (sqrt (float (dim + 1))))
+        // Barycenter of the original simplex
+        let barycenter = (1.0 + lastValue) / (float (dim + 1))
+        // Radius of the original simplex
+        let initialRadius = sqrt (float dim / float (2 * (dim + 1))) * sqrt 2.0
+        // Scaling factor to desired radius
+        let scale = radius / initialRadius
         let vectors =
             Array.init (dim + 1) (
                 fun i ->
                     if i < dim
                     then
+                        // n first basis vectors
                         Array.init dim (fun j ->
                             if j = i
                             then 1.0
                             else 0.0
                             )
                     else
-                        Array.init dim (fun _ -> v)
+                        // last, non-basis vector
+                        Array.init dim (fun _ -> lastValue)
                     |> Array.mapi (fun i x ->
+                        // scale and translate every coordinate
                         scale * (x - barycenter) + origin.[i]
                         )
                     )
