@@ -155,6 +155,16 @@ module Algorithm =
         let best = f ordered.[0]
         if best = -infinity then raise UnboundedObjective
 
+        // if any value in the simplex is infinite or nan,
+        // we exit because of abnormal conditions
+        let isFinite =
+            simplex
+            |> Array.forall (fun v ->
+                v |> Array.forall (System.Double.IsFinite)
+                )
+
+        if (not isFinite) then raise (AbnormalConditions simplex)
+
         // 2) calculate centroid
         let size = simplex.Length
         // drop the worst candidate

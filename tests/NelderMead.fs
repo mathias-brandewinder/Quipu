@@ -237,14 +237,14 @@ module NelderMead =
                 | _ -> false
             Assert.True(isAbnormal)
 
-        [<Fact(Skip="Todo")>]
-        let ``function returning +infinity`` () =
+        [<Fact>]
+        let ``simplex containing +infinity`` () =
 
-            let f (x: float) = +infinity
+            let f (x: float) = 0.0
             let solution =
                 NelderMead.minimize f
                 |> NelderMead.withConfiguration config
-                |> NelderMead.startFrom (StartingPoint.zero)
+                |> NelderMead.startFrom (StartingPoint.fromValue (+infinity))
                 |> NelderMead.solve
             let isAbnormal =
                 match solution with
@@ -252,14 +252,44 @@ module NelderMead =
                 | _ -> false
             Assert.True(isAbnormal)
 
-        [<Fact(Skip="Todo")>]
-        let ``function returning infinity`` () =
+        [<Fact>]
+        let ``simplex containing infinity`` () =
 
-            let f (x: float) = infinity
+            let f (x: float) = 0.0
             let solution =
                 NelderMead.minimize f
                 |> NelderMead.withConfiguration config
-                |> NelderMead.startFrom (StartingPoint.zero)
+                |> NelderMead.startFrom (StartingPoint.fromValue (infinity))
+                |> NelderMead.solve
+            let isAbnormal =
+                match solution with
+                | Abnormal _ -> true
+                | _ -> false
+            Assert.True(isAbnormal)
+
+        [<Fact>]
+        let ``simplex containing -infinity`` () =
+
+            let f (x: float) = 0.0
+            let solution =
+                NelderMead.minimize f
+                |> NelderMead.withConfiguration config
+                |> NelderMead.startFrom (StartingPoint.fromValue (-infinity))
+                |> NelderMead.solve
+            let isAbnormal =
+                match solution with
+                | Abnormal _ -> true
+                | _ -> false
+            Assert.True(isAbnormal)
+
+        [<Fact>]
+        let ``simplex containing nan`` () =
+
+            let f (x: float) = 0.0
+            let solution =
+                NelderMead.minimize f
+                |> NelderMead.withConfiguration config
+                |> NelderMead.startFrom (StartingPoint.fromValue nan)
                 |> NelderMead.solve
             let isAbnormal =
                 match solution with
