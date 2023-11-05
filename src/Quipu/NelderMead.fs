@@ -14,7 +14,8 @@ type Simplex =
         | Vectors (_, vectors) ->
             vectors
             |> Array.copy
-    static member create (origin: float[]) =
+    /// Create a Simplex centered on the origin point, with a set outer radius.
+    static member create (origin: float[], radius: float) =
         // create n+1 vectors of dim n
         // each column contains 1.0 or v
         // barycenter = (1 + v) / n + 1
@@ -22,6 +23,8 @@ type Simplex =
         let dim = origin.Length
         let v = (1.0 / (float dim)) * (1.0 + (sqrt (float dim + 1.0)))
         let barycenter = (1.0 + v) / (float (dim + 1))
+        let r = sqrt (float dim / float (2 * (dim + 1))) * sqrt 2.0
+        let scale = radius / r
         let vectors =
             Array.init (dim + 1) (
                 fun i ->
@@ -34,12 +37,22 @@ type Simplex =
                             )
                     else
                         Array.init dim (fun _ -> v)
-                    |> Array.mapi (fun i x -> x - barycenter + origin.[i])
+                    |> Array.mapi (fun i x ->
+                        scale * (x - barycenter) + origin.[i]
+                        )
                     )
         Vectors (dim, vectors)
+    /// Create a Simplex centered on the origin point, with a radius of 1.0
+    static member create (origin: float[]) =
+        Simplex.create (origin, 1.0)
+    /// Create a Simplex centered on 0.0, with a radius of 1.0
     static member create (dim: int) =
         let origin = Array.init dim (fun _ -> 0.0)
         Simplex.create origin
+    /// Create a Simplex centered on 0.0, with a set outer radius.
+    static member create (dim: int, radius: float) =
+        let origin = Array.init dim (fun _ -> 0.0)
+        Simplex.create (origin, radius)
 
 module Updates =
 

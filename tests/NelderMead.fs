@@ -328,3 +328,46 @@ module NelderMead =
 
             let shouldTerminate = Algorithm.terminate tolerance f simplex
             Assert.True(shouldTerminate)
+
+    module Simplex =
+
+        [<Fact>]
+        let ``simplex should be centered on origin`` () =
+
+            let origin = [| 10.0; 5.0; -20.0 |]
+            let radius = 3.0
+            let simplex = Simplex.create(origin, radius)
+
+            let dims = [| 0 .. simplex.dimension - 1 |]
+            let expected =
+                dims
+                |> Array.map (fun dim ->
+                    simplex
+                    |> Simplex.vertices
+                    |> Array.averageBy (fun vertex -> vertex.[dim])
+                    )
+
+            dims
+            |> Array.iter (fun dim ->
+                Assert.Equal(expected.[dim], origin.[dim])
+                )
+
+        [<Fact>]
+        let ``simplex should have the requested radius`` () =
+
+            let origin = [| 10.0; 5.0; -20.0 |]
+            let radius = 3.0
+            let simplex = Simplex.create(origin, radius)
+
+            let distance xs ys =
+                (xs, ys)
+                ||> Array.map2 (fun x y -> pown (x - y) 2)
+                |> Array.sum
+                |> sqrt
+
+            simplex
+            |> Simplex.vertices
+            |> Array.iter (fun vertex ->
+                let d = distance vertex origin
+                Assert.Equal(radius, d, 3)
+                )
