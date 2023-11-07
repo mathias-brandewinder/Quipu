@@ -340,6 +340,16 @@ type StartingPoint =
                 |> Simplex.vertices
         }
 
+    static member fromValue (startingPoint: seq<float>, radius: float) =
+        { new IStartingPoint with
+            member this.create (dim: int): float[][] =
+                let startingPoint = startingPoint |> Array.ofSeq
+                if startingPoint.Length <> dim
+                then failwith $"Invalid starting point dimension: {startingPoint.Length}, expected {dim}."
+                Simplex.create (startingPoint, radius)
+                |> Simplex.vertices
+        }
+
     static member fromValue (startingPoint: float) =
         { new IStartingPoint with
             member this.create (dim: int): float[][] =
