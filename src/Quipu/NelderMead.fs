@@ -400,6 +400,10 @@ type NelderMead =
         let simplex = problem.StartingPoint.create(problem.Dimension)
         Algorithm.search problem.Objective simplex problem.Configuration
 
+    static member minimize (f: IObjective) =
+        f
+        |> Problem.defaultCreate
+
     static member minimize (f: float -> float) =
         Objective.from f
         |> Problem.defaultCreate
