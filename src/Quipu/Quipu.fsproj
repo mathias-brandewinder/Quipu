@@ -10,6 +10,7 @@
     <RepositoryUrl>https://github.com/mathias-brandewinder/Quipu</RepositoryUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Copyright>Copyright (c) 2023 Mathias Brandewinder</Copyright>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +20,10 @@
 
   <ItemGroup>
     <None Include="../../LICENSE" Pack="true" PackagePath=""/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="5.*" />
   </ItemGroup>
 
 </Project>
