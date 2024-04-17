@@ -183,6 +183,26 @@ module NelderMead =
                 | _ -> failwith "unexpected"
             Assert.InRange(actual, 0.0 - tolerance, 0.0 + tolerance)
 
+    module PartiallyDefinedFunctions =
+
+        [<Fact>]
+        let ``function defined over positive numbers only`` () =
+
+            let f x = sqrt x
+
+            let solution =
+                NelderMead.minimize f
+                |> NelderMead.withConfiguration config
+                |> NelderMead.startFrom (StartingPoint.fromValue 10.0)
+                |> NelderMead.solve
+
+            let actual =
+                match solution with
+                | Optimal (x, _) -> x
+                | _ -> failwith "unexpected"
+
+            Assert.InRange(actual, 0.0 - tolerance, 0.0 + tolerance)
+
     module SubOptimalTermination =
 
         let config =
