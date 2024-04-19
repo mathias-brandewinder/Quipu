@@ -138,6 +138,9 @@ type Solution =
 
 module Algorithm =
 
+    let isNaN x = System.Double.IsNaN x
+    let isReal x = not (System.Double.IsNaN x)
+
     let update
         (config: Updates.Configuration)
         (objective: IObjective)
@@ -201,7 +204,7 @@ module Algorithm =
         let secondWorst = ordered[size - 2]
         let best = ordered[0]
 
-        if System.Double.IsNaN (f reflected)
+        if isNaN (f reflected)
         then shrink ()
         elif
             f reflected < f secondWorst
@@ -220,7 +223,10 @@ module Algorithm =
                 Array.init dim (fun col ->
                     centroid[col] + config.Gamma * (reflected[col] - centroid[col])
                     )
-            if f expanded < f reflected
+            if
+                isReal (f reflected)
+                &&
+                f expanded < f reflected
             then
                 ordered[size - 1] <- expanded
             else
@@ -234,7 +240,10 @@ module Algorithm =
                 Array.init dim (fun col ->
                     centroid[col] + config.Rho * (reflected[col] - centroid[col])
                     )
-            if f contractedOutside < f reflected
+            if
+                isReal (f contractedOutside)
+                &&
+                f contractedOutside < f reflected
             then
                 ordered[size - 1] <- contractedOutside
                 ordered
@@ -248,7 +257,10 @@ module Algorithm =
                 Array.init dim (fun col ->
                     centroid[col] + config.Rho * (worst[col] - centroid[col])
                     )
-            if f contractedInside < f worst
+            if
+                isReal (f contractedInside)
+                &&
+                f contractedInside < f worst
             then
                 ordered[size - 1] <- contractedInside
                 ordered
