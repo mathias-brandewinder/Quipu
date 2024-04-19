@@ -151,6 +151,7 @@ module Algorithm =
             simplex
             |> Array.sortBy f
 
+
         // if the lowest value is -infinity, there is no solution
         let best = f ordered.[0]
         if best = -infinity then raise UnboundedObjective
@@ -176,6 +177,20 @@ module Algorithm =
                 |> Array.averageBy(fun pt -> pt[col])
                 )
 
+        let shrink () =
+            ordered
+            |> Array.mapi (fun i pt ->
+                // keep the best point, at index 0, intact
+                if i = 0
+                then pt
+                else
+                    // shrink towards the best
+                    let best = ordered.[0]
+                    Array.init dim (fun col ->
+                        best[col] + config.Sigma * (pt[col] - best[col])
+                        )
+                )
+
         // 3) reflection
         let worst = ordered[size - 1]
 
@@ -185,7 +200,10 @@ module Algorithm =
                 )
         let secondWorst = ordered[size - 2]
         let best = ordered[0]
-        if
+
+        if System.Double.IsNaN (f reflected)
+        then shrink ()
+        elif
             f reflected < f secondWorst
             &&
             f reflected >= f best
@@ -221,15 +239,9 @@ module Algorithm =
                 ordered[size - 1] <- contractedOutside
                 ordered
             else
-            // 6) shrink
-                let shrunk =
-                    ordered
-                    |> Array.map (fun pt ->
-                        Array.init dim (fun col ->
-                            best[col] + config.Sigma * (pt[col] - best[col])
-                            )
-                        )
-                shrunk
+                // 6) shrink
+                shrink ()
+
         elif f reflected >= f worst
         then
             let contractedInside =
@@ -241,15 +253,8 @@ module Algorithm =
                 ordered[size - 1] <- contractedInside
                 ordered
             else
-            // 6) shrink
-                let shrunk =
-                    ordered
-                    |> Array.map (fun pt ->
-                        Array.init dim (fun col ->
-                            best[col] + config.Sigma * (pt[col] - best[col])
-                            )
-                        )
-                shrunk
+                // 6) shrink
+                shrink ()
         else
             raise (AbnormalConditions simplex)
 
