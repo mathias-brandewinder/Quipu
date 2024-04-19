@@ -189,9 +189,14 @@ module Algorithm =
                 else
                     // shrink towards the best
                     let best = ordered.[0]
-                    Array.init dim (fun col ->
-                        best[col] + config.Sigma * (pt[col] - best[col])
-                        )
+                    let shrunk =
+                        Array.init dim (fun col ->
+                            best[col] + config.Sigma * (pt[col] - best[col])
+                            )
+                    // enforce that shrinking produces a valid simplex
+                    if isReal (f shrunk)
+                    then shrunk
+                    else raise (AbnormalConditions simplex)
                 )
 
         // 3) reflection
