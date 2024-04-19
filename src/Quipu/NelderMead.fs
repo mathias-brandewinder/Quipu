@@ -154,7 +154,6 @@ module Algorithm =
             simplex
             |> Array.sortBy f
 
-
         // if the lowest value is -infinity, there is no solution
         let best = f ordered.[0]
         if best = -infinity then raise UnboundedObjective
@@ -303,6 +302,13 @@ module Algorithm =
         let f = objective.Value
         simplex
         |> Array.iter (fun pt ->
+            // check that the vector pt does not contain any NaNs
+            pt
+            |> Array.iter (fun x ->
+                if isNaN x
+                then raise (AbnormalConditions simplex)
+                )
+            // check the evaluation of the vector pt for early termination
             let evaluation = f pt
             if evaluation = -infinity
             then raise UnboundedObjective
