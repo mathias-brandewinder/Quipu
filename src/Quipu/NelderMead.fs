@@ -155,18 +155,10 @@ module Algorithm =
             |> Array.sortBy f
 
         // if the lowest value is -infinity, there is no solution
-        let best = f ordered.[0]
-        if best = -infinity then raise UnboundedObjective
+        let best = ordered.[0]
+        let bestValue = f best
 
-        // if any value in the simplex is infinite or nan,
-        // we exit because of abnormal conditions
-        let isFinite =
-            simplex
-            |> Array.forall (fun v ->
-                v |> Array.forall (System.Double.IsFinite)
-                )
-
-        if (not isFinite) then raise (AbnormalConditions simplex)
+        if bestValue = -infinity then raise UnboundedObjective
 
         // 2) calculate centroid
         let size = simplex.Length
@@ -200,20 +192,24 @@ module Algorithm =
 
         // 3) reflection
         let worst = ordered[size - 1]
+        let worstValue = f worst
 
         let reflected =
             Array.init dim (fun col ->
                 centroid[col] + config.Alpha * (centroid[col] - worst[col])
                 )
-        let secondWorst = ordered[size - 2]
-        let best = ordered[0]
 
-        if isNaN (f reflected)
+        let secondWorst = ordered[size - 2]
+
+        let reflectedValue = f reflected
+
+        if isNaN reflectedValue
         then shrink ()
+
         elif
-            f reflected < f secondWorst
+            reflectedValue < f secondWorst
             &&
-            f reflected >= f best
+            reflectedValue >= bestValue
         then
             // replace worst by reflected
             ordered[size - 1] <- reflected
@@ -221,16 +217,17 @@ module Algorithm =
 
         // 4) expansion
         elif
-            f reflected < f best
+            reflectedValue < bestValue
         then
             let expanded =
                 Array.init dim (fun col ->
                     centroid[col] + config.Gamma * (reflected[col] - centroid[col])
                     )
+            let expandedValue = f expanded
             if
-                isReal (f reflected)
+                isReal expandedValue
                 &&
-                f expanded < f reflected
+                expandedValue < reflectedValue
             then
                 ordered[size - 1] <- expanded
             else
@@ -238,7 +235,7 @@ module Algorithm =
             ordered
 
         // 5) contraction
-        elif f reflected < f worst
+        elif reflectedValue < worstValue
         then
             let contractedOutside =
                 Array.init dim (fun col ->
@@ -247,7 +244,7 @@ module Algorithm =
             if
                 isReal (f contractedOutside)
                 &&
-                f contractedOutside < f reflected
+                f contractedOutside < reflectedValue
             then
                 ordered[size - 1] <- contractedOutside
                 ordered
@@ -255,7 +252,7 @@ module Algorithm =
                 // 6) shrink
                 shrink ()
 
-        elif f reflected >= f worst
+        elif reflectedValue >= worstValue
         then
             let contractedInside =
                 Array.init dim (fun col ->
@@ -264,7 +261,7 @@ module Algorithm =
             if
                 isReal (f contractedInside)
                 &&
-                f contractedInside < f worst
+                f contractedInside < worstValue
             then
                 ordered[size - 1] <- contractedInside
                 ordered
@@ -272,6 +269,7 @@ module Algorithm =
                 // 6) shrink
                 shrink ()
         else
+            // TODO, check: is this branch even possible?
             raise (AbnormalConditions simplex)
 
     let private minMax f xs =
