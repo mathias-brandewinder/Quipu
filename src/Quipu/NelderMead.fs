@@ -298,9 +298,24 @@ module Algorithm =
             max - min < tolerance
             )
 
+    // Verify that the initial simplex is well-formed
+    let preCheck (objective: IObjective) simplex =
+        let f = objective.Value
+        simplex
+        |> Array.iter (fun pt ->
+            let evaluation = f pt
+            if evaluation = -infinity
+            then raise UnboundedObjective
+            if isNaN evaluation
+            then raise (AbnormalConditions simplex)
+            )
+
     let search (objective: IObjective) simplex config =
         let f = objective.Value
         try
+            // Is the starting simplex well-formed?
+            preCheck objective simplex
+            // Start the search
             simplex
             |> Seq.unfold (fun simplex ->
                 let updatedSimplex = update config.Updates objective simplex
