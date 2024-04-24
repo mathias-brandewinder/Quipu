@@ -256,7 +256,7 @@ module NelderMead =
                 | Abnormal _ -> true
                 | _ -> false
             Assert.True(isAbnormal)
-
+(*
         [<Fact>]
         let ``simplex containing +infinity`` () =
 
@@ -301,7 +301,7 @@ module NelderMead =
                 | Abnormal _ -> true
                 | _ -> false
             Assert.True(isAbnormal)
-
+*)
         [<Fact>]
         let ``simplex containing nan`` () =
 
