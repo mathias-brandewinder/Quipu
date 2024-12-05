@@ -2,9 +2,7 @@ namespace Quipu.Tests
 
 module NelderMead =
 
-    // open Xunit
     open Expecto
-    open Quipu
     open Quipu.NelderMead
 
     let tolerance = 0.01
@@ -287,66 +285,66 @@ module NelderMead =
                     Expect.isTrue(isAbnormal) ""
                     }
 
-                // test "simplex containing +infinity" {
+                test "simplex containing +infinity" {
 
-                //     let f (x: float) = 0.0
-                //     let solution =
-                //         NelderMead.minimize f
-                //         |> NelderMead.withConfiguration config
-                //         |> NelderMead.startFrom (StartingPoint.fromValue (+infinity))
-                //         |> NelderMead.solve
-                //     let isAbnormal =
-                //         match solution with
-                //         | Abnormal _ -> true
-                //         | _ -> false
+                    let f (x: float) = 0.0
+                    let solution =
+                        NelderMead.minimize f
+                        |> NelderMead.withConfiguration config
+                        |> NelderMead.startFrom (StartingPoint.fromValue (+infinity))
+                        |> NelderMead.solve
+                    let isAbnormal =
+                        match solution with
+                        | Abnormal _ -> true
+                        | _ -> false
 
-                //     Expect.isTrue(isAbnormal) ""
-                //     }
+                    Expect.isTrue(isAbnormal) ""
+                    }
 
-                // test "simplex containing infinity" {
+                test "simplex containing infinity" {
 
-                //     let f (x: float) = 0.0
-                //     let solution =
-                //         NelderMead.minimize f
-                //         |> NelderMead.withConfiguration config
-                //         |> NelderMead.startFrom (StartingPoint.fromValue (infinity))
-                //         |> NelderMead.solve
-                //     let isAbnormal =
-                //         match solution with
-                //         | Abnormal _ -> true
-                //         | _ -> false
-                //     Expect.isTrue(isAbnormal) ""
-                //     }
+                    let f (x: float) = 0.0
+                    let solution =
+                        NelderMead.minimize f
+                        |> NelderMead.withConfiguration config
+                        |> NelderMead.startFrom (StartingPoint.fromValue (infinity))
+                        |> NelderMead.solve
+                    let isAbnormal =
+                        match solution with
+                        | Abnormal _ -> true
+                        | _ -> false
+                    Expect.isTrue(isAbnormal) ""
+                    }
 
-                // test "simplex containing -infinity" {
+                test "simplex containing -infinity" {
 
-                //     let f (x: float) = 0.0
-                //     let solution =
-                //         NelderMead.minimize f
-                //         |> NelderMead.withConfiguration config
-                //         |> NelderMead.startFrom (StartingPoint.fromValue (-infinity))
-                //         |> NelderMead.solve
-                //     let isAbnormal =
-                //         match solution with
-                //         | Abnormal _ -> true
-                //         | _ -> false
-                //     Expect.isTrue(isAbnormal) ""
-                //     }
+                    let f (x: float) = 0.0
+                    let solution =
+                        NelderMead.minimize f
+                        |> NelderMead.withConfiguration config
+                        |> NelderMead.startFrom (StartingPoint.fromValue (-infinity))
+                        |> NelderMead.solve
+                    let isAbnormal =
+                        match solution with
+                        | Abnormal _ -> true
+                        | _ -> false
+                    Expect.isTrue(isAbnormal) ""
+                    }
 
-                // test "simplex containing nan" {
+                test "simplex containing nan" {
 
-                //     let f (x: float) = 0.0
-                //     let solution =
-                //         NelderMead.minimize f
-                //         |> NelderMead.withConfiguration config
-                //         |> NelderMead.startFrom (StartingPoint.fromValue nan)
-                //         |> NelderMead.solve
-                //     let isAbnormal =
-                //         match solution with
-                //         | Abnormal _ -> true
-                //         | _ -> false
-                //     Expect.isTrue(isAbnormal) ""
-                //     }
+                    let f (x: float) = 0.0
+                    let solution =
+                        NelderMead.minimize f
+                        |> NelderMead.withConfiguration config
+                        |> NelderMead.startFrom (StartingPoint.fromValue nan)
+                        |> NelderMead.solve
+                    let isAbnormal =
+                        match solution with
+                        | Abnormal _ -> true
+                        | _ -> false
+                    Expect.isTrue(isAbnormal) ""
+                    }
 
                 test "function throwing" {
 
