@@ -140,6 +140,7 @@ module Algorithm =
 
     let isNaN x = System.Double.IsNaN x
     let isReal x = not (System.Double.IsNaN x)
+    let isFinite x = System.Double.IsFinite x
 
     let update
         (config: Updates.Configuration)
@@ -303,7 +304,7 @@ module Algorithm =
             // check that the vector pt does not contain any NaNs
             pt
             |> Array.iter (fun x ->
-                if isNaN x
+                if not (isFinite x)
                 then raise (AbnormalConditions simplex)
                 )
             // check the evaluation of the vector pt for early termination
