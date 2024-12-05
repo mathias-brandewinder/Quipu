@@ -3,6 +3,7 @@ namespace Quipu.Tests
 module NelderMead =
 
     open Expecto
+    open Quipu
     open Quipu.NelderMead
 
     let tolerance = 0.01

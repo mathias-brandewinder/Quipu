@@ -12,6 +12,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Simplex.fs" />
     <Compile Include="NelderMead.fs" />
   </ItemGroup>
   <ItemGroup>
