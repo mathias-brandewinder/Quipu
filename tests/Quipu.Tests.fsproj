@@ -6,7 +6,6 @@
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="KolmogorovSmirnov.fs" />
     <Compile Include="NelderMead.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

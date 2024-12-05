@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -12,18 +11,13 @@
     <Copyright>Copyright (c) 2023 Mathias Brandewinder</Copyright>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-
   <ItemGroup>
-    <Compile Include="KolmogorovSmirnov.fs" />
     <Compile Include="NelderMead.fs" />
   </ItemGroup>
-
   <ItemGroup>
-    <None Include="../../LICENSE" Pack="true" PackagePath=""/>
+    <None Include="../../LICENSE" Pack="true" PackagePath="" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="5.*" />
   </ItemGroup>
-
 </Project>
