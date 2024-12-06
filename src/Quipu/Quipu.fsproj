@@ -13,6 +13,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Simplex.fs" />
+    <Compile Include="StartingPoint.fs" />
     <Compile Include="Objective.fs" />
     <Compile Include="NelderMead.fs" />
   </ItemGroup>
