@@ -57,6 +57,11 @@ type Candidate = {
     Point: float []
     Value: float
     }
+    with
+    member this.IsInfeasible =
+        System.Double.IsNaN (this.Value)
+    member this.IsFeasible =
+        not (this.IsInfeasible)
 
 module Algorithm =
 
@@ -68,8 +73,8 @@ module Algorithm =
         then raise UnboundedObjective
         else { Point = x; Value = f x }
 
-    let isNaN x = System.Double.IsNaN x
-    let isReal x = not (System.Double.IsNaN x)
+    // let isNaN x = System.Double.IsNaN x
+    // let isReal x = not (System.Double.IsNaN x)
     let isFinite x = System.Double.IsFinite x
 
     let private update
@@ -114,13 +119,13 @@ module Algorithm =
                             )
                         |> eval
                     // enforce that shrinking produces a valid simplex
-                    if isReal (shrunk.Value)
+                    if shrunk.IsFeasible
                     then shrunk
                     else raise (AbnormalConditions (candidates |> Array.map (fun c -> c.Point)))
                 )
 
         // 3) reflection
-        let worst = ordered[size - 1] // |> eval
+        let worst = ordered[size - 1]
 
         let reflected =
             Array.init dim (fun col ->
@@ -130,7 +135,7 @@ module Algorithm =
 
         let secondWorst = ordered[size - 2]
 
-        if isNaN reflected.Value
+        if reflected.IsInfeasible
         then shrink ()
 
         elif
@@ -152,7 +157,7 @@ module Algorithm =
                     )
                 |> eval
             if
-                isReal expanded.Value
+                expanded.IsFeasible
                 &&
                 expanded.Value < reflected.Value
             then
@@ -170,7 +175,7 @@ module Algorithm =
                     )
                 |> eval
             if
-                isReal (contractedOutside.Value)
+                contractedOutside.IsFeasible
                 &&
                 contractedOutside.Value < reflected.Value
             then
@@ -188,7 +193,7 @@ module Algorithm =
                     )
                 |> eval
             if
-                isReal (contractedInside.Value)
+                contractedInside.IsFeasible
                 &&
                 contractedInside.Value < worst.Value
             then
@@ -227,32 +232,27 @@ module Algorithm =
             )
 
     // Verify that the initial simplex is well-formed
-    let preCheck (objective: IObjective) simplex =
+    let preCheck (objective: IObjective) simplex: Candidate [] =
         let f = objective.Value
         simplex
-        |> Array.iter (fun pt ->
+        |> Array.map (fun pt ->
             // check that the vector pt does not contain any NaNs
             pt
             |> Array.iter (fun x ->
                 if not (isFinite x)
                 then raise (AbnormalConditions simplex)
                 )
-            // check the evaluation of the vector pt for early termination
-            let evaluation = f pt
-            if evaluation = -infinity
-            then raise UnboundedObjective
-            if isNaN evaluation
+            let candidate = evaluate f pt
+            if candidate.IsInfeasible
             then raise (AbnormalConditions simplex)
+            candidate
             )
 
     let search (objective: IObjective) simplex config =
-        let f = objective.Value
         try
             // Is the starting simplex well-formed?
             preCheck objective simplex
             // Start the search
-            simplex
-            |> Array.map (fun vertex -> { Point = vertex; Value = f vertex })
             |> Seq.unfold (fun simplex ->
                 let updatedSimplex = update config.Updates objective simplex
                 let solution =
