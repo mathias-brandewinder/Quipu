@@ -44,9 +44,6 @@ type Configuration = {
         Termination = Termination.Configuration.defaultValue
         }
 
-exception UnboundedObjective
-exception AbnormalConditions of float [][]
-
 type Solution =
     | Optimal of (float * float [])
     | SubOptimal of (float * float [])
@@ -65,6 +62,9 @@ type Candidate = {
 
 module Algorithm =
 
+    exception private UnboundedObjective
+    exception private AbnormalConditions of float [][]
+
     let private evaluate f (x: float []) =
         let value = f x
         // if the lowest value is -infinity, there is no solution:
@@ -72,10 +72,6 @@ module Algorithm =
         if value = System.Double.NegativeInfinity
         then raise UnboundedObjective
         else { Point = x; Value = f x }
-
-    // let isNaN x = System.Double.IsNaN x
-    // let isReal x = not (System.Double.IsNaN x)
-    let isFinite x = System.Double.IsFinite x
 
     let private update
         (config: Updates.Configuration)
@@ -239,7 +235,7 @@ module Algorithm =
             // check that the vector pt does not contain any NaNs
             pt
             |> Array.iter (fun x ->
-                if not (isFinite x)
+                if not (System.Double.IsFinite x)
                 then raise (AbnormalConditions simplex)
                 )
             let candidate = evaluate f pt
