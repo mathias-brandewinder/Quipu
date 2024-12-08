@@ -373,30 +373,25 @@ module NelderMead =
 
                     // simplex within bounds, but function values are not
                     let tolerance = 0.5
-                    let f (x: float[]) = pown x.[0] 2 + x.[1]
                     let simplex =
                         [|
-                            [| 1.0; 0.0 |]
-                            [| 1.4; 0.0 |]
+                            { Point = [| 0.0; 0.0 |]; Value = 0.0 }
+                            { Point = [| 1.0; 0.0 |]; Value = tolerance + 0.1 }
                         |]
-                        |> Array.map (fun x -> { Point = x; Value = f x })
 
                     let shouldTerminate = Algorithm.terminate tolerance simplex
                     Expect.isFalse(shouldTerminate) ""
                     }
 
-
                 test "when argument values are not within bounds termination should not occur" {
 
                     // function values within bounds, but simplex values are not
                     let tolerance = 0.5
-                    let f (x: float[]) = 0.1 * x.[0] + 0.1 * x.[1]
                     let simplex =
                         [|
-                            [| 1.0; 0.0 |]
-                            [| 2.0; 0.0 |]
+                            { Point = [| 0.0; 0.0 |]; Value = 0.0 }
+                            { Point = [| tolerance + 0.1; 0.0 |]; Value = 0.1 }
                         |]
-                        |> Array.map (fun x -> { Point = x; Value = f x })
 
                     let shouldTerminate = Algorithm.terminate tolerance simplex
                     Expect.isFalse(shouldTerminate) ""
@@ -409,10 +404,9 @@ module NelderMead =
                     let f (x: float[]) = 0.1 * x.[0] + 0.1 * x.[1]
                     let simplex =
                         [|
-                            [| 0.0; 0.0 |]
-                            [| 0.1; 0.0 |]
+                            { Point = [| 0.0; 0.0 |]; Value = 0.0 }
+                            { Point = [| 0.0 + tolerance / 2.0; 0.0 + tolerance / 2.0 |]; Value = 0.0 + tolerance / 2.0 }
                         |]
-                        |> Array.map (fun x -> { Point = x; Value = f x })
 
                     let shouldTerminate = Algorithm.terminate tolerance simplex
                     Expect.isTrue(shouldTerminate) ""
