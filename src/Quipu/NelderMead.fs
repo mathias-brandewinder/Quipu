@@ -55,6 +55,19 @@ type Solution =
 
 module Algorithm =
 
+    type private Candidate = {
+        Point: float []
+        Value: float
+        }
+
+    let private evaluate f (x: float []) =
+        let value = f x
+        // if the lowest value is -infinity, there is no solution:
+        // the problem / objective is unbounded.
+        if value = System.Double.NegativeInfinity
+        then raise UnboundedObjective
+        else { Point = x; Value = f x }
+
     let isNaN x = System.Double.IsNaN x
     let isReal x = not (System.Double.IsNaN x)
     let isFinite x = System.Double.IsFinite x
@@ -66,17 +79,14 @@ module Algorithm =
 
         let dim = objective.Dimension
         let f = objective.Value
+        let eval = evaluate f
 
         // 1) order the values, from best to worst
         let ordered =
             simplex
             |> Array.sortBy f
 
-        // if the lowest value is -infinity, there is no solution
-        let best = ordered.[0]
-        let bestValue = f best
-
-        if bestValue = -infinity then raise UnboundedObjective
+        let best = eval ordered[0]
 
         // 2) calculate centroid
         let size = simplex.Length
@@ -109,79 +119,79 @@ module Algorithm =
                 )
 
         // 3) reflection
-        let worst = ordered[size - 1]
-        let worstValue = f worst
+        let worst = ordered[size - 1] |> eval
 
         let reflected =
             Array.init dim (fun col ->
-                centroid[col] + config.Alpha * (centroid[col] - worst[col])
+                centroid[col] + config.Alpha * (centroid[col] - worst.Point[col])
                 )
+            |> eval
 
         let secondWorst = ordered[size - 2]
 
-        let reflectedValue = f reflected
-
-        if isNaN reflectedValue
+        if isNaN reflected.Value
         then shrink ()
 
         elif
-            reflectedValue < f secondWorst
+            reflected.Value < f secondWorst
             &&
-            reflectedValue >= bestValue
+            reflected.Value >= best.Value
         then
             // replace worst by reflected
-            ordered[size - 1] <- reflected
+            ordered[size - 1] <- reflected.Point
             ordered
 
         // 4) expansion
         elif
-            reflectedValue < bestValue
+            reflected.Value < best.Value
         then
             let expanded =
                 Array.init dim (fun col ->
-                    centroid[col] + config.Gamma * (reflected[col] - centroid[col])
+                    centroid[col] + config.Gamma * (reflected.Point[col] - centroid[col])
                     )
-            let expandedValue = f expanded
+                |> eval
             if
-                isReal expandedValue
+                isReal expanded.Value
                 &&
-                expandedValue < reflectedValue
+                expanded.Value < reflected.Value
             then
-                ordered[size - 1] <- expanded
+                ordered[size - 1] <- expanded.Point
             else
-                ordered[size - 1] <- reflected
+                ordered[size - 1] <- reflected.Point
             ordered
 
         // 5) contraction
-        elif reflectedValue < worstValue
+        elif reflected.Value < worst.Value
         then
             let contractedOutside =
                 Array.init dim (fun col ->
-                    centroid[col] + config.Rho * (reflected[col] - centroid[col])
+                    centroid[col] + config.Rho * (reflected.Point[col] - centroid[col])
                     )
+                |> eval
             if
-                isReal (f contractedOutside)
+                isReal (contractedOutside.Value)
                 &&
-                f contractedOutside < reflectedValue
+                contractedOutside.Value < reflected.Value
             then
-                ordered[size - 1] <- contractedOutside
+                ordered[size - 1] <- contractedOutside.Point
                 ordered
             else
                 // 6) shrink
                 shrink ()
 
-        elif reflectedValue >= worstValue
+        elif reflected.Value >= worst.Value
         then
             let contractedInside =
                 Array.init dim (fun col ->
-                    centroid[col] + config.Rho * (worst[col] - centroid[col])
+                    centroid[col] + config.Rho * (worst.Point[col] - centroid[col])
                     )
+                |> eval
             if
-                isReal (f contractedInside)
+                isReal (contractedInside.Value)
                 &&
-                f contractedInside < worstValue
+                contractedInside.Value < worst.Value
             then
-                ordered[size - 1] <- contractedInside
+                ordered[size - 1] <- contractedInside.Point
                 ordered
             else
                 // 6) shrink
