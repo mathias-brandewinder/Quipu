@@ -376,11 +376,12 @@ module NelderMead =
                     let f (x: float[]) = pown x.[0] 2 + x.[1]
                     let simplex =
                         [|
-                            [| 1.0; 0.0 |] // f = 1.0
-                            [| 1.4; 0.0 |] // f = 1.96
+                            [| 1.0; 0.0 |]
+                            [| 1.4; 0.0 |]
                         |]
+                        |> Array.map (fun x -> { Point = x; Value = f x })
 
-                    let shouldTerminate = Algorithm.terminate tolerance f simplex
+                    let shouldTerminate = Algorithm.terminate tolerance simplex
                     Expect.isFalse(shouldTerminate) ""
                     }
 
@@ -392,11 +393,12 @@ module NelderMead =
                     let f (x: float[]) = 0.1 * x.[0] + 0.1 * x.[1]
                     let simplex =
                         [|
-                            [| 1.0; 0.0 |] // f = 0.1
-                            [| 2.0; 0.0 |] // f = 0.2
+                            [| 1.0; 0.0 |]
+                            [| 2.0; 0.0 |]
                         |]
+                        |> Array.map (fun x -> { Point = x; Value = f x })
 
-                    let shouldTerminate = Algorithm.terminate tolerance f simplex
+                    let shouldTerminate = Algorithm.terminate tolerance simplex
                     Expect.isFalse(shouldTerminate) ""
                     }
 
@@ -407,14 +409,14 @@ module NelderMead =
                     let f (x: float[]) = 0.1 * x.[0] + 0.1 * x.[1]
                     let simplex =
                         [|
-                            [| 0.0; 0.0 |] // f = 0.0
-                            [| 0.1; 0.0 |] // f = 0.01
+                            [| 0.0; 0.0 |]
+                            [| 0.1; 0.0 |]
                         |]
+                        |> Array.map (fun x -> { Point = x; Value = f x })
 
-                    let shouldTerminate = Algorithm.terminate tolerance f simplex
+                    let shouldTerminate = Algorithm.terminate tolerance simplex
                     Expect.isTrue(shouldTerminate) ""
                     }
-
             ]
 
     module Simplex =

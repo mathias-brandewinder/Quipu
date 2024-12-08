@@ -53,12 +53,12 @@ type Solution =
     | Unbounded
     | Abnormal of (float [][])
 
-module Algorithm =
+type Candidate = {
+    Point: float []
+    Value: float
+    }
 
-    type private Candidate = {
-        Point: float []
-        Value: float
-        }
+module Algorithm =
 
     let private evaluate f (x: float []) =
         let value = f x
@@ -72,10 +72,10 @@ module Algorithm =
     let isReal x = not (System.Double.IsNaN x)
     let isFinite x = System.Double.IsFinite x
 
-    let update
+    let private update
         (config: Updates.Configuration)
         (objective: IObjective)
-        (simplex: (float []) []) =
+        (candidates: Candidate []) =
 
         let dim = objective.Dimension
         let f = objective.Value
@@ -83,20 +83,20 @@ module Algorithm =
 
         // 1) order the values, from best to worst
         let ordered =
-            simplex
-            |> Array.sortBy f
+            candidates
+            |> Array.sortBy (fun c -> c.Value)
 
-        let best = eval ordered[0]
+        let best = candidates[0]
 
         // 2) calculate centroid
-        let size = simplex.Length
+        let size = candidates.Length
         // drop the worst candidate
         let bestCandidates = ordered[.. size - 2]
         // calculate average point (centroid)
         let centroid =
             Array.init dim (fun col ->
                 bestCandidates
-                |> Array.averageBy(fun pt -> pt[col])
+                |> Array.averageBy(fun pt -> pt.Point[col])
                 )
 
         let shrink () =
@@ -110,16 +110,17 @@ module Algorithm =
                     let best = ordered.[0]
                     let shrunk =
                         Array.init dim (fun col ->
-                            best[col] + config.Sigma * (pt[col] - best[col])
+                            best.Point[col] + config.Sigma * (pt.Point[col] - best.Point[col])
                             )
+                        |> eval
                     // enforce that shrinking produces a valid simplex
-                    if isReal (f shrunk)
+                    if isReal (shrunk.Value)
                     then shrunk
-                    else raise (AbnormalConditions simplex)
+                    else raise (AbnormalConditions (candidates |> Array.map (fun c -> c.Point)))
                 )
 
         // 3) reflection
-        let worst = ordered[size - 1] |> eval
+        let worst = ordered[size - 1] // |> eval
 
         let reflected =
             Array.init dim (fun col ->
@@ -133,12 +134,12 @@ module Algorithm =
         then shrink ()
 
         elif
-            reflected.Value < f secondWorst
+            reflected.Value < secondWorst.Value
             &&
             reflected.Value >= best.Value
         then
             // replace worst by reflected
-            ordered[size - 1] <- reflected.Point
+            ordered[size - 1] <- reflected
             ordered
 
         // 4) expansion
@@ -155,9 +156,9 @@ module Algorithm =
                 &&
                 expanded.Value < reflected.Value
             then
-                ordered[size - 1] <- expanded.Point
+                ordered[size - 1] <- expanded
             else
-                ordered[size - 1] <- reflected.Point
+                ordered[size - 1] <- reflected
             ordered
 
         // 5) contraction
@@ -173,7 +174,7 @@ module Algorithm =
                 &&
                 contractedOutside.Value < reflected.Value
             then
-                ordered[size - 1] <- contractedOutside.Point
+                ordered[size - 1] <- contractedOutside
                 ordered
             else
                 // 6) shrink
@@ -191,14 +192,14 @@ module Algorithm =
                 &&
                 contractedInside.Value < worst.Value
             then
-                ordered[size - 1] <- contractedInside.Point
+                ordered[size - 1] <- contractedInside
                 ordered
             else
                 // 6) shrink
                 shrink ()
         else
             // TODO, check: is this branch even possible?
-            raise (AbnormalConditions simplex)
+            raise (AbnormalConditions (candidates |> Array.map (fun c -> c.Point)))
 
     let private minMax f xs =
         let projection = xs |> Seq.map f
@@ -206,20 +207,22 @@ module Algorithm =
         let maximum = projection |> Seq.max
         (minimum, maximum)
 
-    let terminate (tolerance: float) (f: float [] -> float) (simplex: float [][]) =
+    let terminate (tolerance: float) (candidates: Candidate []) =
         // The function value must be within the tolerance bounds
         // for every candidate in the simplex.
-        let min, max = simplex |> minMax f
+        let min, max =
+            candidates
+            |> minMax (fun x -> x.Value)
         max - min < tolerance
         &&
         // Every argument must be within the tolerance bounds
         // for every candidate in the simplex.
-        let dim = simplex.[0].Length
+        let dim = candidates[0].Point.Length
         seq { 0 .. dim - 1 }
         |> Seq.forall (fun i ->
             let min, max =
-                simplex
-                |> minMax (fun point -> point.[i])
+                candidates
+                |> minMax (fun point -> point.Point.[i])
             max - min < tolerance
             )
 
@@ -249,24 +252,26 @@ module Algorithm =
             preCheck objective simplex
             // Start the search
             simplex
+            |> Array.map (fun vertex -> { Point = vertex; Value = f vertex })
             |> Seq.unfold (fun simplex ->
                 let updatedSimplex = update config.Updates objective simplex
                 let solution =
                     updatedSimplex
-                    |> Array.map (fun pt -> pt, f pt)
-                    |> Array.minBy snd
+                    |> Array.minBy (fun x -> x.Value)
                 Some ((solution, updatedSimplex), updatedSimplex)
                 )
             |> Seq.mapi (fun i x -> i, x)
             |> Seq.skipWhile (fun (iter, (solution, simplex)) ->
-                simplex |> terminate config.Termination.Tolerance f |> not
+                simplex |> terminate config.Termination.Tolerance |> not
                 &&
                 config.Termination.MaximumIterations
                 |> Option.map (fun maxIter -> iter < maxIter)
                 |> Option.defaultValue true
                 )
             |> Seq.head
-            |> fun (iter, ((args, value), _)) ->
+            |> fun (iter, (best, _)) ->
+                let args = best.Point
+                let value = best.Value
                 match config.Termination.MaximumIterations with
                 | None -> Solution.Optimal (value, args)
                 | Some maxIters ->
