@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Version>0.3.0</Version>
+    <Version>0.3.1</Version>
     <Authors>Mathias Brandewinder</Authors>
     <Description>Nelder-Mead function minimization solver.</Description>
     <ProjectUrl>https://github.com/mathias-brandewinder/Quipu</ProjectUrl>
