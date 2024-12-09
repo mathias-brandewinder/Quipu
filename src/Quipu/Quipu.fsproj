@@ -8,6 +8,7 @@
     <ProjectUrl>https://github.com/mathias-brandewinder/Quipu</ProjectUrl>
     <RepositoryUrl>https://github.com/mathias-brandewinder/Quipu</RepositoryUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <Copyright>Copyright (c) 2023 Mathias Brandewinder</Copyright>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
@@ -18,7 +19,8 @@
     <Compile Include="NelderMead.fs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="../../LICENSE" Pack="true" PackagePath="" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="/" />
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="5.*" />
