@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{AD607682-FF2D-4034-B18A-157F85BE1B09}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B3CA7E63-6DBC-47D9-A600-885F63CFF954}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Quipu", "src\Quipu\Quipu.fsproj", "{1F640F6A-D50B-4D6F-BDB4-BF513ED24721}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Quipu", "src\Quipu\Quipu.fsproj", "{9B59BABF-32AB-4216-8CF2-A29E28BE9122}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Quipu.Tests", "tests\Quipu.Tests.fsproj", "{091B784C-3A5E-41E0-A7AD-B09B3084B384}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4A9EE2B9-2304-4698-907B-E8979D398794}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Quipu.Tests", "tests\Quipu.UnitTests\Quipu.Tests.fsproj", "{DD2816DE-4D01-44BF-9073-C00D48CAE115}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Quipu.Benchmarks", "tests\Quipu.Benchmarks\Quipu.Benchmarks.fsproj", "{A313D4A8-021C-4638-91F1-87D36A2C491C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,16 +22,22 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1F640F6A-D50B-4D6F-BDB4-BF513ED24721}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1F640F6A-D50B-4D6F-BDB4-BF513ED24721}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1F640F6A-D50B-4D6F-BDB4-BF513ED24721}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1F640F6A-D50B-4D6F-BDB4-BF513ED24721}.Release|Any CPU.Build.0 = Release|Any CPU
-		{091B784C-3A5E-41E0-A7AD-B09B3084B384}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{091B784C-3A5E-41E0-A7AD-B09B3084B384}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{091B784C-3A5E-41E0-A7AD-B09B3084B384}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{091B784C-3A5E-41E0-A7AD-B09B3084B384}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B59BABF-32AB-4216-8CF2-A29E28BE9122}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B59BABF-32AB-4216-8CF2-A29E28BE9122}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B59BABF-32AB-4216-8CF2-A29E28BE9122}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B59BABF-32AB-4216-8CF2-A29E28BE9122}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD2816DE-4D01-44BF-9073-C00D48CAE115}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD2816DE-4D01-44BF-9073-C00D48CAE115}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD2816DE-4D01-44BF-9073-C00D48CAE115}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD2816DE-4D01-44BF-9073-C00D48CAE115}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A313D4A8-021C-4638-91F1-87D36A2C491C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A313D4A8-021C-4638-91F1-87D36A2C491C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A313D4A8-021C-4638-91F1-87D36A2C491C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A313D4A8-021C-4638-91F1-87D36A2C491C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{1F640F6A-D50B-4D6F-BDB4-BF513ED24721} = {AD607682-FF2D-4034-B18A-157F85BE1B09}
+		{9B59BABF-32AB-4216-8CF2-A29E28BE9122} = {B3CA7E63-6DBC-47D9-A600-885F63CFF954}
+		{DD2816DE-4D01-44BF-9073-C00D48CAE115} = {4A9EE2B9-2304-4698-907B-E8979D398794}
+		{A313D4A8-021C-4638-91F1-87D36A2C491C} = {4A9EE2B9-2304-4698-907B-E8979D398794}
 	EndGlobalSection
 EndGlobal
