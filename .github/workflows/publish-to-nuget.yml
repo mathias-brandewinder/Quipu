@@ -37,4 +37,4 @@ jobs:
     - name: Create NuGet package
       run: dotnet pack src/Quipu/Quipu.fsproj --configuration Release --output package
     - name: Push to NuGet feed
-      run: dotnet nuget push "package\*.nupkg" --api-key $NUGET_API_KEY --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push package/*.nupkg --api-key $NUGET_API_KEY --source https://api.nuget.org/v3/index.json
