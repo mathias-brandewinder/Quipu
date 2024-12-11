@@ -1,28 +1,37 @@
 namespace Quipu.Benchmarks
 
 open BenchmarkDotNet.Attributes
+open Quipu
 open Quipu.NelderMead
+open Quipu.Tests
 
 type Benchmarks () =
 
-    // See https://en.wikipedia.org/wiki/Test_functions_for_optimization
-    let beale (x, y) =
-        pown (1.5 - x + (x * y)) 2
-        +
-        pown (2.25 - x + (x * pown y 2)) 2
-        +
-        pown (2.625 - x + x * pown y 3) 2
+    // High tolerance to force the solver to work hard
+    let tolerance = 0.000_000_001
+
+    let solverConfiguration =
+        { Configuration.defaultValue with
+            Termination = {
+                MaximumIterations = None
+                Tolerance = tolerance
+                }
+        }
 
     [<Benchmark(Description="Beale function")>]
     member this.BealeFunction () =
 
-        beale
+        TestFunctions.beale
         |> NelderMead.minimize
-        |> NelderMead.withConfiguration
-            { Configuration.defaultValue with
-                Termination = {
-                    Tolerance = 0.000_000_001
-                    MaximumIterations = None
-                    }
-            }
+        |> NelderMead.withConfiguration solverConfiguration
+        |> NelderMead.startFrom (StartingPoint.fromValue [ 4.5; 4.5 ])
+        |> NelderMead.solve
+
+    [<Benchmark(Description="Booth function")>]
+    member this.BoothFunction () =
+
+        TestFunctions.booth
+        |> NelderMead.minimize
+        |> NelderMead.withConfiguration solverConfiguration
+        |> NelderMead.startFrom (StartingPoint.fromValue [ 10.0; 10.0 ])
         |> NelderMead.solve
