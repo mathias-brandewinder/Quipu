@@ -178,7 +178,7 @@ module NelderMead =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (
-                            Start.around [
+                            Start.at [
                                 [ 100.0; 100.0 ]
                                 [ 110.0; 100.0 ]
                                 [ 105.0; 105.0 ]

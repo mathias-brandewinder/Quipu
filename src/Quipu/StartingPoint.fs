@@ -42,7 +42,7 @@ type Start =
                 |> Simplex.vertices
         }
 
-    static member around (startingPoint: #seq<#seq<float>>) =
+    static member at (startingPoint: #seq<#seq<float>>) =
         { new IStartingPoint with
             member this.create (dim: int): float[][] =
                 let startingPoint =
