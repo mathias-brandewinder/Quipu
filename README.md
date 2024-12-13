@@ -46,7 +46,7 @@ let solution =
                 }
         }
     // start search around 100.0, 100.0
-    |> NelderMead.startFrom (StartingPoint.fromValue [ 100.0; 100.0 ])
+    |> NelderMead.startFrom (Start.around [ 100.0; 100.0 ])
     |> NelderMead.solve
 ```
 

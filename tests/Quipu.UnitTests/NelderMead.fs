@@ -37,7 +37,7 @@ module NelderMead =
                     let solution =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (StartingPoint.fromValue 100.0)
+                        |> NelderMead.startFrom (Start.around 100.0)
                         |> NelderMead.solve
                     let actual =
                         match solution with
@@ -53,7 +53,7 @@ module NelderMead =
                     let solution =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (StartingPoint.fromValue [ 100.0; 100.0 ])
+                        |> NelderMead.startFrom (Start.around [ 100.0; 100.0 ])
                         |> NelderMead.solve
                     let actual =
                         match solution with
@@ -68,7 +68,7 @@ module NelderMead =
                     let solution =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (StartingPoint.fromValue [ 100.0; 100.0; 100.0 ])
+                        |> NelderMead.startFrom (Start.around [ 100.0; 100.0; 100.0 ])
                         |> NelderMead.solve
 
                     let actual =
@@ -85,7 +85,7 @@ module NelderMead =
                     let solution =
                         NelderMead.objective (2, f)
                         |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (StartingPoint.fromValue [ 100.0; 100.0 ])
+                        |> NelderMead.startFrom (Start.around [ 100.0; 100.0 ])
                         |> NelderMead.solve
 
                     let actual =
@@ -102,7 +102,7 @@ module NelderMead =
                     let solution =
                         NelderMead.objective testClass.OneParameter
                         |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (StartingPoint.fromValue 100.0)
+                        |> NelderMead.startFrom (Start.around 100.0)
                         |> NelderMead.solve
                     let actual =
                         match solution with
@@ -118,7 +118,7 @@ module NelderMead =
                     let solution =
                         NelderMead.objective testClass.TwoParameters
                         |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (StartingPoint.fromValue [ 100.0; 100.0 ])
+                        |> NelderMead.startFrom (Start.around [ 100.0; 100.0 ])
                         |> NelderMead.solve
                     let actual =
                         match solution with
@@ -133,7 +133,7 @@ module NelderMead =
                     let solution =
                         NelderMead.objective testClass.ThreeParameters
                         |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (StartingPoint.fromValue [ 100.0; 100.0; 100.0 ])
+                        |> NelderMead.startFrom (Start.around [ 100.0; 100.0; 100.0 ])
                         |> NelderMead.solve
                     let actual =
                         match solution with
@@ -147,7 +147,7 @@ module NelderMead =
                     let solution =
                         NelderMead.objective TestClass.StaticOne
                         |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (StartingPoint.fromValue 100.0)
+                        |> NelderMead.startFrom (Start.around 100.0)
                         |> NelderMead.solve
                     let actual =
                         match solution with
@@ -162,7 +162,7 @@ module NelderMead =
                     let solution =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (StartingPoint.fromValue 100.0)
+                        |> NelderMead.startFrom (Start.around 100.0)
                         |> NelderMead.solve
                     let actual =
                         match solution with
@@ -178,7 +178,7 @@ module NelderMead =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (
-                            StartingPoint.fromValue [
+                            Start.around [
                                 [ 100.0; 100.0 ]
                                 [ 110.0; 100.0 ]
                                 [ 105.0; 105.0 ]
@@ -206,7 +206,7 @@ module NelderMead =
                     let solution =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (StartingPoint.fromValue 10.0)
+                        |> NelderMead.startFrom (Start.around 10.0)
                         |> NelderMead.solve
 
                     let actual =
@@ -239,7 +239,7 @@ module NelderMead =
                     let solution =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (StartingPoint.fromValue 100.0)
+                        |> NelderMead.startFrom (Start.around 100.0)
                         |> NelderMead.solve
 
                     let isSuboptimal =
@@ -263,7 +263,7 @@ module NelderMead =
                     let solution =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (StartingPoint.fromValue 0.0)
+                        |> NelderMead.startFrom (Start.around 0.0)
                         |> NelderMead.solve
                     Expect.equal Unbounded solution ""
                     }
@@ -275,7 +275,7 @@ module NelderMead =
                     let solution =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (StartingPoint.fromValue 0.0)
+                        |> NelderMead.startFrom (Start.around 0.0)
                         |> NelderMead.solve
                     let isAbnormal =
                         match solution with
@@ -291,7 +291,7 @@ module NelderMead =
                     let solution =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (StartingPoint.fromValue (+infinity))
+                        |> NelderMead.startFrom (Start.around (+infinity))
                         |> NelderMead.solve
                     let isAbnormal =
                         match solution with
@@ -307,7 +307,7 @@ module NelderMead =
                     let solution =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (StartingPoint.fromValue (infinity))
+                        |> NelderMead.startFrom (Start.around (infinity))
                         |> NelderMead.solve
                     let isAbnormal =
                         match solution with
@@ -322,7 +322,7 @@ module NelderMead =
                     let solution =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (StartingPoint.fromValue (-infinity))
+                        |> NelderMead.startFrom (Start.around (-infinity))
                         |> NelderMead.solve
                     let isAbnormal =
                         match solution with
@@ -337,7 +337,7 @@ module NelderMead =
                     let solution =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (StartingPoint.fromValue nan)
+                        |> NelderMead.startFrom (Start.around nan)
                         |> NelderMead.solve
                     let isAbnormal =
                         match solution with
@@ -352,7 +352,7 @@ module NelderMead =
                     let solution =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (StartingPoint.fromValue 100.0)
+                        |> NelderMead.startFrom (Start.around 100.0)
                         |> NelderMead.solve
                     let isAbnormal =
                         match solution with

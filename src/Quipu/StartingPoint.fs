@@ -3,7 +3,7 @@ namespace Quipu
 type IStartingPoint =
     abstract member create: int -> float[][]
 
-type StartingPoint =
+type Start =
 
     static member zero =
         { new IStartingPoint with
@@ -12,7 +12,7 @@ type StartingPoint =
                 |> Simplex.vertices
         }
 
-    static member fromValue (startingPoint: seq<float>) =
+    static member around (startingPoint: seq<float>) =
         { new IStartingPoint with
             member this.create (dim: int): float[][] =
                 let startingPoint = startingPoint |> Array.ofSeq
@@ -22,7 +22,7 @@ type StartingPoint =
                 |> Simplex.vertices
         }
 
-    static member fromValue (startingPoint: seq<float>, radius: float) =
+    static member around (startingPoint: seq<float>, radius: float) =
         { new IStartingPoint with
             member this.create (dim: int): float[][] =
                 let startingPoint = startingPoint |> Array.ofSeq
@@ -32,7 +32,7 @@ type StartingPoint =
                 |> Simplex.vertices
         }
 
-    static member fromValue (startingPoint: float) =
+    static member around (startingPoint: float) =
         { new IStartingPoint with
             member this.create (dim: int): float[][] =
                 let startingPoint = Array.singleton startingPoint
@@ -42,7 +42,7 @@ type StartingPoint =
                 |> Simplex.vertices
         }
 
-    static member fromValue (startingPoint: #seq<#seq<float>>) =
+    static member around (startingPoint: #seq<#seq<float>>) =
         { new IStartingPoint with
             member this.create (dim: int): float[][] =
                 let startingPoint =

@@ -23,7 +23,7 @@ type Benchmarks () =
         TestFunctions.beale
         |> NelderMead.objective
         |> NelderMead.withConfiguration solverConfiguration
-        |> NelderMead.startFrom (StartingPoint.fromValue [ 4.5; 4.5 ])
+        |> NelderMead.startFrom (Start.around [ 4.5; 4.5 ])
         |> NelderMead.solve
 
     [<Benchmark(Description="Booth function")>]
@@ -32,5 +32,5 @@ type Benchmarks () =
         TestFunctions.booth
         |> NelderMead.objective
         |> NelderMead.withConfiguration solverConfiguration
-        |> NelderMead.startFrom (StartingPoint.fromValue [ 10.0; 10.0 ])
+        |> NelderMead.startFrom (Start.around [ 10.0; 10.0 ])
         |> NelderMead.solve

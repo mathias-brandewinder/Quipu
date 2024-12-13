@@ -290,7 +290,7 @@ type Problem = {
     static member defaultCreate(objective: IObjective) =
         {
             Objective = objective
-            StartingPoint = StartingPoint.zero
+            StartingPoint = Start.zero
             Configuration = Configuration.defaultValue
         }
 
