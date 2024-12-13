@@ -3,7 +3,6 @@ namespace Quipu.Tests
 module TestFunctions =
 
     open Quipu
-    open Quipu.NelderMead
     open Expecto
 
     // See https://en.wikipedia.org/wiki/Test_functions_for_optimization

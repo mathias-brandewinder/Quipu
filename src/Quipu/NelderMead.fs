@@ -1,4 +1,4 @@
-﻿namespace Quipu.NelderMead
+﻿namespace Quipu
 
 open Quipu
 

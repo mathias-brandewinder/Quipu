@@ -2,7 +2,6 @@ namespace Quipu.Benchmarks
 
 open BenchmarkDotNet.Attributes
 open Quipu
-open Quipu.NelderMead
 open Quipu.Tests
 
 type Benchmarks () =
