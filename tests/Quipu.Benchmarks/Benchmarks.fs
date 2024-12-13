@@ -13,7 +13,7 @@ type Benchmarks () =
         { Configuration.defaultValue with
             Termination = {
                 MaximumIterations = None
-                Tolerance = tolerance
+                Termination = Termination.tolerance tolerance
                 }
         }
 

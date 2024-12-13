@@ -26,7 +26,7 @@ module TestFunctions =
             { Configuration.defaultValue with
                 Termination = {
                     MaximumIterations = None
-                    Tolerance = tolerance
+                    Termination = Termination.tolerance tolerance
                     }
             }
 

@@ -10,7 +10,7 @@ module NelderMead =
         { Configuration.defaultValue with
             Termination = {
                 Configuration.defaultValue.Termination with
-                    Tolerance = tolerance
+                    Termination = Termination.tolerance tolerance
                     MaximumIterations = None
                 }
         }
@@ -372,13 +372,14 @@ module NelderMead =
 
                     // simplex within bounds, but function values are not
                     let tolerance = 0.5
+                    let terminate = Termination.tolerance tolerance
                     let simplex =
                         [|
                             { Point = [| 0.0; 0.0 |]; Value = 0.0 }
                             { Point = [| 1.0; 0.0 |]; Value = tolerance + 0.1 }
                         |]
 
-                    let shouldTerminate = Algorithm.terminate tolerance simplex
+                    let shouldTerminate = terminate.HasTerminated simplex
                     Expect.isFalse(shouldTerminate) ""
                     }
 
@@ -386,13 +387,14 @@ module NelderMead =
 
                     // function values within bounds, but simplex values are not
                     let tolerance = 0.5
+                    let terminate = Termination.tolerance tolerance
                     let simplex =
                         [|
                             { Point = [| 0.0; 0.0 |]; Value = 0.0 }
                             { Point = [| tolerance + 0.1; 0.0 |]; Value = 0.1 }
                         |]
 
-                    let shouldTerminate = Algorithm.terminate tolerance simplex
+                    let shouldTerminate = terminate.HasTerminated simplex
                     Expect.isFalse(shouldTerminate) ""
                     }
 
@@ -400,14 +402,14 @@ module NelderMead =
 
                     // function values and simplex values are within bounds
                     let tolerance = 0.5
-                    let f (x: float[]) = 0.1 * x.[0] + 0.1 * x.[1]
+                    let terminate = Termination.tolerance tolerance
                     let simplex =
                         [|
                             { Point = [| 0.0; 0.0 |]; Value = 0.0 }
                             { Point = [| 0.0 + tolerance / 2.0; 0.0 + tolerance / 2.0 |]; Value = 0.0 + tolerance / 2.0 }
                         |]
 
-                    let shouldTerminate = Algorithm.terminate tolerance simplex
+                    let shouldTerminate = terminate.HasTerminated simplex
                     Expect.isTrue(shouldTerminate) ""
                     }
             ]
