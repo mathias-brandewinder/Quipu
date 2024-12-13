@@ -22,7 +22,7 @@ type Benchmarks () =
     member this.BealeFunction () =
 
         TestFunctions.beale
-        |> NelderMead.minimize
+        |> NelderMead.objective
         |> NelderMead.withConfiguration solverConfiguration
         |> NelderMead.startFrom (StartingPoint.fromValue [ 4.5; 4.5 ])
         |> NelderMead.solve
@@ -31,7 +31,7 @@ type Benchmarks () =
     member this.BoothFunction () =
 
         TestFunctions.booth
-        |> NelderMead.minimize
+        |> NelderMead.objective
         |> NelderMead.withConfiguration solverConfiguration
         |> NelderMead.startFrom (StartingPoint.fromValue [ 10.0; 10.0 ])
         |> NelderMead.solve

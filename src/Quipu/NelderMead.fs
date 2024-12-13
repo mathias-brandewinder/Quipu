@@ -300,23 +300,23 @@ type NelderMead =
         let simplex = problem.StartingPoint.create(problem.Dimension)
         Algorithm.search problem.Objective simplex problem.Configuration
 
-    static member minimize (f: IObjective) =
+    static member objective (f: IObjective) =
         f
         |> Problem.defaultCreate
 
-    static member minimize (f: float -> float) =
+    static member objective (f: float -> float) =
         Objective.from f
         |> Problem.defaultCreate
 
-    static member minimize (f: (float * float) -> float) =
+    static member objective (f: (float * float) -> float) =
         Objective.from f
         |> Problem.defaultCreate
 
-    static member minimize (f: (float * float * float) -> float) =
+    static member objective (f: (float * float * float) -> float) =
         Objective.from f
         |> Problem.defaultCreate
 
-    static member minimize (dim: int, f: float[] -> float) =
+    static member objective (dim: int, f: float[] -> float) =
         Objective.from (dim, f)
         |> Problem.defaultCreate
 

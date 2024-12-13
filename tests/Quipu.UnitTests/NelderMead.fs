@@ -36,7 +36,7 @@ module NelderMead =
 
                     let f x = pown x 2
                     let solution =
-                        NelderMead.minimize f
+                        NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (StartingPoint.fromValue 100.0)
                         |> NelderMead.solve
@@ -52,7 +52,7 @@ module NelderMead =
 
                     let f (x, y) = pown x 2 + pown y 2
                     let solution =
-                        NelderMead.minimize f
+                        NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (StartingPoint.fromValue [ 100.0; 100.0 ])
                         |> NelderMead.solve
@@ -67,7 +67,7 @@ module NelderMead =
 
                     let f (x, y, z) = pown x 2 + pown y 2 + pown z 2
                     let solution =
-                        NelderMead.minimize f
+                        NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (StartingPoint.fromValue [ 100.0; 100.0; 100.0 ])
                         |> NelderMead.solve
@@ -84,7 +84,7 @@ module NelderMead =
 
                     let f (x: float []) = pown x.[0] 2 + pown x.[1] 2
                     let solution =
-                        NelderMead.minimize (2, f)
+                        NelderMead.objective (2, f)
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (StartingPoint.fromValue [ 100.0; 100.0 ])
                         |> NelderMead.solve
@@ -101,7 +101,7 @@ module NelderMead =
 
                     let testClass = TestClass()
                     let solution =
-                        NelderMead.minimize testClass.OneParameter
+                        NelderMead.objective testClass.OneParameter
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (StartingPoint.fromValue 100.0)
                         |> NelderMead.solve
@@ -117,7 +117,7 @@ module NelderMead =
 
                     let testClass = TestClass()
                     let solution =
-                        NelderMead.minimize testClass.TwoParameters
+                        NelderMead.objective testClass.TwoParameters
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (StartingPoint.fromValue [ 100.0; 100.0 ])
                         |> NelderMead.solve
@@ -132,7 +132,7 @@ module NelderMead =
 
                     let testClass = TestClass()
                     let solution =
-                        NelderMead.minimize testClass.ThreeParameters
+                        NelderMead.objective testClass.ThreeParameters
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (StartingPoint.fromValue [ 100.0; 100.0; 100.0 ])
                         |> NelderMead.solve
@@ -146,7 +146,7 @@ module NelderMead =
                 test "static method, 1 argument" {
 
                     let solution =
-                        NelderMead.minimize TestClass.StaticOne
+                        NelderMead.objective TestClass.StaticOne
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (StartingPoint.fromValue 100.0)
                         |> NelderMead.solve
@@ -161,7 +161,7 @@ module NelderMead =
 
                     let f (x: float) = 0.0
                     let solution =
-                        NelderMead.minimize f
+                        NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (StartingPoint.fromValue 100.0)
                         |> NelderMead.solve
@@ -176,7 +176,7 @@ module NelderMead =
 
                     let f (x, y) = pown x 2 + pown y 2
                     let solution =
-                        NelderMead.minimize f
+                        NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (
                             StartingPoint.fromValue [
@@ -205,7 +205,7 @@ module NelderMead =
                     let f x = sqrt x
 
                     let solution =
-                        NelderMead.minimize f
+                        NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (StartingPoint.fromValue 10.0)
                         |> NelderMead.solve
@@ -238,7 +238,7 @@ module NelderMead =
 
                     let f x = pown x 2
                     let solution =
-                        NelderMead.minimize f
+                        NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (StartingPoint.fromValue 100.0)
                         |> NelderMead.solve
@@ -262,7 +262,7 @@ module NelderMead =
 
                     let f x = x
                     let solution =
-                        NelderMead.minimize f
+                        NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (StartingPoint.fromValue 0.0)
                         |> NelderMead.solve
@@ -274,7 +274,7 @@ module NelderMead =
 
                     let f (x: float) = nan
                     let solution =
-                        NelderMead.minimize f
+                        NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (StartingPoint.fromValue 0.0)
                         |> NelderMead.solve
@@ -290,7 +290,7 @@ module NelderMead =
 
                     let f (x: float) = 0.0
                     let solution =
-                        NelderMead.minimize f
+                        NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (StartingPoint.fromValue (+infinity))
                         |> NelderMead.solve
@@ -306,7 +306,7 @@ module NelderMead =
 
                     let f (x: float) = 0.0
                     let solution =
-                        NelderMead.minimize f
+                        NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (StartingPoint.fromValue (infinity))
                         |> NelderMead.solve
@@ -321,7 +321,7 @@ module NelderMead =
 
                     let f (x: float) = 0.0
                     let solution =
-                        NelderMead.minimize f
+                        NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (StartingPoint.fromValue (-infinity))
                         |> NelderMead.solve
@@ -336,7 +336,7 @@ module NelderMead =
 
                     let f (x: float) = 0.0
                     let solution =
-                        NelderMead.minimize f
+                        NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (StartingPoint.fromValue nan)
                         |> NelderMead.solve
@@ -351,7 +351,7 @@ module NelderMead =
 
                     let f (x: float) : float = failwith "some exception"
                     let solution =
-                        NelderMead.minimize f
+                        NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (StartingPoint.fromValue 100.0)
                         |> NelderMead.solve

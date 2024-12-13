@@ -15,7 +15,7 @@ open Quipu.NelderMead
 
 let f (x, y) = sin x + cos y
 
-NelderMead.minimize f
+NelderMead.objective f
 |> NelderMead.solve
 ```
 
@@ -36,7 +36,7 @@ open Quipu.NelderMead
 let g (x, y) = pown x 2 + pown y 2
 
 let solution =
-    NelderMead.minimize g
+    NelderMead.objective g
     // modify termination criteria
     |> NelderMead.withConfiguration
         { Configuration.defaultValue with

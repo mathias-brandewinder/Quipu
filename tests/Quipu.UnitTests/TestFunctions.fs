@@ -37,7 +37,7 @@ module TestFunctions =
 
                 let solution =
                     beale
-                    |> NelderMead.minimize
+                    |> NelderMead.objective
                     |> NelderMead.withConfiguration solverConfiguration
                     |> NelderMead.startFrom (StartingPoint.fromValue [ 4.5; 4.5 ])
                     |> NelderMead.solve
@@ -57,7 +57,7 @@ module TestFunctions =
 
                 let solution =
                     booth
-                    |> NelderMead.minimize
+                    |> NelderMead.objective
                     |> NelderMead.withConfiguration solverConfiguration
                     |> NelderMead.startFrom (StartingPoint.fromValue [ 10.0; 10.0 ])
                     |> NelderMead.solve
