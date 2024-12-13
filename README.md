@@ -41,7 +41,7 @@ let solution =
     |> NelderMead.withConfiguration
         { Configuration.defaultValue with
             Termination = {
-                Tolerance = 0.0001
+                Termination = Termination.tolerance 0.0001
                 MaximumIterations = Some 100
                 }
         }
