@@ -25,3 +25,10 @@ type Objective () =
             member this.Dimension = dim
             member this.Value x = f x
         }
+    static member negate (objective: IObjective) =
+        { new IObjective with
+            member this.Dimension: int =
+                objective.Dimension
+            member this.Value(x: float array): float =
+                - (objective.Value x)
+        }

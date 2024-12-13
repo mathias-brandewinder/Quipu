@@ -296,9 +296,22 @@ type Problem = {
 
 type NelderMead =
 
-    static member solve (problem: Problem) =
+    static member minimize (problem: Problem) =
         let simplex = problem.StartingPoint.create(problem.Dimension)
         Algorithm.search problem.Objective simplex problem.Configuration
+
+    static member maximize (problem: Problem) =
+        let problem = {
+            problem with
+                Objective =
+                    problem.Objective
+                    |> Objective.negate
+            }
+        problem
+        |> NelderMead.minimize
+
+    static member solve (problem: Problem) =
+        NelderMead.minimize problem
 
     static member objective (f: IObjective) =
         f
