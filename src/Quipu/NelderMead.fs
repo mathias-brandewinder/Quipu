@@ -173,23 +173,23 @@ module Algorithm =
             // Start the search
             |> Seq.unfold (fun simplex ->
                 let updatedSimplex = update config.Updates objective simplex
-                let solution =
-                    updatedSimplex
-                    |> Array.minBy (fun x -> x.Value)
-                Some ((solution, updatedSimplex), updatedSimplex)
+                Some (updatedSimplex, updatedSimplex)
                 )
             |> Seq.mapi (fun i x -> i, x)
-            |> Seq.skipWhile (fun (iter, (solution, simplex)) ->
-                simplex |> terminator.HasTerminated |> not // config.Termination.Tolerance |> not
+            |> Seq.skipWhile (fun (iter, simplex) ->
+                simplex |> terminator.HasTerminated |> not
                 &&
                 config.Termination.MaximumIterations
                 |> Option.map (fun maxIter -> iter < maxIter)
                 |> Option.defaultValue true
                 )
             |> Seq.head
-            |> fun (iter, (best, _)) ->
-                let args = best.Point
-                let value = best.Value
+            |> fun (iter, simplex) ->
+                let bestSolution =
+                    simplex
+                    |> Array.minBy (fun x -> x.Value)
+                let args = bestSolution.Point
+                let value = bestSolution.Value
                 match config.Termination.MaximumIterations with
                 | None -> Solution.Optimal (value, args)
                 | Some maxIters ->
