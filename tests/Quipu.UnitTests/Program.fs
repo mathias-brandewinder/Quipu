@@ -9,9 +9,9 @@ module Program =
         testList "" [
             NelderMead.BasicConvergence.tests
             NelderMead.PartiallyDefinedFunctions.tests
-            NelderMead.AbnormalTermination.tests // ISSUE
+            NelderMead.AbnormalTermination.tests
             NelderMead.SubOptimalTermination.tests
-            NelderMead.TerminationCriteria.tests
-            NelderMead.Simplex.tests
+            Termination.tests
+            Simplex.tests
             ]
         |> runTestsWithCLIArgs [] args
