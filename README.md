@@ -11,7 +11,7 @@ derivatives may not be known.
 Basic usage: find `x` and `y` that minimize `sin(x) + cos(y)`:  
 
 ``` fsharp
-open Quipu.NelderMead
+open Quipu
 
 let f (x, y) = sin x + cos y
 
@@ -31,7 +31,6 @@ for more examples:
 
 ``` fsharp
 open Quipu
-open Quipu.NelderMead
 
 let g (x, y) = pown x 2 + pown y 2
 

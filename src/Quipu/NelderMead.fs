@@ -260,3 +260,25 @@ type NelderMead =
 
     static member startFrom (start: IStartingPoint) (problem: Problem) =
         { problem with StartingPoint = start }
+
+    static member withMaximumIterations (iterations: int) (problem: Problem) =
+        { problem with
+            Configuration = {
+                problem.Configuration with
+                    Termination = {
+                        problem.Configuration.Termination with
+                            MaximumIterations = Some iterations
+                        }
+                }
+        }
+
+    static member withTolerance (tolerance: float) (problem: Problem) =
+        { problem with
+            Configuration = {
+                problem.Configuration with
+                    Termination = {
+                        problem.Configuration.Termination with
+                            Termination = Termination.tolerance tolerance
+                        }
+                }
+        }
