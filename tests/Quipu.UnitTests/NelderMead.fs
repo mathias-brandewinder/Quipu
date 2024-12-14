@@ -193,6 +193,31 @@ module NelderMead =
                     }
         ]
 
+    module Maximimization =
+
+        [<Tests>]
+        let tests =
+            testList "basic maximization tests" [
+
+                test "function, 1 argument" {
+
+                    let f x = - pown (x - 1.0) 2 + 10.0
+                    let solution =
+                        NelderMead.objective f
+                        |> NelderMead.withConfiguration config
+                        |> NelderMead.startFrom (Start.around 100.0)
+                        |> NelderMead.maximize
+
+                    let value, args =
+                        match solution with
+                        | Optimal solution -> solution
+                        | _ -> failwith "unexpected"
+
+                    Expect.isTrue (10.0 - tolerance <= value && value <= 10.0 + tolerance) "maximum should be near 10.0"
+                    Expect.isTrue (1.0 - tolerance <= args[0] && args[0] <= 1.0 + tolerance) "maximum should be near 10.0"
+                    }
+            ]
+
     module PartiallyDefinedFunctions =
 
         [<Tests>]

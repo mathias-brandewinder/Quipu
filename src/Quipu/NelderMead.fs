@@ -231,6 +231,11 @@ type NelderMead =
             }
         problem
         |> NelderMead.minimize
+        |> function
+            | Optimal (value, solution) -> Optimal (- value, solution)
+            | SubOptimal (value, solution) -> Optimal (- value, solution)
+            | Unbounded -> Unbounded
+            | Abnormal simplex -> Abnormal simplex
 
     static member solve (problem: Problem) =
         NelderMead.minimize problem
