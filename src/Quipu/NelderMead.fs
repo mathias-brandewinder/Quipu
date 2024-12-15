@@ -2,13 +2,13 @@
 
 type Solution =
     | Optimal of Candidate
-    | SubOptimal of (float * float [])
-    | Unbounded
+    | SubOptimal of Candidate
+    | Unbounded of Candidate
     | Abnormal of (float [][])
 
 module Algorithm =
 
-    exception private UnboundedObjective
+    exception private UnboundedObjective of Candidate
     exception private AbnormalConditions of float [][]
 
     let private evaluate f (x: float []) =
@@ -16,7 +16,7 @@ module Algorithm =
         // if the lowest value is -infinity, there is no solution:
         // the problem / objective is unbounded.
         if value = System.Double.NegativeInfinity
-        then raise UnboundedObjective
+        then raise (UnboundedObjective { Value = System.Double.NegativeInfinity; Point = x })
         else { Point = x; Value = f x }
 
     let private update
@@ -195,9 +195,9 @@ module Algorithm =
                 | Some maxIters ->
                     if iter < maxIters
                     then Solution.Optimal { Value = value; Point = args }
-                    else Solution.SubOptimal (value, args)
+                    else Solution.SubOptimal { Value = value; Point = args }
         with
-        | :? UnboundedObjective -> Solution.Unbounded
+        | :? UnboundedObjective as ex -> Solution.Unbounded ex.Data0
         | :? AbnormalConditions -> Solution.Abnormal simplex
         | _ -> Solution.Abnormal simplex
 
@@ -302,8 +302,8 @@ type NelderMead private (problem: Problem) =
         |> NelderMead.minimize
         |> function
             | Optimal solution -> Optimal { solution with Value = - solution.Value }
-            | SubOptimal (value, solution) -> SubOptimal (- value, solution)
-            | Unbounded -> Unbounded
+            | SubOptimal solution -> SubOptimal { solution with Value = - solution.Value }
+            | Unbounded solution -> Unbounded { solution with Value = - solution.Value }
             | Abnormal simplex -> Abnormal simplex
 
     static member solve (problem: Problem) =

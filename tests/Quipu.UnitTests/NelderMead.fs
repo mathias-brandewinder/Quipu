@@ -317,9 +317,14 @@ module NelderMead =
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around 0.0)
                         |> NelderMead.solve
-                    Expect.equal Unbounded solution ""
-                    }
+                    let isUnbounded =
+                        solution
+                        |> function
+                            | Solution.Unbounded _ -> true
+                            | _ -> false
 
+                    Expect.isTrue isUnbounded "Solution should be unbounded"
+                    }
 
                 test "function returning nan" {
 
