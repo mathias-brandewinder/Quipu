@@ -43,7 +43,7 @@ module TestFunctions =
 
                 let (value, point) =
                     match solution with
-                    | Optimal solution -> solution
+                    | Optimal solution -> solution.Value, solution.Point
                     | _ -> failwith "unexpected"
 
                 Expect.floatClose { absolute = tolerance; relative = tolerance } value 0.0 "function value"
@@ -63,7 +63,7 @@ module TestFunctions =
 
                 let (value, point) =
                     match solution with
-                    | Optimal solution -> solution
+                    | Optimal solution -> solution.Value, solution.Point
                     | _ -> failwith "unexpected"
 
                 Expect.floatClose { absolute = tolerance; relative = tolerance } value 0.0 "function value"

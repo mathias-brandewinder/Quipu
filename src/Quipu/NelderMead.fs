@@ -1,7 +1,7 @@
 ﻿namespace Quipu
 
 type Solution =
-    | Optimal of (float * float [])
+    | Optimal of Candidate
     | SubOptimal of (float * float [])
     | Unbounded
     | Abnormal of (float [][])
@@ -191,10 +191,10 @@ module Algorithm =
                 let args = bestSolution.Point
                 let value = bestSolution.Value
                 match config.Termination.MaximumIterations with
-                | None -> Solution.Optimal (value, args)
+                | None -> Solution.Optimal { Value = value; Point = args }
                 | Some maxIters ->
                     if iter < maxIters
-                    then Solution.Optimal (value, args)
+                    then Solution.Optimal { Value = value; Point = args }
                     else Solution.SubOptimal (value, args)
         with
         | :? UnboundedObjective -> Solution.Unbounded
@@ -215,6 +215,24 @@ type Problem = {
             StartingPoint = Start.zero
             Configuration = Configuration.defaultValue
         }
+
+module WIP =
+
+    type Status =
+        | Optimal = 0
+        | SubOptimal = 1
+        | Unbounded = 2
+        | Abnormal = 3
+
+    type Solution = {
+        Status: Status
+        Solution: Candidate
+        Simplex: float[][]
+        ErrorDescription: string
+        }
+        with
+        member this.HasSolution =
+            this.Status <> Status.Abnormal
 
 type NelderMead private (problem: Problem) =
 
@@ -283,8 +301,8 @@ type NelderMead private (problem: Problem) =
         problem
         |> NelderMead.minimize
         |> function
-            | Optimal (value, solution) -> Optimal (- value, solution)
-            | SubOptimal (value, solution) -> Optimal (- value, solution)
+            | Optimal solution -> Optimal { solution with Value = - solution.Value }
+            | SubOptimal (value, solution) -> SubOptimal (- value, solution)
             | Unbounded -> Unbounded
             | Abnormal simplex -> Abnormal simplex
 

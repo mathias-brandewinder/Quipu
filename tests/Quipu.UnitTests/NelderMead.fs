@@ -41,7 +41,7 @@ module NelderMead =
                         |> NelderMead.solve
                     let actual =
                         match solution with
-                        | Optimal (x, _) -> x
+                        | Optimal x -> x.Value
                         | _ -> failwith "unexpected"
 
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
@@ -57,7 +57,7 @@ module NelderMead =
                         |> NelderMead.solve
                     let actual =
                         match solution with
-                        | Optimal (x, _) -> x
+                        | Optimal x -> x.Value
                         | _ -> failwith "unexpected"
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
                     }
@@ -73,7 +73,7 @@ module NelderMead =
 
                     let actual =
                         match solution with
-                        | Optimal (x, _) -> x
+                        | Optimal x -> x.Value
                         | _ -> failwith "unexpected"
 
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
@@ -90,7 +90,7 @@ module NelderMead =
 
                     let actual =
                         match solution with
-                        | Optimal (x, _) -> x
+                        | Optimal x -> x.Value
                         | _ -> failwith "unexpected"
 
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
@@ -106,7 +106,7 @@ module NelderMead =
                         |> NelderMead.solve
                     let actual =
                         match solution with
-                        | Optimal (x, _) -> x
+                        | Optimal x -> x.Value
                         | _ -> failwith "unexpected"
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
                     }
@@ -122,7 +122,7 @@ module NelderMead =
                         |> NelderMead.solve
                     let actual =
                         match solution with
-                        | Optimal (x, _) -> x
+                        | Optimal x -> x.Value
                         | _ -> failwith "unexpected"
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
                     }
@@ -137,7 +137,7 @@ module NelderMead =
                         |> NelderMead.solve
                     let actual =
                         match solution with
-                        | Optimal (x, _) -> x
+                        | Optimal x -> x.Value
                         | _ -> failwith "unexpected"
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
                     }
@@ -151,7 +151,7 @@ module NelderMead =
                         |> NelderMead.solve
                     let actual =
                         match solution with
-                        | Optimal (x, _) -> x
+                        | Optimal x -> x.Value
                         | _ -> failwith "unexpected"
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
                     }
@@ -166,7 +166,7 @@ module NelderMead =
                         |> NelderMead.solve
                     let actual =
                         match solution with
-                        | Optimal (x, _) -> x
+                        | Optimal x -> x.Value
                         | _ -> failwith "unexpected"
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
                     }
@@ -187,7 +187,7 @@ module NelderMead =
                         |> NelderMead.solve
                     let actual =
                         match solution with
-                        | Optimal (x, _) -> x
+                        | Optimal x -> x.Value
                         | _ -> failwith "unexpected"
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
                     }
@@ -210,7 +210,7 @@ module NelderMead =
 
                     let value, args =
                         match solution with
-                        | Optimal solution -> solution
+                        | Optimal solution -> solution.Value, solution.Point
                         | _ -> failwith "unexpected"
 
                     Expect.isTrue (10.0 - tolerance <= value && value <= 10.0 + tolerance) "maximum should be near 10.0"
@@ -230,14 +230,14 @@ module NelderMead =
                     let solution =
                         NelderMead
                             .Objective(f)
-                            .WithMaximumIterations(10)
+                            .WithMaximumIterations(100)
                             .WithTolerance(0.001)
                             .StartFrom(Start.around 100.0)
                             .Maximize()
 
                     let value, args =
                         match solution with
-                        | Optimal solution -> solution
+                        | Optimal solution -> solution.Value, solution.Point
                         | _ -> failwith "unexpected"
 
                     Expect.isTrue (10.0 - tolerance <= value && value <= 10.0 + tolerance) "maximum should be near 10.0"
@@ -263,7 +263,7 @@ module NelderMead =
 
                     let actual =
                         match solution with
-                        | Optimal (x, _) -> x
+                        | Optimal x -> x.Value
                         | _ -> failwith "unexpected"
 
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
