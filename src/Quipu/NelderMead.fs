@@ -1,9 +1,18 @@
 ﻿namespace Quipu
 
-type Solution =
-    | Optimal of Candidate
-    | SubOptimal of Candidate
-    | Unbounded of Candidate
+type Status =
+    | Optimal
+    | Suboptimal
+    | Unbounded
+
+type Solution = {
+    Status: Status
+    Candidate: Candidate
+    Simplex: float [][]
+    }
+
+type SolverResult =
+    | Solution of Solution
     | Abnormal of (float [][])
 
 module Algorithm =
@@ -191,15 +200,38 @@ module Algorithm =
                 let args = bestSolution.Point
                 let value = bestSolution.Value
                 match config.Termination.MaximumIterations with
-                | None -> Solution.Optimal { Value = value; Point = args }
+                | None ->
+                    {
+                        Status = Optimal
+                        Candidate = { Value = value; Point = args }
+                        Simplex = simplex |> Array.map (fun x -> x.Point)
+                    }
                 | Some maxIters ->
                     if iter < maxIters
-                    then Solution.Optimal { Value = value; Point = args }
-                    else Solution.SubOptimal { Value = value; Point = args }
+                    then
+                        {
+                            Status = Optimal
+                            Candidate = { Value = value; Point = args }
+                            Simplex = simplex |> Array.map (fun x -> x.Point)
+                        }
+                    else
+                        {
+                            Status = Suboptimal
+                            Candidate = { Value = value; Point = args }
+                            Simplex = simplex |> Array.map (fun x -> x.Point)
+                        }
+                |> Solution
         with
-        | :? UnboundedObjective as ex -> Solution.Unbounded ex.Data0
-        | :? AbnormalConditions -> Solution.Abnormal simplex
-        | _ -> Solution.Abnormal simplex
+        | :? UnboundedObjective as ex ->
+            {
+                Status = Unbounded
+                Candidate = ex.Data0
+                Simplex = simplex
+            }
+            |> Solution
+        | :? AbnormalConditions ->
+            Abnormal simplex
+        | _ ->Abnormal simplex
 
 type Problem = {
     Objective: IObjective
@@ -215,24 +247,6 @@ type Problem = {
             StartingPoint = Start.zero
             Configuration = Configuration.defaultValue
         }
-
-module WIP =
-
-    type Status =
-        | Optimal = 0
-        | SubOptimal = 1
-        | Unbounded = 2
-        | Abnormal = 3
-
-    type Solution = {
-        Status: Status
-        Solution: Candidate
-        Simplex: float[][]
-        ErrorDescription: string
-        }
-        with
-        member this.HasSolution =
-            this.Status <> Status.Abnormal
 
 type NelderMead private (problem: Problem) =
 
@@ -301,9 +315,14 @@ type NelderMead private (problem: Problem) =
         problem
         |> NelderMead.minimize
         |> function
-            | Optimal solution -> Optimal { solution with Value = - solution.Value }
-            | SubOptimal solution -> SubOptimal { solution with Value = - solution.Value }
-            | Unbounded solution -> Unbounded { solution with Value = - solution.Value }
+            | Solution solution ->
+                { solution with
+                    Candidate = {
+                        solution.Candidate with
+                            Value = - solution.Candidate.Value
+                        }
+                }
+                |> Solution
             | Abnormal simplex -> Abnormal simplex
 
     static member solve (problem: Problem) =

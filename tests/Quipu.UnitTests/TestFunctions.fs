@@ -34,18 +34,21 @@ module TestFunctions =
 
             test "beale function" {
 
-                let solution =
+                let solverResult =
                     beale
                     |> NelderMead.objective
                     |> NelderMead.withConfiguration solverConfiguration
                     |> NelderMead.startFrom (Start.around [ 4.5; 4.5 ])
                     |> NelderMead.solve
 
-                let (value, point) =
-                    match solution with
-                    | Optimal solution -> solution.Value, solution.Point
+                let solution =
+                    match solverResult with
+                    | Solution solution -> solution
                     | _ -> failwith "unexpected"
 
+                Expect.equal solution.Status Status.Optimal "optimal solution"
+
+                let value, point = solution.Candidate.Value, solution.Candidate.Point
                 Expect.floatClose { absolute = tolerance; relative = tolerance } value 0.0 "function value"
 
                 Expect.floatClose { absolute = tolerance; relative = tolerance } point[0] 3.0 "function x0"
@@ -54,17 +57,22 @@ module TestFunctions =
 
             test "booth function" {
 
-                let solution =
+                let solverResult =
                     booth
                     |> NelderMead.objective
                     |> NelderMead.withConfiguration solverConfiguration
                     |> NelderMead.startFrom (Start.around [ 10.0; 10.0 ])
                     |> NelderMead.solve
 
-                let (value, point) =
-                    match solution with
-                    | Optimal solution -> solution.Value, solution.Point
+                let solution =
+                    match solverResult with
+                    | Solution solution -> solution
                     | _ -> failwith "unexpected"
+
+                Expect.equal solution.Status Status.Optimal "optimal solution"
+
+                let value, point = solution.Candidate.Value, solution.Candidate.Point
+
 
                 Expect.floatClose { absolute = tolerance; relative = tolerance } value 0.0 "function value"
 

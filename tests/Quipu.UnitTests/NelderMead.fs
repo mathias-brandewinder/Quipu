@@ -34,80 +34,100 @@ module NelderMead =
                 test "function, 1 argument" {
 
                     let f x = pown x 2
-                    let solution =
+
+                    let solverResult =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around 100.0)
                         |> NelderMead.solve
-                    let actual =
-                        match solution with
-                        | Optimal x -> x.Value
+
+                    let solution =
+                        match solverResult with
+                        | Solution solution -> solution
                         | _ -> failwith "unexpected"
 
+                    Expect.equal solution.Status Status.Optimal "optimal solution"
+                    let actual = solution.Candidate.Value
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
                     }
 
                 test "function, tuple" {
 
                     let f (x, y) = pown x 2 + pown y 2
-                    let solution =
+
+                    let solverResult =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around [ 100.0; 100.0 ])
                         |> NelderMead.solve
-                    let actual =
-                        match solution with
-                        | Optimal x -> x.Value
+
+                    let solution =
+                        match solverResult with
+                        | Solution solution -> solution
                         | _ -> failwith "unexpected"
+
+                    Expect.equal solution.Status Status.Optimal "optimal solution"
+                    let actual = solution.Candidate.Value
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
                     }
 
                 test "function, truple" {
 
                     let f (x, y, z) = pown x 2 + pown y 2 + pown z 2
-                    let solution =
+
+                    let solverResult =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around [ 100.0; 100.0; 100.0 ])
                         |> NelderMead.solve
 
-                    let actual =
-                        match solution with
-                        | Optimal x -> x.Value
+                    let solution =
+                        match solverResult with
+                        | Solution solution -> solution
                         | _ -> failwith "unexpected"
 
+                    Expect.equal solution.Status Status.Optimal "optimal solution"
+                    let actual = solution.Candidate.Value
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
                     }
 
                 test "function, array of arguments" {
 
                     let f (x: float []) = pown x.[0] 2 + pown x.[1] 2
-                    let solution =
+
+                    let solverResult =
                         NelderMead.objective (2, f)
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around [ 100.0; 100.0 ])
                         |> NelderMead.solve
 
-                    let actual =
-                        match solution with
-                        | Optimal x -> x.Value
+                    let solution =
+                        match solverResult with
+                        | Solution solution -> solution
                         | _ -> failwith "unexpected"
 
+                    Expect.equal solution.Status Status.Optimal "optimal solution"
+                    let actual = solution.Candidate.Value
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
                     }
 
                 test "method, 1 argument" {
 
                     let testClass = TestClass()
-                    let solution =
+
+                    let solverResult =
                         NelderMead.objective testClass.OneParameter
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around 100.0)
                         |> NelderMead.solve
-                    let actual =
-                        match solution with
-                        | Optimal x -> x.Value
+
+                    let solution =
+                        match solverResult with
+                        | Solution solution -> solution
                         | _ -> failwith "unexpected"
+
+                    Expect.equal solution.Status Status.Optimal "optimal solution"
+                    let actual = solution.Candidate.Value
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
                     }
 
@@ -115,66 +135,86 @@ module NelderMead =
                 test "method, 2 arguments" {
 
                     let testClass = TestClass()
-                    let solution =
+
+                    let solverResult =
                         NelderMead.objective testClass.TwoParameters
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around [ 100.0; 100.0 ])
                         |> NelderMead.solve
-                    let actual =
-                        match solution with
-                        | Optimal x -> x.Value
+
+                    let solution =
+                        match solverResult with
+                        | Solution solution -> solution
                         | _ -> failwith "unexpected"
+
+                    Expect.equal solution.Status Status.Optimal "optimal solution"
+                    let actual = solution.Candidate.Value
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
                     }
 
                 test "method, 3 arguments" {
 
                     let testClass = TestClass()
-                    let solution =
+
+                    let solverResult =
                         NelderMead.objective testClass.ThreeParameters
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around [ 100.0; 100.0; 100.0 ])
                         |> NelderMead.solve
-                    let actual =
-                        match solution with
-                        | Optimal x -> x.Value
+
+                    let solution =
+                        match solverResult with
+                        | Solution solution -> solution
                         | _ -> failwith "unexpected"
+
+                    Expect.equal solution.Status Status.Optimal "optimal solution"
+                    let actual = solution.Candidate.Value
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
                     }
 
                 test "static method, 1 argument" {
 
-                    let solution =
+                    let solverResult =
                         NelderMead.objective TestClass.StaticOne
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around 100.0)
                         |> NelderMead.solve
-                    let actual =
-                        match solution with
-                        | Optimal x -> x.Value
+
+                    let solution =
+                        match solverResult with
+                        | Solution solution -> solution
                         | _ -> failwith "unexpected"
+
+                    Expect.equal solution.Status Status.Optimal "optimal solution"
+                    let actual = solution.Candidate.Value
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
                     }
 
                 test "constant function, 1 argument" {
 
                     let f (x: float) = 0.0
-                    let solution =
+
+                    let solverResult =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around 100.0)
                         |> NelderMead.solve
-                    let actual =
-                        match solution with
-                        | Optimal x -> x.Value
+
+                    let solution =
+                        match solverResult with
+                        | Solution solution -> solution
                         | _ -> failwith "unexpected"
+
+                    Expect.equal solution.Status Status.Optimal "optimal solution"
+                    let actual = solution.Candidate.Value
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
                     }
 
                 test "function, tuple, starting from simplex" {
 
                     let f (x, y) = pown x 2 + pown y 2
-                    let solution =
+
+                    let solverResult =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (
@@ -185,10 +225,14 @@ module NelderMead =
                                 ]
                             )
                         |> NelderMead.solve
-                    let actual =
-                        match solution with
-                        | Optimal x -> x.Value
+
+                    let solution =
+                        match solverResult with
+                        | Solution solution -> solution
                         | _ -> failwith "unexpected"
+
+                    Expect.equal solution.Status Status.Optimal "optimal solution"
+                    let actual = solution.Candidate.Value
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
                     }
         ]
@@ -202,16 +246,22 @@ module NelderMead =
                 test "function, 1 argument" {
 
                     let f x = - pown (x - 1.0) 2 + 10.0
-                    let solution =
+
+                    let solverResult =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around 100.0)
                         |> NelderMead.maximize
 
-                    let value, args =
-                        match solution with
-                        | Optimal solution -> solution.Value, solution.Point
+                    let solution =
+                        match solverResult with
+                        | Solution solution -> solution
                         | _ -> failwith "unexpected"
+
+                    Expect.equal solution.Status Status.Optimal "optimal solution"
+
+                    let value = solution.Candidate.Value
+                    let args = solution.Candidate.Point
 
                     Expect.isTrue (10.0 - tolerance <= value && value <= 10.0 + tolerance) "maximum should be near 10.0"
                     Expect.isTrue (1.0 - tolerance <= args[0] && args[0] <= 1.0 + tolerance) "maximum should be near 10.0"
@@ -227,7 +277,7 @@ module NelderMead =
                 test "function, 1 argument" {
 
                     let f x = - pown (x - 1.0) 2 + 10.0
-                    let solution =
+                    let solverResult =
                         NelderMead
                             .Objective(f)
                             .WithMaximumIterations(100)
@@ -235,10 +285,15 @@ module NelderMead =
                             .StartFrom(Start.around 100.0)
                             .Maximize()
 
-                    let value, args =
-                        match solution with
-                        | Optimal solution -> solution.Value, solution.Point
+                    let solution =
+                        match solverResult with
+                        | Solution solution -> solution
                         | _ -> failwith "unexpected"
+
+                    Expect.equal solution.Status Status.Optimal "optimal solution"
+
+                    let value = solution.Candidate.Value
+                    let args = solution.Candidate.Point
 
                     Expect.isTrue (10.0 - tolerance <= value && value <= 10.0 + tolerance) "maximum should be near 10.0"
                     Expect.isTrue (1.0 - tolerance <= args[0] && args[0] <= 1.0 + tolerance) "maximum should be near 10.0"
@@ -255,17 +310,19 @@ module NelderMead =
 
                     let f x = sqrt x
 
-                    let solution =
+                    let solverResult =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around 10.0)
                         |> NelderMead.solve
 
-                    let actual =
-                        match solution with
-                        | Optimal x -> x.Value
+                    let solution =
+                        match solverResult with
+                        | Solution solution -> solution
                         | _ -> failwith "unexpected"
 
+                    Expect.equal solution.Status Status.Optimal "optimal solution"
+                    let actual = solution.Candidate.Value
                     Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
                     }
                 ]
@@ -288,18 +345,19 @@ module NelderMead =
                 test "function, 1 argument" {
 
                     let f x = pown x 2
-                    let solution =
+
+                    let solverResult =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around 100.0)
                         |> NelderMead.solve
 
-                    let isSuboptimal =
-                        match solution with
-                        | SubOptimal _ -> true
+                    let solution =
+                        match solverResult with
+                        | Solution solution -> solution
                         | _ -> failwith "unexpected"
 
-                    Expect.isTrue(isSuboptimal) ""
+                    Expect.equal solution.Status Status.Suboptimal ""
                     }
                 ]
 
@@ -312,30 +370,32 @@ module NelderMead =
                 test "unbounded function" {
 
                     let f x = x
-                    let solution =
+                    let solverResult =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around 0.0)
                         |> NelderMead.solve
-                    let isUnbounded =
-                        solution
-                        |> function
-                            | Solution.Unbounded _ -> true
-                            | _ -> false
 
-                    Expect.isTrue isUnbounded "Solution should be unbounded"
+                    let solution =
+                        match solverResult with
+                        | Solution solution -> solution
+                        | _ -> failwith "unexpected"
+
+                    Expect.equal solution.Status Status.Unbounded "Solution should be unbounded"
                     }
 
                 test "function returning nan" {
 
                     let f (x: float) = nan
-                    let solution =
+
+                    let solverResult =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around 0.0)
                         |> NelderMead.solve
+
                     let isAbnormal =
-                        match solution with
+                        match solverResult with
                         | Abnormal _ -> true
                         | _ -> false
 
@@ -345,13 +405,15 @@ module NelderMead =
                 test "simplex containing +infinity" {
 
                     let f (x: float) = 0.0
-                    let solution =
+
+                    let solverResult =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around (+infinity))
                         |> NelderMead.solve
+
                     let isAbnormal =
-                        match solution with
+                        match solverResult with
                         | Abnormal _ -> true
                         | _ -> false
 
@@ -361,61 +423,71 @@ module NelderMead =
                 test "simplex containing infinity" {
 
                     let f (x: float) = 0.0
-                    let solution =
+
+                    let solverResult =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around (infinity))
                         |> NelderMead.solve
+
                     let isAbnormal =
-                        match solution with
+                        match solverResult with
                         | Abnormal _ -> true
                         | _ -> false
+
                     Expect.isTrue(isAbnormal) ""
                     }
 
                 test "simplex containing -infinity" {
 
                     let f (x: float) = 0.0
-                    let solution =
+
+                    let solverResult =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around (-infinity))
                         |> NelderMead.solve
+
                     let isAbnormal =
-                        match solution with
+                        match solverResult with
                         | Abnormal _ -> true
                         | _ -> false
+
                     Expect.isTrue(isAbnormal) ""
                     }
 
                 test "simplex containing nan" {
 
                     let f (x: float) = 0.0
-                    let solution =
+
+                    let solverResult =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around nan)
                         |> NelderMead.solve
+
                     let isAbnormal =
-                        match solution with
+                        match solverResult with
                         | Abnormal _ -> true
                         | _ -> false
+
                     Expect.isTrue(isAbnormal) ""
                     }
 
                 test "function throwing" {
 
                     let f (x: float) : float = failwith "some exception"
-                    let solution =
+                    let solverResult =
                         NelderMead.objective f
                         |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around 100.0)
                         |> NelderMead.solve
+
                     let isAbnormal =
-                        match solution with
+                        match solverResult with
                         | Abnormal _ -> true
                         | _ -> false
+
                     Expect.isTrue(isAbnormal) ""
                     }
-
             ]
