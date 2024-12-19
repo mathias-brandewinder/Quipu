@@ -16,7 +16,7 @@ module Algorithm =
         else { Arguments = x; Value = f x }
 
     let private update
-        (config: Updates.Configuration)
+        (config: UpdateParameters)
         (objective: IVectorFunction)
         (candidates: Evaluation []) =
 
