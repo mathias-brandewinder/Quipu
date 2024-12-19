@@ -43,7 +43,7 @@ module NelderMead =
 
                     let solution =
                         match solverResult with
-                        | Solution solution -> solution
+                        | Successful solution -> solution
                         | _ -> failwith "unexpected"
 
                     Expect.equal solution.Status Status.Optimal "optimal solution"
@@ -63,7 +63,7 @@ module NelderMead =
 
                     let solution =
                         match solverResult with
-                        | Solution solution -> solution
+                        | Successful solution -> solution
                         | _ -> failwith "unexpected"
 
                     Expect.equal solution.Status Status.Optimal "optimal solution"
@@ -83,7 +83,7 @@ module NelderMead =
 
                     let solution =
                         match solverResult with
-                        | Solution solution -> solution
+                        | Successful solution -> solution
                         | _ -> failwith "unexpected"
 
                     Expect.equal solution.Status Status.Optimal "optimal solution"
@@ -103,7 +103,7 @@ module NelderMead =
 
                     let solution =
                         match solverResult with
-                        | Solution solution -> solution
+                        | Successful solution -> solution
                         | _ -> failwith "unexpected"
 
                     Expect.equal solution.Status Status.Optimal "optimal solution"
@@ -123,7 +123,7 @@ module NelderMead =
 
                     let solution =
                         match solverResult with
-                        | Solution solution -> solution
+                        | Successful solution -> solution
                         | _ -> failwith "unexpected"
 
                     Expect.equal solution.Status Status.Optimal "optimal solution"
@@ -144,7 +144,7 @@ module NelderMead =
 
                     let solution =
                         match solverResult with
-                        | Solution solution -> solution
+                        | Successful solution -> solution
                         | _ -> failwith "unexpected"
 
                     Expect.equal solution.Status Status.Optimal "optimal solution"
@@ -164,7 +164,7 @@ module NelderMead =
 
                     let solution =
                         match solverResult with
-                        | Solution solution -> solution
+                        | Successful solution -> solution
                         | _ -> failwith "unexpected"
 
                     Expect.equal solution.Status Status.Optimal "optimal solution"
@@ -182,7 +182,7 @@ module NelderMead =
 
                     let solution =
                         match solverResult with
-                        | Solution solution -> solution
+                        | Successful solution -> solution
                         | _ -> failwith "unexpected"
 
                     Expect.equal solution.Status Status.Optimal "optimal solution"
@@ -202,7 +202,7 @@ module NelderMead =
 
                     let solution =
                         match solverResult with
-                        | Solution solution -> solution
+                        | Successful solution -> solution
                         | _ -> failwith "unexpected"
 
                     Expect.equal solution.Status Status.Optimal "optimal solution"
@@ -228,7 +228,7 @@ module NelderMead =
 
                     let solution =
                         match solverResult with
-                        | Solution solution -> solution
+                        | Successful solution -> solution
                         | _ -> failwith "unexpected"
 
                     Expect.equal solution.Status Status.Optimal "optimal solution"
@@ -255,7 +255,7 @@ module NelderMead =
 
                     let solution =
                         match solverResult with
-                        | Solution solution -> solution
+                        | Successful solution -> solution
                         | _ -> failwith "unexpected"
 
                     Expect.equal solution.Status Status.Optimal "optimal solution"
@@ -287,7 +287,7 @@ module NelderMead =
 
                     let solution =
                         match solverResult with
-                        | Solution solution -> solution
+                        | Successful solution -> solution
                         | _ -> failwith "unexpected"
 
                     Expect.equal solution.Status Status.Optimal "optimal solution"
@@ -318,7 +318,7 @@ module NelderMead =
 
                     let solution =
                         match solverResult with
-                        | Solution solution -> solution
+                        | Successful solution -> solution
                         | _ -> failwith "unexpected"
 
                     Expect.equal solution.Status Status.Optimal "optimal solution"
@@ -354,7 +354,7 @@ module NelderMead =
 
                     let solution =
                         match solverResult with
-                        | Solution solution -> solution
+                        | Successful solution -> solution
                         | _ -> failwith "unexpected"
 
                     Expect.equal solution.Status Status.Suboptimal ""
@@ -378,7 +378,7 @@ module NelderMead =
 
                     let solution =
                         match solverResult with
-                        | Solution solution -> solution
+                        | Successful solution -> solution
                         | _ -> failwith "unexpected"
 
                     Expect.equal solution.Status Status.Unbounded "Solution should be unbounded"

@@ -43,7 +43,7 @@ module TestFunctions =
 
                 let solution =
                     match solverResult with
-                    | Solution solution -> solution
+                    | Successful solution -> solution
                     | _ -> failwith "unexpected"
 
                 Expect.equal solution.Status Status.Optimal "optimal solution"
@@ -66,7 +66,7 @@ module TestFunctions =
 
                 let solution =
                     match solverResult with
-                    | Solution solution -> solution
+                    | Successful solution -> solution
                     | _ -> failwith "unexpected"
 
                 Expect.equal solution.Status Status.Optimal "optimal solution"

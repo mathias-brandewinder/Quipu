@@ -12,8 +12,17 @@ type Solution = {
     }
 
 type SolverResult =
-    | Solution of Solution
+    | Successful of Solution
     | Abnormal of (float [][])
+    with
+    member this.HasSolution =
+        match this with
+        | Successful _ -> true
+        | Abnormal _ -> false
+    member this.Solution =
+        match this with
+        | Successful solution -> solution
+        | Abnormal _ -> failwith "No solution found."
 
 module Algorithm =
 
@@ -220,7 +229,7 @@ module Algorithm =
                             Candidate = { Value = value; Point = args }
                             Simplex = simplex |> Array.map (fun x -> x.Point)
                         }
-                |> Solution
+                |> Successful
         with
         | :? UnboundedObjective as ex ->
             {
@@ -228,7 +237,7 @@ module Algorithm =
                 Candidate = ex.Data0
                 Simplex = simplex
             }
-            |> Solution
+            |> Successful
         | :? AbnormalConditions ->
             Abnormal simplex
         | _ ->Abnormal simplex
@@ -315,14 +324,14 @@ type NelderMead private (problem: Problem) =
         problem
         |> NelderMead.minimize
         |> function
-            | Solution solution ->
+            | Successful solution ->
                 { solution with
                     Candidate = {
                         solution.Candidate with
                             Value = - solution.Candidate.Value
                         }
                 }
-                |> Solution
+                |> Successful
             | Abnormal simplex -> Abnormal simplex
 
     static member solve (problem: Problem) =

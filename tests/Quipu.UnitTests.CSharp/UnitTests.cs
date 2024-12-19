@@ -1,5 +1,6 @@
 ﻿namespace Quipu.Tests.CSharp;
 
+using System.Net;
 using Quipu;
 
 public class CSharpFluentInterface
@@ -37,42 +38,48 @@ public class CSharpFluentInterface
     [Fact]
     public void Test_One_Parameter()
     {
-        var solution =
+        var result =
             NelderMead
                 .Objective(this.OneParameter)
-                .WithMaximumIterations(10)
+                .WithMaximumIterations(100)
                 .WithTolerance(0.001)
                 .StartFrom(Start.around(100.0))
                 .Minimize();
 
-        Assert.True(true);
+        Assert.True(result.HasSolution);
+        var solution = result.Solution;
+        Assert.Equal(Status.Optimal, solution.Status);
     }
 
     [Fact]
     public void Test_Two_Parameters()
     {
-        var solution =
+        var result =
             NelderMead
                 .Objective(this.TwoParameters)
-                .WithMaximumIterations(10)
+                .WithMaximumIterations(100)
                 .WithTolerance(0.001)
                 .StartFrom(Start.around(new double[] { 100.0, 100.0 }))
                 .Minimize();
 
-        Assert.True(true);
+        Assert.True(result.HasSolution);
+        var solution = result.Solution;
+        Assert.Equal(Status.Optimal, solution.Status);
     }
 
     [Fact]
     public void Test_Three_Parameters()
     {
-        var solution =
+        var result =
             NelderMead
                 .Objective(this.ThreeParameters)
-                .WithMaximumIterations(10)
+                .WithMaximumIterations(100)
                 .WithTolerance(0.001)
                 .StartFrom(Start.around(new double[] { 100.0, 100.0, 100.0 }))
                 .Minimize();
 
-        Assert.True(true);
+        Assert.True(result.HasSolution);
+        var solution = result.Solution;
+        Assert.Equal(Status.Optimal, solution.Status);
     }
 }
