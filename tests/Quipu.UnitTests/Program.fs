@@ -13,5 +13,6 @@ module Program =
             NelderMead.SubOptimalTermination.tests
             Termination.tests
             Simplex.tests
+            HappyPath.BasicConvergence.tests
             ]
         |> runTestsWithCLIArgs [] args

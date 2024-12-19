@@ -9,6 +9,7 @@
     <Compile Include="TestFunctions.fs" />
     <Compile Include="Simplex.fs" />
     <Compile Include="Termination.fs" />
+    <Compile Include="HappyPath.fs" />
     <Compile Include="NelderMead.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
