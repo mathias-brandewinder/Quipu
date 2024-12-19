@@ -25,14 +25,14 @@ type SolverResult =
         | Abnormal _ -> failwith "No solution found."
 
 type Problem = {
-    Objective: IObjective
+    Objective: IVectorFunction
     Configuration: Configuration
     StartingPoint: IStartingPoint
     }
     with
     member this.Dimension =
         this.Objective.Dimension
-    static member defaultCreate(objective: IObjective) =
+    static member defaultCreate(objective: IVectorFunction) =
         {
             Objective = objective
             StartingPoint = Start.zero

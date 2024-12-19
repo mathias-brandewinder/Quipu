@@ -17,7 +17,7 @@ module Algorithm =
 
     let private update
         (config: Updates.Configuration)
-        (objective: IObjective)
+        (objective: IVectorFunction)
         (candidates: Candidate []) =
 
         let dim = objective.Dimension
@@ -145,7 +145,7 @@ module Algorithm =
             raise (AbnormalConditions (candidates |> Array.map (fun c -> c.Point)))
 
     // Verify that the initial simplex is well-formed
-    let preCheck (objective: IObjective) simplex: Candidate [] =
+    let preCheck (objective: IVectorFunction) simplex: Candidate [] =
         let f = objective.Value
         simplex
         |> Array.map (fun pt ->
@@ -161,7 +161,7 @@ module Algorithm =
             candidate
             )
 
-    let search (objective: IObjective) simplex config =
+    let search (objective: IVectorFunction) simplex config =
         let terminator = config.Termination.Termination
         try
             // Is the starting simplex well-formed?

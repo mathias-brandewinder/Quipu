@@ -6,7 +6,7 @@ type NelderMead private (problem: Problem) =
     // C# Fluent Interface
     // -------------------------------------------------------------------------
 
-    static member Objective(f: IObjective) =
+    static member Objective(f: IVectorFunction) =
         NelderMead.objective f
         |> NelderMead
 
@@ -62,7 +62,7 @@ type NelderMead private (problem: Problem) =
             problem with
                 Objective =
                     problem.Objective
-                    |> Objective.negate
+                    |> Vectorize.negate
             }
         problem
         |> NelderMead.minimize
@@ -81,24 +81,24 @@ type NelderMead private (problem: Problem) =
         problem
         |> NelderMead.minimize
 
-    static member objective (f: IObjective) =
+    static member objective (f: IVectorFunction) =
         f
         |> Problem.defaultCreate
 
     static member objective (f: float -> float) =
-        Objective.from f
+        Vectorize.from f
         |> Problem.defaultCreate
 
     static member objective (f: (float * float) -> float) =
-        Objective.from f
+        Vectorize.from f
         |> Problem.defaultCreate
 
     static member objective (f: (float * float * float) -> float) =
-        Objective.from f
+        Vectorize.from f
         |> Problem.defaultCreate
 
     static member objective (dim: int, f: float[] -> float) =
-        Objective.from (dim, f)
+        Vectorize.from (dim, f)
         |> Problem.defaultCreate
 
     static member withConfiguration (config: Configuration) (problem: Problem) =
