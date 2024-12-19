@@ -15,7 +15,7 @@
   <ItemGroup>
     <Compile Include="Simplex.fs" />
     <Compile Include="StartingPoint.fs" />
-    <Compile Include="Objective.fs" />
+    <Compile Include="VectorizedFunctions.fs" />
     <Compile Include="Configuration.fs" />
     <Compile Include="Core.fs" />
     <Compile Include="Algorithm.fs" />
