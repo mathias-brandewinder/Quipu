@@ -7,7 +7,7 @@ type Status =
 
 type Solution = {
     Status: Status
-    Candidate: Candidate
+    Candidate: Evaluation
     Simplex: float [][]
     }
 

@@ -4,7 +4,7 @@ namespace Quipu
 /// Inspired by https://en.wikipedia.org/wiki/Nelder%E2%80%93Mead_method
 module Algorithm =
 
-    exception private UnboundedObjective of Candidate
+    exception private UnboundedObjective of Evaluation
     exception private AbnormalConditions of float [][]
 
     let private evaluate f (x: float []) =
@@ -12,13 +12,13 @@ module Algorithm =
         // if the lowest value is -infinity, there is no solution:
         // the problem / objective is unbounded.
         if value = System.Double.NegativeInfinity
-        then raise (UnboundedObjective { Value = System.Double.NegativeInfinity; Point = x })
-        else { Point = x; Value = f x }
+        then raise (UnboundedObjective { Value = System.Double.NegativeInfinity; Arguments = x })
+        else { Arguments = x; Value = f x }
 
     let private update
         (config: Updates.Configuration)
         (objective: IVectorFunction)
-        (candidates: Candidate []) =
+        (candidates: Evaluation []) =
 
         let dim = objective.Dimension
         let f = objective.Value
@@ -39,7 +39,7 @@ module Algorithm =
         let centroid =
             Array.init dim (fun col ->
                 bestCandidates
-                |> Array.averageBy(fun pt -> pt.Point[col])
+                |> Array.averageBy(fun pt -> pt.Arguments[col])
                 )
 
         let shrink () =
@@ -53,13 +53,13 @@ module Algorithm =
                     let best = ordered.[0]
                     let shrunk =
                         Array.init dim (fun col ->
-                            best.Point[col] + config.Sigma * (pt.Point[col] - best.Point[col])
+                            best.Arguments[col] + config.Sigma * (pt.Arguments[col] - best.Arguments[col])
                             )
                         |> eval
                     // enforce that shrinking produces a valid simplex
                     if shrunk.IsFeasible
                     then shrunk
-                    else raise (AbnormalConditions (candidates |> Array.map (fun c -> c.Point)))
+                    else raise (AbnormalConditions (candidates |> Array.map (fun c -> c.Arguments)))
                 )
 
         // 3) reflection
@@ -67,7 +67,7 @@ module Algorithm =
 
         let reflected =
             Array.init dim (fun col ->
-                centroid[col] + config.Alpha * (centroid[col] - worst.Point[col])
+                centroid[col] + config.Alpha * (centroid[col] - worst.Arguments[col])
                 )
             |> eval
 
@@ -91,7 +91,7 @@ module Algorithm =
         then
             let expanded =
                 Array.init dim (fun col ->
-                    centroid[col] + config.Gamma * (reflected.Point[col] - centroid[col])
+                    centroid[col] + config.Gamma * (reflected.Arguments[col] - centroid[col])
                     )
                 |> eval
             if
@@ -109,7 +109,7 @@ module Algorithm =
         then
             let contractedOutside =
                 Array.init dim (fun col ->
-                    centroid[col] + config.Rho * (reflected.Point[col] - centroid[col])
+                    centroid[col] + config.Rho * (reflected.Arguments[col] - centroid[col])
                     )
                 |> eval
             if
@@ -127,7 +127,7 @@ module Algorithm =
         then
             let contractedInside =
                 Array.init dim (fun col ->
-                    centroid[col] + config.Rho * (worst.Point[col] - centroid[col])
+                    centroid[col] + config.Rho * (worst.Arguments[col] - centroid[col])
                     )
                 |> eval
             if
@@ -142,10 +142,10 @@ module Algorithm =
                 shrink ()
         else
             // TODO, check: is this branch even possible?
-            raise (AbnormalConditions (candidates |> Array.map (fun c -> c.Point)))
+            raise (AbnormalConditions (candidates |> Array.map (fun c -> c.Arguments)))
 
     // Verify that the initial simplex is well-formed
-    let preCheck (objective: IVectorFunction) simplex: Candidate [] =
+    let preCheck (objective: IVectorFunction) simplex: Evaluation [] =
         let f = objective.Value
         simplex
         |> Array.map (fun pt ->
@@ -184,28 +184,28 @@ module Algorithm =
                 let bestSolution =
                     simplex
                     |> Array.minBy (fun x -> x.Value)
-                let args = bestSolution.Point
+                let args = bestSolution.Arguments
                 let value = bestSolution.Value
                 match config.Termination.MaximumIterations with
                 | None ->
                     {
                         Status = Optimal
-                        Candidate = { Value = value; Point = args }
-                        Simplex = simplex |> Array.map (fun x -> x.Point)
+                        Candidate = { Value = value; Arguments = args }
+                        Simplex = simplex |> Array.map (fun x -> x.Arguments)
                     }
                 | Some maxIters ->
                     if iter < maxIters
                     then
                         {
                             Status = Optimal
-                            Candidate = { Value = value; Point = args }
-                            Simplex = simplex |> Array.map (fun x -> x.Point)
+                            Candidate = { Value = value; Arguments = args }
+                            Simplex = simplex |> Array.map (fun x -> x.Arguments)
                         }
                     else
                         {
                             Status = Suboptimal
-                            Candidate = { Value = value; Point = args }
-                            Simplex = simplex |> Array.map (fun x -> x.Point)
+                            Candidate = { Value = value; Arguments = args }
+                            Simplex = simplex |> Array.map (fun x -> x.Arguments)
                         }
                 |> Successful
         with

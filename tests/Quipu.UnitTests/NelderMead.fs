@@ -261,7 +261,7 @@ module NelderMead =
                     Expect.equal solution.Status Status.Optimal "optimal solution"
 
                     let value = solution.Candidate.Value
-                    let args = solution.Candidate.Point
+                    let args = solution.Candidate.Arguments
 
                     Expect.isTrue (10.0 - tolerance <= value && value <= 10.0 + tolerance) "maximum should be near 10.0"
                     Expect.isTrue (1.0 - tolerance <= args[0] && args[0] <= 1.0 + tolerance) "maximum should be near 10.0"
@@ -293,7 +293,7 @@ module NelderMead =
                     Expect.equal solution.Status Status.Optimal "optimal solution"
 
                     let value = solution.Candidate.Value
-                    let args = solution.Candidate.Point
+                    let args = solution.Candidate.Arguments
 
                     Expect.isTrue (10.0 - tolerance <= value && value <= 10.0 + tolerance) "maximum should be near 10.0"
                     Expect.isTrue (1.0 - tolerance <= args[0] && args[0] <= 1.0 + tolerance) "maximum should be near 10.0"

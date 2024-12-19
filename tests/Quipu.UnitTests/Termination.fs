@@ -15,8 +15,8 @@ module Termination =
                 let terminate = Termination.tolerance tolerance
                 let simplex =
                     [|
-                        { Point = [| 0.0; 0.0 |]; Value = 0.0 }
-                        { Point = [| 1.0; 0.0 |]; Value = tolerance + 0.1 }
+                        { Arguments = [| 0.0; 0.0 |]; Value = 0.0 }
+                        { Arguments = [| 1.0; 0.0 |]; Value = tolerance + 0.1 }
                     |]
 
                 let shouldTerminate = terminate.HasTerminated simplex
@@ -30,8 +30,8 @@ module Termination =
                 let terminate = Termination.tolerance tolerance
                 let simplex =
                     [|
-                        { Point = [| 0.0; 0.0 |]; Value = 0.0 }
-                        { Point = [| tolerance + 0.1; 0.0 |]; Value = 0.1 }
+                        { Arguments = [| 0.0; 0.0 |]; Value = 0.0 }
+                        { Arguments = [| tolerance + 0.1; 0.0 |]; Value = 0.1 }
                     |]
 
                 let shouldTerminate = terminate.HasTerminated simplex
@@ -45,8 +45,8 @@ module Termination =
                 let terminate = Termination.tolerance tolerance
                 let simplex =
                     [|
-                        { Point = [| 0.0; 0.0 |]; Value = 0.0 }
-                        { Point = [| 0.0 + tolerance / 2.0; 0.0 + tolerance / 2.0 |]; Value = 0.0 + tolerance / 2.0 }
+                        { Arguments = [| 0.0; 0.0 |]; Value = 0.0 }
+                        { Arguments = [| 0.0 + tolerance / 2.0; 0.0 + tolerance / 2.0 |]; Value = 0.0 + tolerance / 2.0 }
                     |]
 
                 let shouldTerminate = terminate.HasTerminated simplex

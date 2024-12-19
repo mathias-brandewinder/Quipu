@@ -20,8 +20,9 @@ module Updates =
             Sigma = 0.5
             }
 
-type Candidate = {
-    Point: float []
+/// Value of a function, evaluated for an array of Arguments.
+type Evaluation = {
+    Arguments: float []
     Value: float
     }
     with
@@ -31,7 +32,7 @@ type Candidate = {
         not (this.IsInfeasible)
 
 type ITerminator =
-    abstract member HasTerminated: Candidate [] -> bool
+    abstract member HasTerminated: Evaluation [] -> bool
 
 module Termination =
 
@@ -43,7 +44,7 @@ module Termination =
 
     let tolerance (tolerance: float) =
         { new ITerminator with
-            member this.HasTerminated(candidates: Candidate array): bool =
+            member this.HasTerminated(candidates: Evaluation array): bool =
                 // The function value must be within the tolerance bounds
                 // for every candidate in the simplex.
                 let min, max =
@@ -53,12 +54,12 @@ module Termination =
                 &&
                 // Every argument must be within the tolerance bounds
                 // for every candidate in the simplex.
-                let dim = candidates[0].Point.Length
+                let dim = candidates[0].Arguments.Length
                 seq { 0 .. dim - 1 }
                 |> Seq.forall (fun i ->
                     let min, max =
                         candidates
-                        |> minMax (fun point -> point.Point.[i])
+                        |> minMax (fun point -> point.Arguments.[i])
                     max - min < tolerance
                     )
         }

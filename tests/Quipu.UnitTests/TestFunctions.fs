@@ -48,7 +48,7 @@ module TestFunctions =
 
                 Expect.equal solution.Status Status.Optimal "optimal solution"
 
-                let value, point = solution.Candidate.Value, solution.Candidate.Point
+                let value, point = solution.Candidate.Value, solution.Candidate.Arguments
                 Expect.floatClose { absolute = tolerance; relative = tolerance } value 0.0 "function value"
 
                 Expect.floatClose { absolute = tolerance; relative = tolerance } point[0] 3.0 "function x0"
@@ -71,7 +71,7 @@ module TestFunctions =
 
                 Expect.equal solution.Status Status.Optimal "optimal solution"
 
-                let value, point = solution.Candidate.Value, solution.Candidate.Point
+                let value, point = solution.Candidate.Value, solution.Candidate.Arguments
 
 
                 Expect.floatClose { absolute = tolerance; relative = tolerance } value 0.0 "function value"
