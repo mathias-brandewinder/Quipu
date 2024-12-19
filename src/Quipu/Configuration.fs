@@ -18,17 +18,6 @@ type UpdateParameters = {
         Sigma = 0.5
         }
 
-/// Value of a function, evaluated for an array of Arguments.
-type Evaluation = {
-    Arguments: float []
-    Value: float
-    }
-    with
-    member this.IsInfeasible =
-        System.Double.IsNaN (this.Value)
-    member this.IsFeasible =
-        not (this.IsInfeasible)
-
 type ITerminator =
     abstract member HasTerminated: Evaluation [] -> bool
 

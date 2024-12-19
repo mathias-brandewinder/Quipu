@@ -6,6 +6,17 @@ type IVectorFunction =
     abstract member Dimension: int
     abstract member Value: float [] -> float
 
+/// Value of a function, evaluated for an array of Arguments.
+type Evaluation = {
+    Arguments: float []
+    Value: float
+    }
+    with
+    member this.IsInfeasible =
+        System.Double.IsNaN (this.Value)
+    member this.IsFeasible =
+        not (this.IsInfeasible)
+
 /// Utilities to convert methods or functions into an IVectorFunction.
 type Vectorize () =
     static member from (f: float -> float) =
