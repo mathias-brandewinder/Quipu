@@ -22,7 +22,7 @@ module HappyPath =
         let expectedSolution =
             Array.init dim (fun i -> float (i + 1))
 
-        member this.testFunction =
+        member this.objective =
             fun (xs: float []) ->
                 [ 0 .. (dim - 1) ]
                 |> List.sumBy (fun i ->
@@ -44,19 +44,15 @@ module HappyPath =
 
     module BasicConvergence =
 
-        // We test variations of minimize f(x) = x ^ 2,
-        // which has a minimum value of 0.0 for x = 0.0.
-        let expected = 0.0
-
         type TestClass() =
             member this.OneParameter(x: float) =
-                SimpleTest(1).testFunction [| x |]
+                SimpleTest(1).objective [| x |]
             member this.TwoParameters(x: float, y: float) =
-                SimpleTest(2).testFunction [| x; y |]
+                SimpleTest(2).objective [| x; y |]
             member this.ThreeParameters(x: float, y: float, z: float) =
-                SimpleTest(3).testFunction [| x; y; z |]
+                SimpleTest(3).objective [| x; y; z |]
             static member StaticOne(x: float) =
-                SimpleTest(1).testFunction [| x |]
+                SimpleTest(1).objective [| x |]
 
         [<Tests>]
         let tests =
@@ -64,7 +60,7 @@ module HappyPath =
 
                 test "function, 1 argument" {
 
-                    let f x = SimpleTest(1).testFunction [| x |]
+                    let f x = SimpleTest(1).objective [| x |]
 
                     let solverResult =
                         NelderMead.objective f
@@ -80,7 +76,7 @@ module HappyPath =
 
                 test "function, tuple" {
 
-                    let f (x, y) = SimpleTest(2).testFunction [| x; y |]
+                    let f (x, y) = SimpleTest(2).objective [| x; y |]
 
                     let solverResult =
                         NelderMead.objective f
@@ -96,7 +92,7 @@ module HappyPath =
 
                 test "function, truple" {
 
-                    let f (x, y, z) = SimpleTest(3).testFunction [| x; y; z |]
+                    let f (x, y, z) = SimpleTest(3).objective [| x; y; z |]
 
                     let solverResult =
                         NelderMead.objective f
@@ -113,7 +109,7 @@ module HappyPath =
                 test "function, array of arguments" {
 
                     let dim = 5
-                    let f (x: float []) = SimpleTest(dim).testFunction x
+                    let f (x: float []) = SimpleTest(dim).objective x
 
                     let solverResult =
                         NelderMead.objective (dim, f)
@@ -191,7 +187,7 @@ module HappyPath =
 
                 test "function, tuple, starting from simplex" {
 
-                    let f (x, y) = SimpleTest(2).testFunction [| x; y |]
+                    let f (x, y) = SimpleTest(2).objective [| x; y |]
 
                     let solverResult =
                         NelderMead.objective f
