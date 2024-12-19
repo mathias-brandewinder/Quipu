@@ -111,10 +111,7 @@ type NelderMead private (problem: Problem) =
         { problem with
             Configuration = {
                 problem.Configuration with
-                    Termination = {
-                        problem.Configuration.Termination with
-                            MaximumIterations = Some iterations
-                        }
+                    MaximumIterations = Some iterations
                 }
         }
 
@@ -122,9 +119,6 @@ type NelderMead private (problem: Problem) =
         { problem with
             Configuration = {
                 problem.Configuration with
-                    Termination = {
-                        problem.Configuration.Termination with
-                            Termination = Termination.tolerance tolerance
-                        }
+                    Termination = Termination.tolerance tolerance
                 }
         }

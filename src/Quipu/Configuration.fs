@@ -64,22 +64,14 @@ module Termination =
                     )
         }
 
-    type Configuration = {
-        Termination: ITerminator
-        MaximumIterations: Option<int>
-        }
-        with
-        static member defaultValue = {
-            Termination = tolerance 0.001
-            MaximumIterations = None
-            }
-
 type Configuration = {
     Updates: Updates.Configuration
-    Termination: Termination.Configuration
+    Termination: ITerminator
+    MaximumIterations: Option<int>
     }
     with
     static member defaultValue = {
         Updates = Updates.Configuration.defaultValue
-        Termination = Termination.Configuration.defaultValue
+        Termination = Termination.tolerance 0.001
+        MaximumIterations = None
         }

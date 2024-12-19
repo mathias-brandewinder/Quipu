@@ -11,10 +11,8 @@ type Benchmarks () =
 
     let solverConfiguration =
         { Configuration.defaultValue with
-            Termination = {
-                MaximumIterations = None
-                Termination = Termination.tolerance tolerance
-                }
+            MaximumIterations = None
+            Termination = Termination.tolerance tolerance
         }
 
     [<Benchmark(Description="Beale function")>]

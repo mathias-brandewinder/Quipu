@@ -162,7 +162,7 @@ module Algorithm =
             )
 
     let search (objective: IVectorFunction) simplex config =
-        let terminator = config.Termination.Termination
+        let terminator = config.Termination
         try
             // Is the starting simplex well-formed?
             preCheck objective simplex
@@ -175,7 +175,7 @@ module Algorithm =
             |> Seq.skipWhile (fun (iter, simplex) ->
                 simplex |> terminator.HasTerminated |> not
                 &&
-                config.Termination.MaximumIterations
+                config.MaximumIterations
                 |> Option.map (fun maxIter -> iter < maxIter)
                 |> Option.defaultValue true
                 )
@@ -186,7 +186,7 @@ module Algorithm =
                     |> Array.minBy (fun x -> x.Value)
                 let args = bestSolution.Arguments
                 let value = bestSolution.Value
-                match config.Termination.MaximumIterations with
+                match config.MaximumIterations with
                 | None ->
                     {
                         Status = Optimal

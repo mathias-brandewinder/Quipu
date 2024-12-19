@@ -8,11 +8,7 @@ module NelderMead =
     let tolerance = 0.01
     let config =
         { Configuration.defaultValue with
-            Termination = {
-                Configuration.defaultValue.Termination with
-                    Termination = Termination.tolerance tolerance
-                    MaximumIterations = None
-                }
+            Termination = Termination.tolerance tolerance
         }
 
     module BasicConvergence =
@@ -332,10 +328,7 @@ module NelderMead =
 
         let config =
             { config with
-                Termination = {
-                    config.Termination with
-                        MaximumIterations = Some 1
-                }
+                MaximumIterations = Some 1
             }
 
         [<Tests>]
