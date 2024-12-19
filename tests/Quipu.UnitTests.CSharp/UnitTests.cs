@@ -43,7 +43,7 @@ public class CSharpFluentInterface
                 .Objective(this.OneParameter)
                 .WithMaximumIterations(100)
                 .WithTolerance(0.001)
-                .StartFrom(Start.around(100.0))
+                .StartFrom(Start.Around(100.0))
                 .Minimize();
 
         Assert.True(result.HasSolution);
@@ -59,7 +59,7 @@ public class CSharpFluentInterface
                 .Objective(this.TwoParameters)
                 .WithMaximumIterations(100)
                 .WithTolerance(0.001)
-                .StartFrom(Start.around(new double[] { 100.0, 100.0 }))
+                .StartFrom(Start.Around(new double[] { 100.0, 100.0 }))
                 .Minimize();
 
         Assert.True(result.HasSolution);
@@ -75,7 +75,7 @@ public class CSharpFluentInterface
                 .Objective(this.ThreeParameters)
                 .WithMaximumIterations(100)
                 .WithTolerance(0.001)
-                .StartFrom(Start.around(new double[] { 100.0, 100.0, 100.0 }))
+                .StartFrom(Start.Around(new double[] { 100.0, 100.0, 100.0 }))
                 .Minimize();
 
         Assert.True(result.HasSolution);

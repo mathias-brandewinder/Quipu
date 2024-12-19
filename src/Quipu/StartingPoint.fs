@@ -12,6 +12,7 @@ type Start =
                 |> Simplex.vertices
         }
 
+    [<CompiledName("Around")>]
     static member around (startingPoint: seq<float>) =
         { new IStartingPoint with
             member this.create (dim: int): float[][] =
@@ -22,6 +23,7 @@ type Start =
                 |> Simplex.vertices
         }
 
+    [<CompiledName("Around")>]
     static member around (startingPoint: seq<float>, radius: float) =
         { new IStartingPoint with
             member this.create (dim: int): float[][] =
@@ -32,6 +34,7 @@ type Start =
                 |> Simplex.vertices
         }
 
+    [<CompiledName("Around")>]
     static member around (startingPoint: float) =
         { new IStartingPoint with
             member this.create (dim: int): float[][] =
@@ -42,6 +45,7 @@ type Start =
                 |> Simplex.vertices
         }
 
+    [<CompiledName("At")>]
     static member at (startingPoint: #seq<#seq<float>>) =
         { new IStartingPoint with
             member this.create (dim: int): float[][] =
