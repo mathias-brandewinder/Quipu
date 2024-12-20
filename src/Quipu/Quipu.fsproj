@@ -20,6 +20,7 @@
     <Compile Include="Core.fs" />
     <Compile Include="Algorithm.fs" />
     <Compile Include="NelderMead.fs" />
+    <Compile Include="NelderMead.CSharp.fs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../../LICENSE" Pack="true" PackagePath="/" />

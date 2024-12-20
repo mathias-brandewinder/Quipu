@@ -121,6 +121,8 @@ module NelderMead =
 
     module Fluent =
 
+        open Quipu.CSharp
+
         [<Tests>]
         let tests =
             testList "fluent interface" [

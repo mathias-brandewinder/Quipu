@@ -1,7 +1,7 @@
 ﻿namespace Quipu.Tests.CSharp;
 
 using System.Net;
-using Quipu;
+using Quipu.CSharp;
 
 public class CSharpFluentInterface
 {
