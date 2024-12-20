@@ -7,12 +7,11 @@ module Program =
     [<EntryPoint>]
     let  main args =
         testList "" [
-            NelderMead.BasicConvergence.tests
-            NelderMead.PartiallyDefinedFunctions.tests
+            HappyPath.BasicConvergence.tests
+            NelderMead.EdgeCaseFunctions.tests
             NelderMead.AbnormalTermination.tests
             NelderMead.SubOptimalTermination.tests
             Termination.tests
             Simplex.tests
-            HappyPath.BasicConvergence.tests
             ]
         |> runTestsWithCLIArgs [] args

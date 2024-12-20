@@ -11,19 +11,16 @@ module NelderMead =
             Termination = Termination.tolerance tolerance
         }
 
-    module BasicConvergence =
-
-        // We test variations of minimize f(x) = x ^ 2,
-        // which has a minimum value of 0.0 for x = 0.0.
-        let expected = 0.0
+    module EdgeCaseFunctions =
 
         [<Tests>]
         let tests =
-            testList "basic convergence tests" [
+            testList "convergence tests for edge case functions" [
 
                 test "constant function, 1 argument" {
 
-                    let f (x: float) = 0.0
+                    let constant = 42.0
+                    let f (x: float) = constant
 
                     let solverResult =
                         NelderMead.objective f
@@ -31,14 +28,63 @@ module NelderMead =
                         |> NelderMead.startFrom (Start.around 100.0)
                         |> NelderMead.solve
 
-                    let solution =
-                        match solverResult with
-                        | Successful solution -> solution
-                        | _ -> failwith "unexpected"
+                    if solverResult.HasSolution
+                    then
+                        let solution = solverResult.Solution
+                        Expect.isTrue(solution.Status = Status.Optimal) "solution should be optimal"
+                        let actual = solution.Candidate.Value
+                        Expect.isTrue (constant - tolerance <= actual && actual <= constant + tolerance) $"minimum should be near {constant}"
+                    else failwith "unexpected"
+                    }
 
-                    Expect.equal solution.Status Status.Optimal "optimal solution"
-                    let actual = solution.Candidate.Value
-                    Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
+                test "function defined over positive numbers only (sqrt)" {
+
+                    let f x = sqrt x
+
+                    let solverResult =
+                        NelderMead.objective f
+                        |> NelderMead.withConfiguration config
+                        |> NelderMead.startFrom (Start.around 10.0)
+                        |> NelderMead.solve
+
+                    if solverResult.HasSolution
+                    then
+                        let solution = solverResult.Solution
+                        Expect.isTrue(solution.Status = Status.Optimal) "solution should be optimal"
+                        // function value
+                        let expected = 0.0
+                        let actual = solution.Candidate.Value
+                        Expect.isTrue (expected - tolerance <= actual && actual <= expected + tolerance) $"minimum should be near {expected}"
+                        // function arguments
+                        let expected = 0.0
+                        let actual = solution.Candidate.Arguments.[0]
+                        Expect.isTrue (expected - tolerance <= actual && actual <= expected + tolerance) $"argmin should be near {expected}"
+                    else failwith "unexpected"
+                    }
+
+                test "unbounded function defined over positive numbers only (log)" {
+
+                    let f x = log x
+
+                    let solverResult =
+                        NelderMead.objective f
+                        |> NelderMead.withConfiguration config
+                        |> NelderMead.startFrom (Start.around 10.0)
+                        |> NelderMead.solve
+
+                    if solverResult.HasSolution
+                    then
+                        let solution = solverResult.Solution
+                        Expect.isTrue(solution.Status = Status.Unbounded) "solution should be unbounded"
+                        // function value
+                        let expected = System.Double.NegativeInfinity
+                        let actual = solution.Candidate.Value
+                        Expect.isTrue (expected - tolerance <= actual && actual <= expected + tolerance) $"minimum should be near {expected}"
+                        // function arguments
+                        let expected = 0.0
+                        let actual = solution.Candidate.Arguments.[0]
+                        Expect.isTrue (expected - tolerance <= actual && actual <= expected + tolerance) $"argmin should be near {expected}"
+                    else failwith "unexpected"
                     }
         ]
 
@@ -104,34 +150,6 @@ module NelderMead =
                     Expect.isTrue (1.0 - tolerance <= args[0] && args[0] <= 1.0 + tolerance) "maximum should be near 10.0"
                     }
             ]
-
-    module PartiallyDefinedFunctions =
-
-        [<Tests>]
-        let tests =
-            testList "partially defined functions tests" [
-
-                test "function defined over positive numbers only" {
-
-                    let f x = sqrt x
-
-                    let solverResult =
-                        NelderMead.objective f
-                        |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (Start.around 10.0)
-                        |> NelderMead.solve
-
-                    let solution =
-                        match solverResult with
-                        | Successful solution -> solution
-                        | _ -> failwith "unexpected"
-
-                    Expect.equal solution.Status Status.Optimal "optimal solution"
-                    let actual = solution.Candidate.Value
-                    Expect.isTrue (0.0 - tolerance <= actual && actual <= 0.0 + tolerance) "minimum should be near 0.0"
-                    }
-                ]
-
 
     module SubOptimalTermination =
 
