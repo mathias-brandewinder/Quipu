@@ -16,7 +16,7 @@ module HappyPath =
     // f(x) = (x1 - 1) ^ 2 + (x2 - 2) ^ 2 ... + (xdim - dim) ^2 + 42
     // The function has a unique minimum, 42, reached for
     // x1 = 1, x2 = 2, ... xdim = dim
-    type SimpleTest (dim: int) =
+    type SimpleMinimization (dim: int) =
 
         let expectedMinimum = 42.0
         let expectedSolution =
@@ -42,168 +42,266 @@ module HappyPath =
                 let actual = solution.Candidate.Arguments.[i]
                 Expect.isTrue (expected - tolerance <= actual && actual <= expected + tolerance) $"argument {i} should be near {expected}, actual {actual}"
 
+    type SimpleMaximization (dim: int) =
+
+        let expectedMinimum = 42.0
+        let expectedSolution =
+            Array.init dim (fun i -> float (i + 1))
+
+        member this.objective =
+            fun (xs: float []) ->
+                [ 0 .. (dim - 1) ]
+                |> List.sumBy (fun i ->
+                    pown (xs.[i] - float (i + 1)) 2
+                    )
+                |> fun total -> - total + expectedMinimum
+
+        member this.verify (solution: Solution) =
+            Expect.isTrue (solution.Status = Status.Optimal) "solution should be optimal"
+            // verify value
+            let expected = expectedMinimum
+            let actual = solution.Candidate.Value
+            Expect.isTrue (expected - tolerance <= actual && actual <= expected + tolerance) $"minimum should be near {expected}, actual {actual}"
+            // verify function arguments
+            for i in 0 .. (dim - 1) do
+                let expected = expectedSolution.[i]
+                let actual = solution.Candidate.Arguments.[i]
+                Expect.isTrue (expected - tolerance <= actual && actual <= expected + tolerance) $"argument {i} should be near {expected}, actual {actual}"
+
     module BasicConvergence =
 
         type TestClass() =
             member this.OneParameter(x: float) =
-                SimpleTest(1).objective [| x |]
+                SimpleMinimization(1).objective [| x |]
             member this.TwoParameters(x: float, y: float) =
-                SimpleTest(2).objective [| x; y |]
+                SimpleMinimization(2).objective [| x; y |]
             member this.ThreeParameters(x: float, y: float, z: float) =
-                SimpleTest(3).objective [| x; y; z |]
+                SimpleMinimization(3).objective [| x; y; z |]
             static member StaticOne(x: float) =
-                SimpleTest(1).objective [| x |]
+                SimpleMinimization(1).objective [| x |]
 
         [<Tests>]
         let tests =
-            testList "happy path tests" [
 
-                test "function, 1 argument" {
+            testList "happy path" [
 
-                    let f x = SimpleTest(1).objective [| x |]
+                testList "minimization" [
 
-                    let solverResult =
-                        NelderMead.objective f
-                        |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (Start.around 100.0)
-                        |> NelderMead.solve
+                    test "function, 1 argument" {
 
-                    if solverResult.HasSolution
-                    then
-                        SimpleTest(1).verify solverResult.Solution
-                    else failwith "unexpected"
-                    }
+                        let f x = SimpleMinimization(1).objective [| x |]
 
-                test "function, tuple" {
+                        let solverResult =
+                            NelderMead.objective f
+                            |> NelderMead.withConfiguration config
+                            |> NelderMead.startFrom (Start.around 100.0)
+                            |> NelderMead.solve
 
-                    let f (x, y) = SimpleTest(2).objective [| x; y |]
+                        if solverResult.HasSolution
+                        then
+                            SimpleMinimization(1).verify solverResult.Solution
+                        else failwith "unexpected"
+                        }
 
-                    let solverResult =
-                        NelderMead.objective f
-                        |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (Start.around [ 100.0; 100.0 ])
-                        |> NelderMead.solve
+                    test "function, tuple" {
 
-                    if solverResult.HasSolution
-                    then
-                        SimpleTest(2).verify solverResult.Solution
-                    else failwith "unexpected"
-                    }
+                        let f (x, y) = SimpleMinimization(2).objective [| x; y |]
 
-                test "function, truple" {
+                        let solverResult =
+                            NelderMead.objective f
+                            |> NelderMead.withConfiguration config
+                            |> NelderMead.startFrom (Start.around [ 100.0; 100.0 ])
+                            |> NelderMead.solve
 
-                    let f (x, y, z) = SimpleTest(3).objective [| x; y; z |]
+                        if solverResult.HasSolution
+                        then
+                            SimpleMinimization(2).verify solverResult.Solution
+                        else failwith "unexpected"
+                        }
 
-                    let solverResult =
-                        NelderMead.objective f
-                        |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (Start.around [ 100.0; 100.0; 100.0 ])
-                        |> NelderMead.solve
+                    test "function, truple" {
 
-                    if solverResult.HasSolution
-                    then
-                        SimpleTest(2).verify solverResult.Solution
-                    else failwith "unexpected"
-                    }
+                        let f (x, y, z) = SimpleMinimization(3).objective [| x; y; z |]
 
-                test "function, array of arguments" {
+                        let solverResult =
+                            NelderMead.objective f
+                            |> NelderMead.withConfiguration config
+                            |> NelderMead.startFrom (Start.around [ 100.0; 100.0; 100.0 ])
+                            |> NelderMead.solve
 
-                    let dim = 5
-                    let f (x: float []) = SimpleTest(dim).objective x
+                        if solverResult.HasSolution
+                        then
+                            SimpleMinimization(2).verify solverResult.Solution
+                        else failwith "unexpected"
+                        }
 
-                    let solverResult =
-                        NelderMead.objective (dim, f)
-                        |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (Start.around (Array.create 5 100.0))
-                        |> NelderMead.solve
+                    test "function, array of arguments" {
 
-                    if solverResult.HasSolution
-                    then
-                        SimpleTest(dim).verify solverResult.Solution
-                    else failwith "unexpected"
-                    }
+                        let dim = 5
+                        let f (x: float []) = SimpleMinimization(dim).objective x
 
-                test "method, 1 argument" {
+                        let solverResult =
+                            NelderMead.objective (dim, f)
+                            |> NelderMead.withConfiguration config
+                            |> NelderMead.startFrom (Start.around (Array.create 5 100.0))
+                            |> NelderMead.solve
 
-                    let testClass = TestClass()
+                        if solverResult.HasSolution
+                        then
+                            SimpleMinimization(dim).verify solverResult.Solution
+                        else failwith "unexpected"
+                        }
 
-                    let solverResult =
-                        NelderMead.objective testClass.OneParameter
-                        |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (Start.around 100.0)
-                        |> NelderMead.solve
+                    test "method, 1 argument" {
 
-                    if solverResult.HasSolution
-                    then
-                        SimpleTest(1).verify solverResult.Solution
-                    else failwith "unexpected"
-                    }
+                        let testClass = TestClass()
 
-                test "method, 2 arguments" {
+                        let solverResult =
+                            NelderMead.objective testClass.OneParameter
+                            |> NelderMead.withConfiguration config
+                            |> NelderMead.startFrom (Start.around 100.0)
+                            |> NelderMead.solve
 
-                    let testClass = TestClass()
+                        if solverResult.HasSolution
+                        then
+                            SimpleMinimization(1).verify solverResult.Solution
+                        else failwith "unexpected"
+                        }
 
-                    let solverResult =
-                        NelderMead.objective testClass.TwoParameters
-                        |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (Start.around [ 100.0; 100.0 ])
-                        |> NelderMead.solve
+                    test "method, 2 arguments" {
 
-                    if solverResult.HasSolution
-                    then
-                        SimpleTest(2).verify solverResult.Solution
-                    else failwith "unexpected"
-                    }
+                        let testClass = TestClass()
 
-                test "method, 3 arguments" {
+                        let solverResult =
+                            NelderMead.objective testClass.TwoParameters
+                            |> NelderMead.withConfiguration config
+                            |> NelderMead.startFrom (Start.around [ 100.0; 100.0 ])
+                            |> NelderMead.solve
 
-                    let testClass = TestClass()
+                        if solverResult.HasSolution
+                        then
+                            SimpleMinimization(2).verify solverResult.Solution
+                        else failwith "unexpected"
+                        }
 
-                    let solverResult =
-                        NelderMead.objective testClass.ThreeParameters
-                        |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (Start.around [ 100.0; 100.0; 100.0 ])
-                        |> NelderMead.solve
+                    test "method, 3 arguments" {
 
-                    if solverResult.HasSolution
-                    then
-                        SimpleTest(3).verify solverResult.Solution
-                    else failwith "unexpected"
-                    }
+                        let testClass = TestClass()
 
-                test "static method, 1 argument" {
+                        let solverResult =
+                            NelderMead.objective testClass.ThreeParameters
+                            |> NelderMead.withConfiguration config
+                            |> NelderMead.startFrom (Start.around [ 100.0; 100.0; 100.0 ])
+                            |> NelderMead.solve
 
-                    let solverResult =
-                        NelderMead.objective TestClass.StaticOne
-                        |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (Start.around 100.0)
-                        |> NelderMead.solve
+                        if solverResult.HasSolution
+                        then
+                            SimpleMinimization(3).verify solverResult.Solution
+                        else failwith "unexpected"
+                        }
 
-                    if solverResult.HasSolution
-                    then
-                        SimpleTest(1).verify solverResult.Solution
-                    else failwith "unexpected"
-                    }
+                    test "static method, 1 argument" {
 
-                test "function, tuple, starting from simplex" {
+                        let solverResult =
+                            NelderMead.objective TestClass.StaticOne
+                            |> NelderMead.withConfiguration config
+                            |> NelderMead.startFrom (Start.around 100.0)
+                            |> NelderMead.solve
 
-                    let f (x, y) = SimpleTest(2).objective [| x; y |]
+                        if solverResult.HasSolution
+                        then
+                            SimpleMinimization(1).verify solverResult.Solution
+                        else failwith "unexpected"
+                        }
 
-                    let solverResult =
-                        NelderMead.objective f
-                        |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (
-                            Start.at [
-                                [ 100.0; 100.0 ]
-                                [ 110.0; 100.0 ]
-                                [ 105.0; 105.0 ]
-                                ]
-                            )
-                        |> NelderMead.solve
+                    test "function, tuple, starting from simplex" {
 
-                    if solverResult.HasSolution
-                    then
-                        SimpleTest(2).verify solverResult.Solution
-                    else failwith "unexpected"
-                    }
-        ]
+                        let f (x, y) = SimpleMinimization(2).objective [| x; y |]
+
+                        let solverResult =
+                            NelderMead.objective f
+                            |> NelderMead.withConfiguration config
+                            |> NelderMead.startFrom (
+                                Start.at [
+                                    [ 100.0; 100.0 ]
+                                    [ 110.0; 100.0 ]
+                                    [ 105.0; 105.0 ]
+                                    ]
+                                )
+                            |> NelderMead.solve
+
+                        if solverResult.HasSolution
+                        then
+                            SimpleMinimization(2).verify solverResult.Solution
+                        else failwith "unexpected"
+                        }
+                    ]
+
+                testList "maximization" [
+
+                    test "function, 1 argument" {
+
+                        let f x = SimpleMaximization(1).objective [| x |]
+
+                        let solverResult =
+                            NelderMead.objective f
+                            |> NelderMead.withConfiguration config
+                            |> NelderMead.startFrom (Start.around 100.0)
+                            |> NelderMead.maximize
+
+                        if solverResult.HasSolution
+                        then
+                            SimpleMaximization(1).verify solverResult.Solution
+                        else failwith "unexpected"
+                        }
+
+                    test "function, tuple" {
+
+                        let f (x, y) = SimpleMaximization(2).objective [| x; y |]
+
+                        let solverResult =
+                            NelderMead.objective f
+                            |> NelderMead.withConfiguration config
+                            |> NelderMead.startFrom (Start.around [ 100.0; 100.0 ])
+                            |> NelderMead.maximize
+
+                        if solverResult.HasSolution
+                        then
+                            SimpleMaximization(2).verify solverResult.Solution
+                        else failwith "unexpected"
+                        }
+
+                    test "function, truple" {
+
+                        let f (x, y, z) = SimpleMaximization(3).objective [| x; y; z |]
+
+                        let solverResult =
+                            NelderMead.objective f
+                            |> NelderMead.withConfiguration config
+                            |> NelderMead.startFrom (Start.around [ 100.0; 100.0; 100.0 ])
+                            |> NelderMead.maximize
+
+                        if solverResult.HasSolution
+                        then
+                            SimpleMaximization(2).verify solverResult.Solution
+                        else failwith "unexpected"
+                        }
+
+                    test "function, array of arguments" {
+
+                        let dim = 5
+                        let f (x: float []) = SimpleMaximization(dim).objective x
+
+                        let solverResult =
+                            NelderMead.objective (dim, f)
+                            |> NelderMead.withConfiguration config
+                            |> NelderMead.startFrom (Start.around (Array.create 5 100.0))
+                            |> NelderMead.maximize
+
+                        if solverResult.HasSolution
+                        then
+                            SimpleMaximization(dim).verify solverResult.Solution
+                        else failwith "unexpected"
+                        }
+                ]
+            ]
