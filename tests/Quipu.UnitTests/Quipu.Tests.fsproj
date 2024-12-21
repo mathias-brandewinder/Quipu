@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Helpers.fs" />
+    <Compile Include="SampleUsage.fs" />
     <Compile Include="TestFunctions.fs" />
     <Compile Include="Simplex.fs" />
     <Compile Include="Termination.fs" />

@@ -7,6 +7,7 @@ module Program =
     [<EntryPoint>]
     let  main args =
         testList "" [
+            SampleUsage.tests
             HappyPath.BasicConvergence.tests
             NelderMead.EdgeCaseFunctions.tests
             NelderMead.AbnormalTermination.tests
