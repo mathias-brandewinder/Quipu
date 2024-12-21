@@ -33,7 +33,7 @@ module NelderMead =
                         let solution = solverResult.Solution
                         Expect.isTrue(solution.Status = Status.Optimal) "solution should be optimal"
                         let actual = solution.Candidate.Value
-                        Expect.isTrue (constant - tolerance <= actual && actual <= constant + tolerance) $"minimum should be near {constant}"
+                        Expect.isWithin tolerance actual constant $"minimum should be near {constant}"
                     else failwith "unexpected"
                     }
 
@@ -54,11 +54,11 @@ module NelderMead =
                         // function value
                         let expected = 0.0
                         let actual = solution.Candidate.Value
-                        Expect.isTrue (expected - tolerance <= actual && actual <= expected + tolerance) $"minimum should be near {expected}"
+                        Expect.isWithin tolerance actual expected $"minimum should be near {expected}"
                         // function arguments
                         let expected = 0.0
                         let actual = solution.Candidate.Arguments.[0]
-                        Expect.isTrue (expected - tolerance <= actual && actual <= expected + tolerance) $"argmin should be near {expected}"
+                        Expect.isWithin tolerance actual expected $"argmin should be near {expected}"
                     else failwith "unexpected"
                     }
 
@@ -79,11 +79,11 @@ module NelderMead =
                         // function value
                         let expected = System.Double.NegativeInfinity
                         let actual = solution.Candidate.Value
-                        Expect.isTrue (expected - tolerance <= actual && actual <= expected + tolerance) $"minimum should be near {expected}"
+                        Expect.equal actual expected $"minimum should be near {expected}"
                         // function arguments
                         let expected = 0.0
                         let actual = solution.Candidate.Arguments.[0]
-                        Expect.isTrue (expected - tolerance <= actual && actual <= expected + tolerance) $"argmin should be near {expected}"
+                        Expect.isWithin tolerance actual expected $"argmin should be near {expected}"
                     else failwith "unexpected"
                     }
         ]
@@ -114,8 +114,8 @@ module NelderMead =
                     let value = solution.Candidate.Value
                     let args = solution.Candidate.Arguments
 
-                    Expect.isTrue (10.0 - tolerance <= value && value <= 10.0 + tolerance) "maximum should be near 10.0"
-                    Expect.isTrue (1.0 - tolerance <= args[0] && args[0] <= 1.0 + tolerance) "maximum should be near 10.0"
+                    Expect.isWithin tolerance value 10.0 "maximum should be near 10.0"
+                    Expect.isWithin tolerance args[0] 1.0 "maximum should be near 10.0"
                     }
             ]
 
@@ -148,8 +148,8 @@ module NelderMead =
                     let value = solution.Candidate.Value
                     let args = solution.Candidate.Arguments
 
-                    Expect.isTrue (10.0 - tolerance <= value && value <= 10.0 + tolerance) "maximum should be near 10.0"
-                    Expect.isTrue (1.0 - tolerance <= args[0] && args[0] <= 1.0 + tolerance) "maximum should be near 10.0"
+                    Expect.isWithin tolerance value 10.0 "maximum should be near 10.0"
+                    Expect.isWithin tolerance args[0] 1.0 "maximum should be near 10.0"
                     }
             ]
 

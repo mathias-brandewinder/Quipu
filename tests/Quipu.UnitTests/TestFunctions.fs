@@ -47,10 +47,10 @@ module TestFunctions =
                 Expect.equal solution.Status Status.Optimal "optimal solution"
 
                 let value, point = solution.Candidate.Value, solution.Candidate.Arguments
-                Expect.floatClose { absolute = tolerance; relative = tolerance } value 0.0 "function value"
+                Expect.isWithin tolerance value 0.0 "function value"
 
-                Expect.floatClose { absolute = tolerance; relative = tolerance } point[0] 3.0 "function x0"
-                Expect.floatClose { absolute = tolerance; relative = tolerance } point[1] 0.5 "function x1"
+                Expect.isWithin tolerance point[0] 3.0 "function x0"
+                Expect.isWithin tolerance point[1] 0.5 "function x1"
                 }
 
             test "booth function" {
@@ -71,10 +71,9 @@ module TestFunctions =
 
                 let value, point = solution.Candidate.Value, solution.Candidate.Arguments
 
+                Expect.isWithin tolerance value 0.0 "function value"
 
-                Expect.floatClose { absolute = tolerance; relative = tolerance } value 0.0 "function value"
-
-                Expect.floatClose { absolute = tolerance; relative = tolerance } point[0] 1.0 "function x0"
-                Expect.floatClose { absolute = tolerance; relative = tolerance } point[1] 3.0 "function x1"
+                Expect.isWithin tolerance point[0] 1.0 "function x0"
+                Expect.isWithin tolerance point[1] 3.0 "function x1"
                 }
             ]

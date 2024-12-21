@@ -35,12 +35,12 @@ module HappyPath =
             // verify value
             let expected = expectedMinimum
             let actual = solution.Candidate.Value
-            Expect.isTrue (expected - tolerance <= actual && actual <= expected + tolerance) $"minimum should be near {expected}, actual {actual}"
+            Expect.isWithin tolerance actual expected $"minimum should be near {expected}, actual {actual}"
             // verify function arguments
             for i in 0 .. (dim - 1) do
                 let expected = expectedSolution.[i]
                 let actual = solution.Candidate.Arguments.[i]
-                Expect.isTrue (expected - tolerance <= actual && actual <= expected + tolerance) $"argument {i} should be near {expected}, actual {actual}"
+                Expect.isWithin tolerance actual expected $"argument {i} should be near {expected}, actual {actual}"
 
     type SimpleMaximization (dim: int) =
 
@@ -61,12 +61,12 @@ module HappyPath =
             // verify value
             let expected = expectedMinimum
             let actual = solution.Candidate.Value
-            Expect.isTrue (expected - tolerance <= actual && actual <= expected + tolerance) $"minimum should be near {expected}, actual {actual}"
+            Expect.isWithin tolerance actual expected $"minimum should be near {expected}, actual {actual}"
             // verify function arguments
             for i in 0 .. (dim - 1) do
                 let expected = expectedSolution.[i]
                 let actual = solution.Candidate.Arguments.[i]
-                Expect.isTrue (expected - tolerance <= actual && actual <= expected + tolerance) $"argument {i} should be near {expected}, actual {actual}"
+                Expect.isWithin tolerance actual expected $"argument {i} should be near {expected}, actual {actual}"
 
     module BasicConvergence =
 

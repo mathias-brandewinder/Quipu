@@ -45,7 +45,7 @@ module Simplex =
                 |> Simplex.vertices
                 |> Array.iter (fun vertex ->
                     let d = distance vertex origin
-                    Expect.floatClose { absolute = 0.001; relative = 0.001 } radius d "" // 3 decimals, really
+                    Expect.isWithin 0.001 radius d $"simplex vertices should be {radius} away from center, actual: {d}"
                     )
                 }
             ]

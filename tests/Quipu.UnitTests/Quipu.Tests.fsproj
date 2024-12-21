@@ -6,6 +6,7 @@
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Helpers.fs" />
     <Compile Include="TestFunctions.fs" />
     <Compile Include="Simplex.fs" />
     <Compile Include="Termination.fs" />
