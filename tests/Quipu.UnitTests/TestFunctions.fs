@@ -39,11 +39,7 @@ module TestFunctions =
                     |> NelderMead.startFrom (Start.around [ 4.5; 4.5 ])
                     |> NelderMead.solve
 
-                let solution =
-                    match solverResult with
-                    | Successful solution -> solution
-                    | _ -> failwith "unexpected"
-
+                let solution = solverResult.Solution
                 Expect.equal solution.Status Status.Optimal "optimal solution"
 
                 let value, point = solution.Candidate.Value, solution.Candidate.Arguments
@@ -62,11 +58,7 @@ module TestFunctions =
                     |> NelderMead.startFrom (Start.around [ 10.0; 10.0 ])
                     |> NelderMead.solve
 
-                let solution =
-                    match solverResult with
-                    | Successful solution -> solution
-                    | _ -> failwith "unexpected"
-
+                let solution = solverResult.Solution
                 Expect.equal solution.Status Status.Optimal "optimal solution"
 
                 let value, point = solution.Candidate.Value, solution.Candidate.Arguments

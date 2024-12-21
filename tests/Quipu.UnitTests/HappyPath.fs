@@ -97,10 +97,7 @@ module HappyPath =
                             |> NelderMead.startFrom (Start.around 100.0)
                             |> NelderMead.solve
 
-                        if solverResult.HasSolution
-                        then
-                            SimpleMinimization(1).verify solverResult.Solution
-                        else failwith "unexpected"
+                        SimpleMinimization(1).verify solverResult.Solution
                         }
 
                     test "function, tuple" {
@@ -113,10 +110,7 @@ module HappyPath =
                             |> NelderMead.startFrom (Start.around [ 100.0; 100.0 ])
                             |> NelderMead.solve
 
-                        if solverResult.HasSolution
-                        then
-                            SimpleMinimization(2).verify solverResult.Solution
-                        else failwith "unexpected"
+                        SimpleMinimization(2).verify solverResult.Solution
                         }
 
                     test "function, truple" {
@@ -129,10 +123,7 @@ module HappyPath =
                             |> NelderMead.startFrom (Start.around [ 100.0; 100.0; 100.0 ])
                             |> NelderMead.solve
 
-                        if solverResult.HasSolution
-                        then
-                            SimpleMinimization(2).verify solverResult.Solution
-                        else failwith "unexpected"
+                        SimpleMinimization(2).verify solverResult.Solution
                         }
 
                     test "function, array of arguments" {
@@ -146,10 +137,7 @@ module HappyPath =
                             |> NelderMead.startFrom (Start.around (Array.create 5 100.0))
                             |> NelderMead.solve
 
-                        if solverResult.HasSolution
-                        then
-                            SimpleMinimization(dim).verify solverResult.Solution
-                        else failwith "unexpected"
+                        SimpleMinimization(dim).verify solverResult.Solution
                         }
 
                     test "method, 1 argument" {
@@ -162,10 +150,7 @@ module HappyPath =
                             |> NelderMead.startFrom (Start.around 100.0)
                             |> NelderMead.solve
 
-                        if solverResult.HasSolution
-                        then
-                            SimpleMinimization(1).verify solverResult.Solution
-                        else failwith "unexpected"
+                        SimpleMinimization(1).verify solverResult.Solution
                         }
 
                     test "method, 2 arguments" {
@@ -178,10 +163,7 @@ module HappyPath =
                             |> NelderMead.startFrom (Start.around [ 100.0; 100.0 ])
                             |> NelderMead.solve
 
-                        if solverResult.HasSolution
-                        then
-                            SimpleMinimization(2).verify solverResult.Solution
-                        else failwith "unexpected"
+                        SimpleMinimization(2).verify solverResult.Solution
                         }
 
                     test "method, 3 arguments" {
@@ -194,10 +176,7 @@ module HappyPath =
                             |> NelderMead.startFrom (Start.around [ 100.0; 100.0; 100.0 ])
                             |> NelderMead.solve
 
-                        if solverResult.HasSolution
-                        then
-                            SimpleMinimization(3).verify solverResult.Solution
-                        else failwith "unexpected"
+                        SimpleMinimization(3).verify solverResult.Solution
                         }
 
                     test "static method, 1 argument" {
@@ -208,10 +187,7 @@ module HappyPath =
                             |> NelderMead.startFrom (Start.around 100.0)
                             |> NelderMead.solve
 
-                        if solverResult.HasSolution
-                        then
-                            SimpleMinimization(1).verify solverResult.Solution
-                        else failwith "unexpected"
+                        SimpleMinimization(1).verify solverResult.Solution
                         }
 
                     test "function, tuple, starting from simplex" {
@@ -230,10 +206,7 @@ module HappyPath =
                                 )
                             |> NelderMead.solve
 
-                        if solverResult.HasSolution
-                        then
-                            SimpleMinimization(2).verify solverResult.Solution
-                        else failwith "unexpected"
+                        SimpleMinimization(2).verify solverResult.Solution
                         }
                     ]
 
@@ -249,10 +222,7 @@ module HappyPath =
                             |> NelderMead.startFrom (Start.around 100.0)
                             |> NelderMead.maximize
 
-                        if solverResult.HasSolution
-                        then
-                            SimpleMaximization(1).verify solverResult.Solution
-                        else failwith "unexpected"
+                        SimpleMaximization(1).verify solverResult.Solution
                         }
 
                     test "function, tuple" {
@@ -265,10 +235,7 @@ module HappyPath =
                             |> NelderMead.startFrom (Start.around [ 100.0; 100.0 ])
                             |> NelderMead.maximize
 
-                        if solverResult.HasSolution
-                        then
-                            SimpleMaximization(2).verify solverResult.Solution
-                        else failwith "unexpected"
+                        SimpleMaximization(2).verify solverResult.Solution
                         }
 
                     test "function, truple" {
@@ -281,10 +248,7 @@ module HappyPath =
                             |> NelderMead.startFrom (Start.around [ 100.0; 100.0; 100.0 ])
                             |> NelderMead.maximize
 
-                        if solverResult.HasSolution
-                        then
-                            SimpleMaximization(2).verify solverResult.Solution
-                        else failwith "unexpected"
+                        SimpleMaximization(2).verify solverResult.Solution
                         }
 
                     test "function, array of arguments" {
@@ -298,10 +262,7 @@ module HappyPath =
                             |> NelderMead.startFrom (Start.around (Array.create 5 100.0))
                             |> NelderMead.maximize
 
-                        if solverResult.HasSolution
-                        then
-                            SimpleMaximization(dim).verify solverResult.Solution
-                        else failwith "unexpected"
+                        SimpleMaximization(dim).verify solverResult.Solution
                         }
                 ]
             ]
