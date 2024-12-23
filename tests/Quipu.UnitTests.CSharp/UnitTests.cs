@@ -67,6 +67,22 @@ public class UnitTests
     }
 
     [Fact]
+    public void Test_Two_Parameters_Start_From_Pair()
+    {
+        var result =
+            NelderMead
+                .Objective(this.TwoParameters)
+                .WithMaximumIterations(100)
+                .WithTolerance(0.001)
+                .StartFrom(Start.Around(100.0, 100.0))
+                .Minimize();
+
+        Assert.True(result.HasSolution);
+        var solution = result.Solution;
+        Assert.Equal(Status.Optimal, solution.Status);
+    }
+
+    [Fact]
     public void Test_Three_Parameters()
     {
         var result =
@@ -75,6 +91,22 @@ public class UnitTests
                 .WithMaximumIterations(100)
                 .WithTolerance(0.001)
                 .StartFrom(Start.Around(new double[] { 100.0, 100.0, 100.0 }))
+                .Minimize();
+
+        Assert.True(result.HasSolution);
+        var solution = result.Solution;
+        Assert.Equal(Status.Optimal, solution.Status);
+    }
+
+    [Fact]
+    public void Test_Three_Parameters_Start_From_Triplet()
+    {
+        var result =
+            NelderMead
+                .Objective(this.ThreeParameters)
+                .WithMaximumIterations(100)
+                .WithTolerance(0.001)
+                .StartFrom(Start.Around(100.0, 100.0, 100.0))
                 .Minimize();
 
         Assert.True(result.HasSolution);
