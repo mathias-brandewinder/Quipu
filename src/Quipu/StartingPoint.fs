@@ -45,6 +45,28 @@ type Start =
                 |> Simplex.vertices
         }
 
+    [<CompiledName("Around")>]
+    static member around (x: float, y: float) =
+        { new IStartingPoint with
+            member this.create (dim: int): float[][] =
+                let startingPoint = [| x; y |]
+                if startingPoint.Length <> dim
+                then failwith $"Invalid starting point dimension: {startingPoint.Length}, expected {dim}."
+                Simplex.create startingPoint
+                |> Simplex.vertices
+        }
+
+    [<CompiledName("Around")>]
+    static member around (x: float, y: float, z: float) =
+        { new IStartingPoint with
+            member this.create (dim: int): float[][] =
+                let startingPoint = [| x; y; z |]
+                if startingPoint.Length <> dim
+                then failwith $"Invalid starting point dimension: {startingPoint.Length}, expected {dim}."
+                Simplex.create startingPoint
+                |> Simplex.vertices
+        }
+
     [<CompiledName("At")>]
     static member at (startingPoint: #seq<#seq<float>>) =
         { new IStartingPoint with
