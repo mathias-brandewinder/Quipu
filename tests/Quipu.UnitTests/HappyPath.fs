@@ -126,6 +126,32 @@ module HappyPath =
                         SimpleMinimization(2).verify solverResult.Solution
                         }
 
+                    test "function, 2 arguments" {
+
+                        let f x y = SimpleMinimization(2).objective [| x; y |]
+
+                        let solverResult =
+                            NelderMead.objective f
+                            |> NelderMead.withConfiguration config
+                            |> NelderMead.startFrom (Start.around [ 100.0; 100.0 ])
+                            |> NelderMead.solve
+
+                        SimpleMinimization(2).verify solverResult.Solution
+                        }
+
+                    test "function, 3 arguments" {
+
+                        let f x y z = SimpleMinimization(3).objective [| x; y; z |]
+
+                        let solverResult =
+                            NelderMead.objective f
+                            |> NelderMead.withConfiguration config
+                            |> NelderMead.startFrom (Start.around [ 100.0; 100.0; 100.0 ])
+                            |> NelderMead.solve
+
+                        SimpleMinimization(3).verify solverResult.Solution
+                        }
+
                     test "function, array of arguments" {
 
                         let dim = 5

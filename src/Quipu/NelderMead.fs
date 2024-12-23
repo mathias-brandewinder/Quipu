@@ -50,6 +50,14 @@ type NelderMead private (problem: Problem) =
         Vectorize.from f
         |> Problem.defaultCreate
 
+    static member objective (f: float -> float -> float) =
+        Vectorize.from f
+        |> Problem.defaultCreate
+
+    static member objective (f: float -> float -> float -> float) =
+        Vectorize.from f
+        |> Problem.defaultCreate
+
     static member objective (dim: int, f: float[] -> float) =
         Vectorize.from (dim, f)
         |> Problem.defaultCreate
