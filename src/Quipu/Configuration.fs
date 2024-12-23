@@ -18,39 +18,6 @@ type UpdateParameters = {
         Sigma = 0.5
         }
 
-type ITerminator =
-    abstract member HasTerminated: Evaluation [] -> bool
-
-module Termination =
-
-    let private minMax f xs =
-        let projection = xs |> Seq.map f
-        let minimum = projection |> Seq.min
-        let maximum = projection |> Seq.max
-        (minimum, maximum)
-
-    let tolerance (tolerance: float) =
-        { new ITerminator with
-            member this.HasTerminated(candidates: Evaluation array): bool =
-                // The function value must be within the tolerance bounds
-                // for every candidate in the simplex.
-                let min, max =
-                    candidates
-                    |> minMax (fun x -> x.Value)
-                max - min < tolerance
-                &&
-                // Every argument must be within the tolerance bounds
-                // for every candidate in the simplex.
-                let dim = candidates[0].Arguments.Length
-                seq { 0 .. dim - 1 }
-                |> Seq.forall (fun i ->
-                    let min, max =
-                        candidates
-                        |> minMax (fun point -> point.Arguments.[i])
-                    max - min < tolerance
-                    )
-        }
-
 type Configuration = {
     Updates: UpdateParameters
     Termination: ITerminator
