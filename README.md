@@ -6,7 +6,7 @@ It is a numerical solver used to find the minimum or maximum of a function. It
 is particularly useful for nonlinear optimization problems for which 
 derivatives may not be known.  
 
-![NuGet Version](https://img.shields.io/nuget/v/Quipu)
+[![NuGet Version](https://img.shields.io/nuget/v/Quipu)](https://www.nuget.org/packages/Quipu)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mathias-brandewinder/Quipu/build-and-test.yml)
 [![F#](https://img.shields.io/badge/F%23-378BBA?logo=fsharp&logoColor=fff)](#)
 
