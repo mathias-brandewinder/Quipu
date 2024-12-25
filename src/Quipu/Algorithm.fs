@@ -29,7 +29,7 @@ module Algorithm =
             candidates
             |> Array.sortBy (fun c -> c.Value)
 
-        let best = candidates[0]
+        let best = ordered[0]
 
         // 2) calculate centroid
         let size = candidates.Length
