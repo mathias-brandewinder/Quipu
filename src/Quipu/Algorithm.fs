@@ -7,6 +7,49 @@ module Algorithm =
     exception private UnboundedObjective of Evaluation
     exception private AbnormalConditions of float [][]
 
+    /// This function is not intended for general use. It is public only for
+    /// the sake of testing.
+    /// The algorithm requires knowing which of the candidates is the best,
+    /// the worst, and the second worst. Rather than fully sorting the
+    /// candidates every iteration, we do an in-place, partial sort of the
+    /// candidates, so these 3 candidates are at index 0, length - 2 and
+    /// length - 1.
+    let sortInPlace (candidates: Evaluation []) =
+
+        let len = candidates.Length
+
+        // move best (lowest value) to first position (index 0)
+        let mutable bestValue = candidates[0].Value
+        for i in 1 .. (len - 1) do
+            if candidates[i].Value < bestValue
+            then
+                let temp = candidates[i]
+                candidates[i] <- candidates[0]
+                candidates[0] <- temp
+                bestValue <- temp.Value
+
+        // move worst (highest value) to last position (index len - 1)
+        let mutable worstValue = candidates[len - 1].Value
+        for i in 1 .. (len - 2) do
+            if candidates[i].Value > worstValue
+            then
+                let temp = candidates[i]
+                candidates[i] <- candidates[len - 1]
+                candidates[len - 1] <- temp
+                worstValue <- temp.Value
+
+        // move second worst to second last position (index len - 2)
+        let mutable secondWorstValue = candidates[len - 2].Value
+        for i in 1 .. (len - 3) do
+            if candidates[i].Value > secondWorstValue
+            then
+                let temp = candidates[i]
+                candidates[i] <- candidates[len - 2]
+                candidates[len - 2] <- temp
+                secondWorstValue <- temp.Value
+
+        candidates
+
     let private evaluate f (x: float []) =
         let value = f x
         // if the lowest value is -infinity, there is no solution:
@@ -26,8 +69,9 @@ module Algorithm =
 
         // 1) order the values, from best to worst
         let ordered =
-            candidates
-            |> Array.sortBy (fun c -> c.Value)
+            sortInPlace candidates
+            // candidates
+            // |> Array.sortBy (fun c -> c.Value)
 
         let best = ordered[0]
 
