@@ -58,7 +58,7 @@ public class UnitTests
                 .Objective(this.TwoParameters)
                 .WithMaximumIterations(100)
                 .WithTolerance(0.001)
-                .StartFrom(Start.Around(new double[] { 100.0, 100.0 }))
+                .StartFrom(Start.Around(100.0, 100.0))
                 .Minimize();
 
         Assert.True(result.HasSolution);
@@ -90,7 +90,7 @@ public class UnitTests
                 .Objective(this.ThreeParameters)
                 .WithMaximumIterations(100)
                 .WithTolerance(0.001)
-                .StartFrom(Start.Around(new double[] { 100.0, 100.0, 100.0 }))
+                .StartFrom(Start.Around(100.0, 100.0, 100.0))
                 .Minimize();
 
         Assert.True(result.HasSolution);

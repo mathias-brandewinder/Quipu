@@ -1,4 +1,4 @@
-#r "nuget: Quipu, 0.5.1"
+#r "nuget: Quipu, 0.5.2"
 using Quipu.CSharp;
 using System;
 
