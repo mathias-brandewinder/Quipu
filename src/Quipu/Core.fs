@@ -11,9 +11,14 @@ type Solution = {
     Simplex: float [][]
     }
 
+type AbnormalSimplex = {
+    Message: string
+    Simplex: float [][]
+    }
+
 type SolverResult =
     | Successful of Solution
-    | Abnormal of (float [][])
+    | Abnormal of AbnormalSimplex
     with
     member this.HasSolution =
         match this with

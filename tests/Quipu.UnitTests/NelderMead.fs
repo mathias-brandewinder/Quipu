@@ -104,10 +104,7 @@ module NelderMead =
                         |> NelderMead.startFrom (Start.around 100.0)
                         |> NelderMead.maximize
 
-                    let solution =
-                        match solverResult with
-                        | Successful solution -> solution
-                        | _ -> failwith "unexpected"
+                    let solution = solverResult.Solution
 
                     Expect.equal solution.Status Status.Optimal "optimal solution"
 
@@ -138,10 +135,7 @@ module NelderMead =
                             .StartFrom(Start.around 100.0)
                             .Maximize()
 
-                    let solution =
-                        match solverResult with
-                        | Successful solution -> solution
-                        | _ -> failwith "unexpected"
+                    let solution = solverResult.Solution
 
                     Expect.equal solution.Status Status.Optimal "optimal solution"
 
@@ -174,12 +168,7 @@ module NelderMead =
                         |> NelderMead.startFrom (Start.around 100.0)
                         |> NelderMead.solve
 
-                    let solution =
-                        match solverResult with
-                        | Successful solution -> solution
-                        | _ -> failwith "unexpected"
-
-                    Expect.equal solution.Status Status.Suboptimal ""
+                    Expect.equal solverResult.Solution.Status Status.Suboptimal ""
                     }
                 ]
 
@@ -194,16 +183,9 @@ module NelderMead =
                     let f x = x
                     let solverResult =
                         NelderMead.objective f
-                        |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (Start.around 0.0)
                         |> NelderMead.solve
 
-                    let solution =
-                        match solverResult with
-                        | Successful solution -> solution
-                        | _ -> failwith "unexpected"
-
-                    Expect.equal solution.Status Status.Unbounded "Solution should be unbounded"
+                    Expect.equal solverResult.Solution.Status Status.Unbounded "Solution should be unbounded"
                     }
 
                 test "function returning nan" {
@@ -212,8 +194,6 @@ module NelderMead =
 
                     let solverResult =
                         NelderMead.objective f
-                        |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (Start.around 0.0)
                         |> NelderMead.solve
 
                     let isAbnormal =
@@ -230,7 +210,6 @@ module NelderMead =
 
                     let solverResult =
                         NelderMead.objective f
-                        |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around (+infinity))
                         |> NelderMead.solve
 
@@ -248,7 +227,6 @@ module NelderMead =
 
                     let solverResult =
                         NelderMead.objective f
-                        |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around (infinity))
                         |> NelderMead.solve
 
@@ -266,7 +244,6 @@ module NelderMead =
 
                     let solverResult =
                         NelderMead.objective f
-                        |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around (-infinity))
                         |> NelderMead.solve
 
@@ -284,7 +261,6 @@ module NelderMead =
 
                     let solverResult =
                         NelderMead.objective f
-                        |> NelderMead.withConfiguration config
                         |> NelderMead.startFrom (Start.around nan)
                         |> NelderMead.solve
 
@@ -301,8 +277,6 @@ module NelderMead =
                     let f (x: float) : float = failwith "some exception"
                     let solverResult =
                         NelderMead.objective f
-                        |> NelderMead.withConfiguration config
-                        |> NelderMead.startFrom (Start.around 100.0)
                         |> NelderMead.solve
 
                     let isAbnormal =

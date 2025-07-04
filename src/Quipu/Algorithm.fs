@@ -5,7 +5,7 @@ namespace Quipu
 module Algorithm =
 
     exception private UnboundedObjective of Evaluation
-    exception private AbnormalConditions of float [][]
+    exception private AbnormalConditions of AbnormalSimplex
 
     /// This function is not intended for general use. It is public only for
     /// the sake of testing.
@@ -103,7 +103,15 @@ module Algorithm =
                     // enforce that shrinking produces a valid simplex
                     if shrunk.IsFeasible
                     then shrunk
-                    else raise (AbnormalConditions (candidates |> Array.map (fun c -> c.Arguments)))
+                    else
+                        {
+                            Message = "Cannot Shrink Simplex"
+                            Simplex =
+                                candidates
+                                |> Array.map (fun c -> c.Arguments)
+                        }
+                        |> AbnormalConditions
+                        |> raise
                 )
 
         // 3) reflection
@@ -186,7 +194,14 @@ module Algorithm =
                 shrink ()
         else
             // TODO, check: is this branch even possible?
-            raise (AbnormalConditions (candidates |> Array.map (fun c -> c.Arguments)))
+            {
+                Message = "Unable to iterate from current Simplex"
+                Simplex =
+                    candidates
+                    |> Array.map (fun c -> c.Arguments)
+            }
+            |> AbnormalConditions
+            |> raise
 
     // Verify that the initial simplex is well-formed
     let preCheck (objective: IVectorFunction) simplex: Evaluation [] =
@@ -197,11 +212,23 @@ module Algorithm =
             pt
             |> Array.iter (fun x ->
                 if not (System.Double.IsFinite x)
-                then raise (AbnormalConditions simplex)
+                then
+                    {
+                        Message = "Invalid initial Simplex: all values must be finite"
+                        Simplex = simplex
+                    }
+                    |> AbnormalConditions
+                    |> raise
                 )
             let candidate = evaluate f pt
             if candidate.IsInfeasible
-            then raise (AbnormalConditions simplex)
+            then
+                {
+                    Message = "Invalid initial Simplex: undefined function value"
+                    Simplex = simplex
+                }
+                |> AbnormalConditions
+                |> raise
             candidate
             )
 
@@ -260,6 +287,11 @@ module Algorithm =
                 Simplex = simplex
             }
             |> Successful
-        | :? AbnormalConditions ->
-            Abnormal simplex
-        | _ ->Abnormal simplex
+        | :? AbnormalConditions as ex ->
+            Abnormal ex.Data0
+        | _ as ex ->
+            {
+                Message = $"Unexpected error: {ex.Message}"
+                Simplex = simplex
+            }
+            |> Abnormal
