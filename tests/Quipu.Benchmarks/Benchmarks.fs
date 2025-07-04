@@ -2,7 +2,7 @@ namespace Quipu.Benchmarks
 
 open BenchmarkDotNet.Attributes
 open Quipu
-open Quipu.Tests
+open Quipu.Tests.Functions
 
 type Benchmarks () =
 
@@ -18,7 +18,7 @@ type Benchmarks () =
     [<Benchmark(Description="Beale function")>]
     member this.BealeFunction () =
 
-        TestFunctions.beale
+        beale
         |> NelderMead.objective
         |> NelderMead.withConfiguration solverConfiguration
         |> NelderMead.startFrom (Start.around [ 4.5; 4.5 ])
@@ -27,7 +27,7 @@ type Benchmarks () =
     [<Benchmark(Description="Booth function")>]
     member this.BoothFunction () =
 
-        TestFunctions.booth
+        booth
         |> NelderMead.objective
         |> NelderMead.withConfiguration solverConfiguration
         |> NelderMead.startFrom (Start.around [ 10.0; 10.0 ])

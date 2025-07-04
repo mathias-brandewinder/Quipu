@@ -12,6 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Quipu\Quipu.fsproj" />
-    <ProjectReference Include="..\Quipu.UnitTests\Quipu.Tests.fsproj" />
+    <ProjectReference Include="..\Quipu.TestFunctions\Quipu.TestFunctions.fsproj" />
   </ItemGroup>
 </Project>
