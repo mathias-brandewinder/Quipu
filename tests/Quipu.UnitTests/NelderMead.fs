@@ -286,4 +286,26 @@ module NelderMead =
 
                     Expect.isTrue(isAbnormal) ""
                     }
+
+                test "unshrinkable function" {
+
+                    // The solution is 0.0, we start around 0.0
+                    // At some point the solver will shrink towards 0.0,
+                    // and should fail.
+                    let f (x: float) =
+                        if x = 0.0
+                        then nan
+                        else pown x 2
+
+                    let solverResult =
+                        NelderMead.objective f
+                        |> NelderMead.solve
+
+                    let isAbnormal =
+                        match solverResult with
+                        | Abnormal _ -> true
+                        | _ -> false
+
+                    Expect.isTrue(isAbnormal) ""
+                    }
             ]
