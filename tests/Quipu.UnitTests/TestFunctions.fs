@@ -56,4 +56,40 @@ module TestFunctions =
                 Expect.isWithin tolerance point[0] 1.0 "function x0"
                 Expect.isWithin tolerance point[1] 3.0 "function x1"
                 }
+
+            ptest "bukin function" {
+                let solverResult =
+                    bukin
+                    |> NelderMead.objective
+                    |> NelderMead.withConfiguration solverConfiguration
+                    |> NelderMead.solve
+
+                let solution = solverResult.Solution
+                Expect.equal solution.Status Status.Optimal "optimal solution"
+
+                let value, point = solution.Candidate.Value, solution.Candidate.Arguments
+
+                Expect.isWithin tolerance value 0.0 "function value"
+
+                Expect.isWithin tolerance point[0] -10.0 "function x0"
+                Expect.isWithin tolerance point[1] 1.0 "function x1"
+                }
+
+            ptest "himmelblau function" {
+                let solverResult =
+                    himmelblau
+                    |> NelderMead.objective
+                    |> NelderMead.withConfiguration solverConfiguration
+                    |> NelderMead.solve
+
+                let solution = solverResult.Solution
+                Expect.equal solution.Status Status.Optimal "optimal solution"
+
+                let value, point = solution.Candidate.Value, solution.Candidate.Arguments
+
+                Expect.isWithin tolerance value 0.0 "function value"
+
+                Expect.isWithin tolerance point[0] 3.0 "function x0"
+                Expect.isWithin tolerance point[1] 2.0 "function x1"
+                }
             ]

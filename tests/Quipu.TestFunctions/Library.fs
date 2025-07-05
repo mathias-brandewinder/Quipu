@@ -15,3 +15,13 @@ module Functions =
         pown (x + 2.0 * y - 7.0) 2
         +
         pown (2.0 * x + y - 5.0) 2
+
+    let bukin (x, y) =
+        100.0 * (sqrt (abs (y - 0.01 * pown x 2)))
+        +
+        0.01 * (abs (x + 10.0))
+
+    let himmelblau (x, y) =
+        pown (pown x 2 + y - 11.0) 2
+        +
+        pown (x + pown y 2 - 7.0) 2
