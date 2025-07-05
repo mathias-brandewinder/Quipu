@@ -34,6 +34,13 @@ type NelderMead private (problem: Problem) =
         problem
         |> NelderMead.minimize
 
+    static member safe (problem: Problem) =
+        { problem with
+            Objective =
+                problem.Objective
+                |> Vectorize.safe
+        }
+
     static member objective (f: IVectorFunction) =
         f
         |> Problem.defaultCreate

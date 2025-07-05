@@ -19,6 +19,14 @@ type Evaluation = {
 
 /// Utilities to convert methods or functions into an IVectorFunction.
 type Vectorize () =
+    static member safe (vectorFunction: IVectorFunction) =
+        { new IVectorFunction with
+            member this.Dimension = vectorFunction.Dimension
+            member this.Value (vector: float []) =
+                try vectorFunction.Value vector
+                with
+                | _ -> nan
+        }
     static member from (f: float -> float) =
         { new IVectorFunction with
             member this.Dimension = 1
