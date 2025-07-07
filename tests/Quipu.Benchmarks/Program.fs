@@ -3,11 +3,21 @@
 module App =
 
     open BenchmarkDotNet.Running
+    open BenchmarkDotNet.Configs
+    open BenchmarkDotNet.Jobs
 
     [<EntryPoint>]
     let main (args: string []) =
 
-        BenchmarkRunner.Run<Benchmarks>()
+        let config =
+            DefaultConfig.Instance
+                .AddJob(
+                    Job.Dry
+                        .WithInvocationCount(10_000)
+                        .WithIterationCount(100)
+                        )
+
+        BenchmarkRunner.Run<Benchmarks>(config)
         |> ignore
 
         0

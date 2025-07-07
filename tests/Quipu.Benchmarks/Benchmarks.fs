@@ -16,8 +16,6 @@ type Benchmarks () =
         }
 
     [<Benchmark(Description="Beale function")>]
-    [<IterationCount(100)>]
-    [<InvocationCount(10000)>]
     member this.BealeFunction () =
 
         beale
@@ -27,8 +25,6 @@ type Benchmarks () =
         |> NelderMead.solve
 
     [<Benchmark(Description="Beale function, safe")>]
-    [<IterationCount(100)>]
-    [<InvocationCount(10000)>]
     member this.BealeFunction_safe () =
 
         beale
@@ -39,8 +35,6 @@ type Benchmarks () =
         |> NelderMead.solve
 
     [<Benchmark(Description="Booth function")>]
-    [<IterationCount(100)>]
-    [<InvocationCount(10000)>]
     member this.BoothFunction () =
 
         booth
@@ -50,8 +44,6 @@ type Benchmarks () =
         |> NelderMead.solve
 
     [<Benchmark(Description="Booth function, safe")>]
-    [<IterationCount(100)>]
-    [<InvocationCount(10000)>]
     member this.BoothFunction_safe () =
 
         booth
