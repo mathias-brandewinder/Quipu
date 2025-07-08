@@ -50,7 +50,3 @@ type NelderMead private (problem: Problem) =
     member this.Minimize() =
         problem
         |> NelderMead.minimize
-
-    member this.Safe() =
-        problem
-        |> NelderMead.safe
