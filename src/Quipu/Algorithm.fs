@@ -259,6 +259,7 @@ module Algorithm =
                 {
                     Status = Optimal
                     Candidate = bestSolution
+                    Iterations = iter
                     Simplex = simplex |> Array.map (fun x -> x.Arguments)
                 }
             | Some maxIters ->
@@ -267,12 +268,14 @@ module Algorithm =
                     {
                         Status = Optimal
                         Candidate = bestSolution
+                        Iterations = iter
                         Simplex = simplex |> Array.map (fun x -> x.Arguments)
                     }
                 else
                     {
                         Status = Suboptimal
                         Candidate = bestSolution
+                        Iterations = iter
                         Simplex = simplex |> Array.map (fun x -> x.Arguments)
                     }
             |> Successful
@@ -281,6 +284,7 @@ module Algorithm =
             {
                 Status = Unbounded
                 Candidate = ex.Data0
+                Iterations = iter
                 Simplex = simplex
             }
             |> Successful

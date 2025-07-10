@@ -7,6 +7,7 @@ type Status =
 
 type Solution = {
     Status: Status
+    Iterations: int
     Candidate: Evaluation
     Simplex: float [][]
     }
