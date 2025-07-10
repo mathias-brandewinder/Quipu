@@ -234,51 +234,48 @@ module Algorithm =
 
     let search (objective: IVectorFunction) simplex config =
         let terminator = config.Termination
+        let mutable iter = 0
         try
             // Is the starting simplex well-formed?
-            preCheck objective simplex
-            // Start the search
-            |> Seq.unfold (fun simplex ->
-                let updatedSimplex = update config.Updates objective simplex
-                Some (updatedSimplex, updatedSimplex)
-                )
-            |> Seq.mapi (fun i x -> i, x)
-            |> Seq.skipWhile (fun (iter, simplex) ->
+            let mutable simplex = preCheck objective simplex
+            let notFinished () =
                 simplex |> terminator.HasTerminated |> not
                 &&
                 config.MaximumIterations
                 |> Option.map (fun maxIter -> iter < maxIter)
                 |> Option.defaultValue true
-                )
-            |> Seq.head
-            |> fun (iter, simplex) ->
-                let bestSolution =
-                    simplex
-                    |> Array.minBy (fun x -> x.Value)
-                let args = bestSolution.Arguments
-                let value = bestSolution.Value
-                match config.MaximumIterations with
-                | None ->
+
+            while notFinished () do
+            // Start the search
+                iter <- iter + 1
+                simplex <- update config.Updates objective simplex
+
+            let bestSolution =
+                simplex
+                |> Array.minBy (fun x -> x.Value)
+
+            match config.MaximumIterations with
+            | None ->
+                {
+                    Status = Optimal
+                    Candidate = bestSolution
+                    Simplex = simplex |> Array.map (fun x -> x.Arguments)
+                }
+            | Some maxIters ->
+                if iter < maxIters
+                then
                     {
                         Status = Optimal
-                        Candidate = { Value = value; Arguments = args }
+                        Candidate = bestSolution
                         Simplex = simplex |> Array.map (fun x -> x.Arguments)
                     }
-                | Some maxIters ->
-                    if iter < maxIters
-                    then
-                        {
-                            Status = Optimal
-                            Candidate = { Value = value; Arguments = args }
-                            Simplex = simplex |> Array.map (fun x -> x.Arguments)
-                        }
-                    else
-                        {
-                            Status = Suboptimal
-                            Candidate = { Value = value; Arguments = args }
-                            Simplex = simplex |> Array.map (fun x -> x.Arguments)
-                        }
-                |> Successful
+                else
+                    {
+                        Status = Suboptimal
+                        Candidate = bestSolution
+                        Simplex = simplex |> Array.map (fun x -> x.Arguments)
+                    }
+            |> Successful
         with
         | :? UnboundedObjective as ex ->
             {
