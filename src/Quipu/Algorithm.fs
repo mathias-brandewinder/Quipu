@@ -254,31 +254,22 @@ module Algorithm =
                 simplex
                 |> Array.minBy (fun x -> x.Value)
 
-            match config.MaximumIterations with
-            | None ->
-                {
-                    Status = Optimal
-                    Candidate = bestSolution
-                    Iterations = iter
-                    Simplex = simplex |> Array.map (fun x -> x.Arguments)
-                }
-            | Some maxIters ->
-                if iter < maxIters
-                then
-                    {
-                        Status = Optimal
-                        Candidate = bestSolution
-                        Iterations = iter
-                        Simplex = simplex |> Array.map (fun x -> x.Arguments)
-                    }
-                else
-                    {
-                        Status = Suboptimal
-                        Candidate = bestSolution
-                        Iterations = iter
-                        Simplex = simplex |> Array.map (fun x -> x.Arguments)
-                    }
+            let status =
+                match config.MaximumIterations with
+                | None -> Optimal
+                | Some maxIters ->
+                    if iter < maxIters
+                    then Optimal
+                    else Suboptimal
+
+            {
+                Status = status
+                Candidate = bestSolution
+                Iterations = iter
+                Simplex = simplex |> Array.map (fun x -> x.Arguments)
+            }
             |> Successful
+
         with
         | :? UnboundedObjective as ex ->
             {
