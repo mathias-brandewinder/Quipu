@@ -21,6 +21,7 @@ module Functions =
         +
         0.01 * (abs (x + 10.0))
 
+    // https://en.wikipedia.org/wiki/Himmelblau%27s_function
     let himmelblau (x, y) =
         pown (pown x 2 + y - 11.0) 2
         +

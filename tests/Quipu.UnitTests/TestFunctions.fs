@@ -75,7 +75,7 @@ module TestFunctions =
                 Expect.isWithin tolerance point[1] 1.0 "function x1"
                 }
 
-            ptest "himmelblau function" {
+            test "himmelblau function" {
                 let solverResult =
                     himmelblau
                     |> NelderMead.objective
@@ -89,7 +89,18 @@ module TestFunctions =
 
                 Expect.isWithin tolerance value 0.0 "function value"
 
-                Expect.isWithin tolerance point[0] 3.0 "function x0"
-                Expect.isWithin tolerance point[1] 2.0 "function x1"
+                // 4 possible minima
+                [
+                    (3.0, 2.0)
+                    (-2.805118, 3.131312)
+                    (-3.779310, -3.283186)
+                    (3.584428, -1.848126)
+                ]
+                |> List.exists (fun (x0, x1) ->
+                    Value.isWithin tolerance point[0] x0
+                    &&
+                    Value.isWithin tolerance point[1] x1
+                    )
+                |> fun check -> Expect.isTrue check "function x0, y0"
                 }
             ]
