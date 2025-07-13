@@ -1,8 +1,22 @@
 namespace Quipu
 
+/// <summary>
+/// Strategy to create a starting point for the search algorithm. To optimize
+/// a n-dimensional function (a function that takes n arguments), the search
+/// algorithm requires at least n+1 distinct sets of arguments as starting
+/// values.
+/// <para>
+/// Start has multiple built-in implementations covering typical scenarios such
+/// as starting around a given value.
+/// </para>
+/// </summary>
 type IStartingPoint =
+    /// Given a dimension n, create an array of n+1 arrays of n floats.
     abstract member create: int -> float[][]
 
+/// <summary>
+/// Contains functions to help create starting points for the search.
+/// </summary>
 type Start =
 
     static member zero =

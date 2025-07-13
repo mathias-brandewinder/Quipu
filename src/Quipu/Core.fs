@@ -6,9 +6,14 @@ type Status =
     | Unbounded
 
 type Solution = {
+    /// Indicates whether the best candidate is (locally) optimal, sub-optimal
+    /// (early search termination) or unbounded.
     Status: Status
+    /// Number of search iterations performed.
     Iterations: int
+    /// Best combination of arguments found for the target function.
     Candidate: Evaluation
+    /// Final Simplex.
     Simplex: float [][]
     }
 
