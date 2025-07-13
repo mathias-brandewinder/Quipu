@@ -1,8 +1,14 @@
 namespace Quipu
 
 type Status =
+    /// The algorithm terminated the search, the solution is a local optimum.
     | Optimal
+    /// The algorithm did not find an optimal solution within the specified
+    /// number of iterations. The best current solution
+    /// does not satisfy the termination criteria.
     | Suboptimal
+    /// The algorithm found a candidate where the function is unbounded. The
+    /// objective function does not have a minimum.
     | Unbounded
 
 type Solution = {

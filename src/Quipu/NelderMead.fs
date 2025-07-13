@@ -91,6 +91,16 @@ type NelderMead private (problem: Problem) =
     static member withConfiguration (config: Configuration) (problem: Problem) =
         { problem with Configuration = config }
 
+    /// <summary>
+    /// Specify the starting point for the search. The Start class exposes
+    /// multiple helper functions for that purpose, for example:
+    /// <code lang="fsharp">
+    /// Start.around 1.0
+    /// Start.around (1.0, 1.0)
+    /// Start.around ([1.0, 1.0], 0.1)
+    /// Start.at [[1.0; 0.0];[0.0; 1.0]]
+    /// </code>
+    /// </summary>
     static member startFrom (start: IStartingPoint) (problem: Problem) =
         { problem with StartingPoint = start }
 
@@ -102,6 +112,12 @@ type NelderMead private (problem: Problem) =
                 }
         }
 
+    /// <summary>
+    /// Specify the tolerance required to successfully terminate the search. A
+    /// tolerance of 0.01 means that the algorithm will terminate if for all
+    /// the current search candidates, the function values are within 0.01 of
+    /// each other, and the arguments are within 0.01 of each other.
+    /// </summary>
     static member withTolerance (tolerance: float) (problem: Problem) =
         { problem with
             Configuration = {
