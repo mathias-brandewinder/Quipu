@@ -2,6 +2,17 @@ namespace Quipu.CSharp
 
 open Quipu
 
+/// <summary>
+/// Fluent interface to set up and solve function minimization problems,
+/// using the Nelder-Mead algorithm.
+/// <code lang="csharp">
+/// var f = x => Math.Pow(x,2);
+/// var result =
+///   NelderMead
+///     .Objective(f)
+///     .Minimize();
+/// </code>
+/// </summary>
 type NelderMead private (problem: Problem) =
 
     // -------------------------------------------------------------------------

@@ -1,15 +1,37 @@
 ﻿namespace Quipu
 
+/// <summary>
+/// Contains functions to set up and solve function minimization problems,
+/// using the Nelder-Mead algorithm.
+/// <code lang="fsharp">
+/// let f (x: float) = x * x
+/// f
+/// |> NelderMead.objective
+/// |> NelderMead.minimize
+/// </code>
+/// <para>
+/// This API is intended for F#. The namespace Quipu.CSharp exposes
+/// an equivalent API as a fluent interface.
+/// </para>
+/// </summary>
 type NelderMead private (problem: Problem) =
 
     // -------------------------------------------------------------------------
     // F# pipe-forward interface
     // -------------------------------------------------------------------------
 
+    /// <summary>
+    /// Start the search for arguments that minimize the objective
+    /// function defined in the Problem.
+    /// </summary>
     static member minimize (problem: Problem) =
         let simplex = problem.StartingPoint.create(problem.Dimension)
         Algorithm.search problem.Objective simplex problem.Configuration
 
+    /// <summary>
+    /// Start the search for arguments that maximize the objective
+    /// function defined in the Problem.
+    /// </summary>
     static member maximize (problem: Problem) =
         let problem = {
             problem with
@@ -30,6 +52,10 @@ type NelderMead private (problem: Problem) =
                 |> Successful
             | Abnormal simplex -> Abnormal simplex
 
+    /// <summary>
+    /// Start the search for arguments that minimize the objective
+    /// function defined in the Problem.
+    /// </summary>
     static member solve (problem: Problem) =
         problem
         |> NelderMead.minimize
