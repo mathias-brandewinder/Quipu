@@ -220,8 +220,13 @@ module Algorithm =
                     |> AbnormalConditions
                     |> raise
                 )
+
+            // check the evaluation at pt is finite.
             let candidate = evaluate f pt
-            if candidate.IsInfeasible
+            let candidateValue = candidate.Value
+
+            // NaN is not acceptable
+            if System.Double.IsNaN candidateValue
             then
                 {
                     Message = "Invalid initial Simplex: undefined function value"
@@ -229,6 +234,22 @@ module Algorithm =
                 }
                 |> AbnormalConditions
                 |> raise
+            // Negative infinity means the problem is unbounded
+            elif System.Double.IsNegativeInfinity candidateValue
+            then
+                candidate
+                |> UnboundedObjective
+                |> raise
+            // Infinite, but not negative, is not acceptable
+            elif System.Double.IsInfinity candidateValue
+            then
+                {
+                    Message = "Invalid initial Simplex: infinite function value"
+                    Simplex = simplex
+                }
+                |> AbnormalConditions
+                |> raise
+
             candidate
             )
 
