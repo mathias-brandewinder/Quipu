@@ -14,7 +14,7 @@ module PreCheck =
         // Good enough for now.
         testList "validation of initial simplex" [
 
-            test "an initial simplex containing nan should throw" {
+            test "an initial simplex containing nan should produce Abnormal solution" {
 
                 let objective =
                     fun (x, y) -> x + y
@@ -26,11 +26,11 @@ module PreCheck =
                         [| 1.0; nan |]
                     |]
 
-                Expect.throws (
-                    fun () ->
-                        preCheck objective simplex
-                        |> ignore
-                    ) "preCheck should throw"
+                let actual = preCheck objective simplex
+                match actual with
+                | Error result ->
+                    Expect.isTrue (result.IsAbnormal) "Invalid initial Simplex"
+                | Ok _ -> failwith "simplex should not pass pre-check"
                 }
 
             test "an initial simplex evaluating to -infinity should throw" {
@@ -45,11 +45,11 @@ module PreCheck =
                         [| 1.0; 0.0 |]
                     |]
 
-                Expect.throws (
-                    fun () ->
-                        preCheck objective simplex
-                        |> ignore
-                    ) "preCheck should throw"
+                let actual = preCheck objective simplex
+                match actual with
+                | Error result ->
+                    Expect.isTrue (result.Solution.Status = Status.Unbounded) "Early exit: unbounded problem"
+                | Ok _ -> failwith "simplex should not pass pre-check"
                 }
 
             test "an initial simplex evaluating to infinity should throw" {
@@ -64,11 +64,11 @@ module PreCheck =
                         [| 1.0; 0.0 |]
                     |]
 
-                Expect.throws (
-                    fun () ->
-                        preCheck objective simplex
-                        |> ignore
-                    ) "preCheck should throw"
+                let actual = preCheck objective simplex
+                match actual with
+                | Error result ->
+                    Expect.isTrue (result.IsAbnormal) "Invalid initial Simplex"
+                | Ok _ -> failwith "simplex should not pass pre-check"
                 }
 
             test "an initial simplex evaluating to nan should throw" {
@@ -83,10 +83,10 @@ module PreCheck =
                         [| 1.0; 0.0 |]
                     |]
 
-                Expect.throws (
-                    fun () ->
-                        preCheck objective simplex
-                        |> ignore
-                    ) "preCheck should throw"
+                let actual = preCheck objective simplex
+                match actual with
+                | Error result ->
+                    Expect.isTrue (result.IsAbnormal) "Invalid initial Simplex"
+                | Ok _ -> failwith "simplex should not pass pre-check"
                 }
             ]

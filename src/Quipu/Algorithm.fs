@@ -204,107 +204,143 @@ module Algorithm =
             |> raise
 
     // Verify that the initial simplex is well-formed
-    let preCheck (objective: IVectorFunction) simplex: Evaluation [] =
-        let f = objective.Value
-        simplex
-        |> Array.map (fun pt ->
-            // check that the vector pt does not contain any NaNs
-            pt
-            |> Array.iter (fun x ->
-                if not (System.Double.IsFinite x)
-                then
+    let preCheck (objective: IVectorFunction) simplex: Result<Evaluation [], SolverResult> =
+
+        // are all arguments finite?
+        let checkArgumentsFinite (simplex: float[][]) =
+            simplex
+            // are all the arguments finite?
+            |> Array.forall (fun args ->
+                args
+                |> Array.forall System.Double.IsFinite
+                )
+            |> function
+                | false ->
                     {
-                        Message = "Invalid initial Simplex: all values must be finite"
+                        Message = "Invalid initial Simplex: all arguments must be finite"
                         Simplex = simplex
                     }
-                    |> AbnormalConditions
-                    |> raise
+                    |> Abnormal
+                    |> Error
+                | true ->
+                    simplex
+                    |> Ok
+
+        // does the objective throw
+        let checkFunctionEvaluation (simplex: float[][]) =
+            try
+                simplex
+                |> Array.map (fun args ->
+                    {
+                        Arguments = args
+                        Value = objective.Value args
+                    }
+                    )
+                |> Ok
+            with
+            | ex ->
+                {
+                    Message = $"Invalid initial Simplex: exception thrown {ex.Message}"
+                    Simplex = simplex
+                }
+                |> Abnormal
+                |> Error
+
+        let checkUnboundedObjective (evaluations: Evaluation []) =
+            evaluations
+            |> Array.tryFind (fun evaluation ->
+                evaluation.Value = System.Double.NegativeInfinity
                 )
+            |> function
+                | None -> Ok evaluations
+                | Some unbounded ->
+                    {
+                        Status = Unbounded
+                        Candidate = unbounded
+                        Iterations = 0
+                        Simplex = simplex
+                    }
+                    |> Successful
+                    |> Error
 
-            // check the evaluation at pt is finite.
-            let candidate = evaluate f pt
-            let candidateValue = candidate.Value
+        let checkFiniteObjective (evaluations: Evaluation []) =
+            evaluations
+            |> Array.forall (fun evaluation ->
+                System.Double.IsFinite evaluation.Value
+                )
+            |> function
+                | false ->
+                    {
+                        Message = "Invalid initial Simplex: all objective values must be finite"
+                        Simplex = simplex
+                    }
+                    |> Abnormal
+                    |> Error
+                | true ->
+                    evaluations
+                    |> Ok
 
-            // NaN is not acceptable
-            if System.Double.IsNaN candidateValue
-            then
-                {
-                    Message = "Invalid initial Simplex: undefined function value"
-                    Simplex = simplex
-                }
-                |> AbnormalConditions
-                |> raise
-            // Negative infinity means the problem is unbounded
-            elif System.Double.IsNegativeInfinity candidateValue
-            then
-                candidate
-                |> UnboundedObjective
-                |> raise
-            // Infinite, but not negative, is not acceptable
-            elif System.Double.IsInfinity candidateValue
-            then
-                {
-                    Message = "Invalid initial Simplex: infinite function value"
-                    Simplex = simplex
-                }
-                |> AbnormalConditions
-                |> raise
-
-            candidate
-            )
+        simplex
+        |> checkArgumentsFinite
+        |> Result.bind checkFunctionEvaluation
+        |> Result.bind checkUnboundedObjective
+        |> Result.bind checkFiniteObjective
 
     let search (objective: IVectorFunction) simplex config =
-        let terminator = config.Termination
-        let mutable iter = 0
-        try
-            // Is the starting simplex well-formed?
-            let mutable simplex = preCheck objective simplex
-            let notFinished () =
-                simplex |> terminator.HasTerminated |> not
-                &&
-                config.MaximumIterations
-                |> Option.map (fun maxIter -> iter < maxIter)
-                |> Option.defaultValue true
+        match preCheck objective simplex with
+        | Error result -> result
+        | Ok candidates ->
+            let terminator = config.Termination
+            let mutable iter = 0
+            try
+                // Is the starting simplex well-formed?
+                let mutable simplex = candidates //preCheck objective simplex
+                let notFinished () =
+                    simplex |> terminator.HasTerminated |> not
+                    &&
+                    config.MaximumIterations
+                    |> Option.map (fun maxIter -> iter < maxIter)
+                    |> Option.defaultValue true
 
-            while notFinished () do
-            // Start the search
-                iter <- iter + 1
-                simplex <- update config.Updates objective simplex
+                while notFinished () do
+                // Start the search
+                    iter <- iter + 1
+                    simplex <- update config.Updates objective simplex
 
-            let bestSolution =
-                simplex
-                |> Array.minBy (fun x -> x.Value)
+                let bestSolution =
+                    simplex
+                    |> Array.minBy (fun x -> x.Value)
 
-            let status =
-                match config.MaximumIterations with
-                | None -> Optimal
-                | Some maxIters ->
-                    if iter < maxIters
-                    then Optimal
-                    else Suboptimal
+                let status =
+                    match config.MaximumIterations with
+                    | None -> Optimal
+                    | Some maxIters ->
+                        if iter < maxIters
+                        then Optimal
+                        else Suboptimal
 
-            {
-                Status = status
-                Candidate = bestSolution
-                Iterations = iter
-                Simplex = simplex |> Array.map (fun x -> x.Arguments)
-            }
-            |> Successful
+                {
+                    Status = status
+                    Candidate = bestSolution
+                    Iterations = iter
+                    Simplex = simplex |> Array.map (fun x -> x.Arguments)
+                }
+                |> Successful
 
-        with
-        | :? UnboundedObjective as ex ->
-            {
-                Status = Unbounded
-                Candidate = ex.Data0
-                Iterations = iter
-                Simplex = simplex
-            }
-            |> Successful
-        | :? AbnormalConditions as ex ->
-            Abnormal ex.Data0
-        | _ as ex ->
-            {
-                Message = $"Unexpected error: {ex.Message}"
-                Simplex = simplex
-            }
-            |> Abnormal
+            with
+            | :? UnboundedObjective as ex ->
+                {
+                    Status = Unbounded
+                    Candidate = ex.Data0
+                    Iterations = iter
+                    Simplex = simplex
+                }
+                |> Successful
+            | :? AbnormalConditions as ex ->
+                Abnormal ex.Data0
+            | _ as ex ->
+                {
+                    Message = $"Unexpected error: {ex.Message}"
+                    Simplex = simplex
+                }
+                |> Abnormal
