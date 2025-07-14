@@ -19,6 +19,7 @@
     <Compile Include="Termination.fs" />
     <Compile Include="Configuration.fs" />
     <Compile Include="Core.fs" />
+    <Compile Include="Validation.fs" />
     <Compile Include="Algorithm.fs" />
     <Compile Include="NelderMead.fs" />
     <Compile Include="NelderMead.CSharp.fs" />

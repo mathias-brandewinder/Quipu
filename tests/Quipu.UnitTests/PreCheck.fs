@@ -4,7 +4,7 @@ module PreCheck =
 
     open Expecto
     open Quipu
-    open Quipu.Algorithm
+    open Quipu.Validation
 
     [<Tests>]
     let tests =
