@@ -14,6 +14,25 @@ module PreCheck =
         // Good enough for now.
         testList "validation of initial simplex" [
 
+            test "an initial simplex throwing should produce Abnormal solution" {
+
+                let objective =
+                    fun (x, y) -> failwith "exception"
+                    |> Vectorize.from
+
+                let simplex =
+                    [|
+                        [| 0.0; 1.0 |]
+                        [| 1.0; nan |]
+                    |]
+
+                let actual = preCheck objective simplex
+                match actual with
+                | Error result ->
+                    Expect.isTrue (result.IsAbnormal) "Invalid initial Simplex"
+                | Ok _ -> failwith "simplex should not pass pre-check"
+                }
+
             test "an initial simplex containing nan should produce Abnormal solution" {
 
                 let objective =
@@ -33,7 +52,7 @@ module PreCheck =
                 | Ok _ -> failwith "simplex should not pass pre-check"
                 }
 
-            test "an initial simplex evaluating to -infinity should throw" {
+            test "an initial simplex evaluating to -infinity should produce unbounded solution" {
 
                 let objective =
                     fun (x, y) -> - infinity
@@ -52,7 +71,7 @@ module PreCheck =
                 | Ok _ -> failwith "simplex should not pass pre-check"
                 }
 
-            test "an initial simplex evaluating to infinity should throw" {
+            test "an initial simplex evaluating to infinity should produce Abnormal solution" {
 
                 let objective =
                     fun (x, y) -> infinity
@@ -71,7 +90,7 @@ module PreCheck =
                 | Ok _ -> failwith "simplex should not pass pre-check"
                 }
 
-            test "an initial simplex evaluating to nan should throw" {
+            test "an initial simplex evaluating to nan should produce Abnormal solution" {
 
                 let objective =
                     fun (x, y) -> nan
