@@ -29,7 +29,7 @@ module PreCheck =
                 let actual = preCheck objective simplex
                 match actual with
                 | Error result ->
-                    Expect.isTrue (result.IsAbnormal) "Invalid initial Simplex"
+                    Expect.isFalse (result.HasSolution) "Invalid initial Simplex"
                 | Ok _ -> failwith "simplex should not pass pre-check"
                 }
 
@@ -48,7 +48,7 @@ module PreCheck =
                 let actual = preCheck objective simplex
                 match actual with
                 | Error result ->
-                    Expect.isTrue (result.IsAbnormal) "Invalid initial Simplex"
+                    Expect.isFalse (result.HasSolution) "Invalid initial Simplex"
                 | Ok _ -> failwith "simplex should not pass pre-check"
                 }
 
@@ -86,7 +86,7 @@ module PreCheck =
                 let actual = preCheck objective simplex
                 match actual with
                 | Error result ->
-                    Expect.isTrue (result.IsAbnormal) "Invalid initial Simplex"
+                    Expect.isFalse (result.HasSolution) "Invalid initial Simplex"
                 | Ok _ -> failwith "simplex should not pass pre-check"
                 }
 
@@ -105,7 +105,7 @@ module PreCheck =
                 let actual = preCheck objective simplex
                 match actual with
                 | Error result ->
-                    Expect.isTrue (result.IsAbnormal) "Invalid initial Simplex"
+                    Expect.isFalse (result.HasSolution) "Invalid initial Simplex"
                 | Ok _ -> failwith "simplex should not pass pre-check"
                 }
             ]
