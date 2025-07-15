@@ -60,7 +60,6 @@ type NelderMead private (problem: Problem) =
         problem
         |> NelderMead.minimize
 
-    [<Experimental("This function might change or be removed in the future.")>]
     static member goalSeek (target: float) (problem: Problem) =
         { problem with
             Objective =
