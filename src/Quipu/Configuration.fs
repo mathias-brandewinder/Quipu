@@ -1,5 +1,13 @@
 namespace Quipu
 
+module Default =
+
+    let tolerance = 0.001
+    let alpha = 1.0
+    let gamma = 2.0
+    let rho = 0.5
+    let sigma = 0.5
+
 type UpdateParameters = {
     /// Reflection parameter, Alpha > 0.0
     Alpha: float
@@ -12,10 +20,10 @@ type UpdateParameters = {
     }
     with
     static member defaultValue = {
-        Alpha = 1.0
-        Gamma = 2.0
-        Rho = 0.5
-        Sigma = 0.5
+        Alpha = Default.alpha
+        Gamma = Default.gamma
+        Rho = Default.rho
+        Sigma = Default.sigma
         }
 
 type Configuration = {
@@ -26,6 +34,6 @@ type Configuration = {
     with
     static member defaultValue = {
         Updates = UpdateParameters.defaultValue
-        Termination = Termination.tolerance 0.001
+        Termination = Termination.tolerance Default.tolerance
         MaximumIterations = None
         }

@@ -60,6 +60,30 @@ type NelderMead private (problem: Problem) =
         problem
         |> NelderMead.minimize
 
+    [<Experimental("This function might change or be removed in the future.")>]
+    static member goalSeek (target: float) (problem: Problem) =
+        { problem with
+            Objective =
+                { new IVectorFunction with
+                    member this.Dimension = problem.Objective.Dimension
+                    member this.Value (args: float []) =
+                        pown (target - problem.Objective.Value args) 2
+                }
+        }
+        |> NelderMead.minimize
+        |> function
+            | Successful solution ->
+                let value = problem.Objective.Value solution.Candidate.Arguments
+                let candidate = { solution.Candidate with Value = value}
+                if abs (value - target) <= Default.tolerance
+                then
+                    { solution with
+                        Candidate = candidate
+                    }
+                    |> Successful
+                else Abnormal { Simplex = solution.Simplex; Message = "No solution found" }
+            | Abnormal simplex -> Abnormal simplex
+
     static member objective (f: IVectorFunction) =
         f
         |> Problem.defaultCreate

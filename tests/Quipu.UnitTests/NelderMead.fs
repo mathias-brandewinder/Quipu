@@ -116,6 +116,55 @@ module NelderMead =
                     }
             ]
 
+    module GoalSeek =
+
+        [<Tests>]
+        let tests =
+            testList "basic goal seek tests" [
+
+                test "function, 1 argument" {
+
+                    let f x = pown (x - 1.0) 2
+                    let target = 16.0
+
+                    let solverResult =
+                        NelderMead.objective f
+                        |> NelderMead.goalSeek target
+
+                    let solution = solverResult.Solution
+                    let value = solution.Candidate.Value
+
+                    Expect.isWithin tolerance value target "goal seek"
+                    }
+
+                test "function, 2 arguments" {
+
+                    let f (x, y) = pown (x - 1.0) 2 + pown (y - 2.0) 2 + x * y - 10.0
+                    let target = 100.0
+
+                    let solverResult =
+                        NelderMead.objective f
+                        |> NelderMead.goalSeek target
+
+                    let solution = solverResult.Solution
+                    let value = solution.Candidate.Value
+
+                    Expect.isWithin tolerance value target "goal seek"
+                    }
+
+                test "function, no solution" {
+
+                    let f (x) = pown (x - 1.0) 2 + 10.0
+                    let target = -100.0
+
+                    let solverResult =
+                        NelderMead.objective f
+                        |> NelderMead.goalSeek target
+
+                    Expect.isFalse solverResult.HasSolution "goal seek"
+                    }
+            ]
+
     module Fluent =
 
         open Quipu.CSharp
