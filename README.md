@@ -21,7 +21,7 @@ This function has a unique global minimum, for `x=1,y=2`.
 ### Basic usage, F# pipeline
 
 ``` fsharp
-#r "nuget: Quipu, 0.5.1"
+#r "nuget: Quipu, 1.0.0"
 open Quipu
 
 let f (x, y) = pown (x - 1.0) 2 + pown (y - 2.0) 2 + 42.0
@@ -48,7 +48,7 @@ f(1.000, 2.000) = 42.000
 ### Basic usage, C# fluent interface  
 
 ``` csharp
-#r "nuget: Quipu, 0.5.1"
+#r "nuget: Quipu, 1.0.0"
 using Quipu.CSharp;
 using System;
 

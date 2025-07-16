@@ -1,4 +1,4 @@
-#r "nuget: Quipu, 0.5.2"
+#r "nuget: Quipu, 1.0.0"
 open Quipu
 
 let f (x, y) = pown (x - 1.0) 2 + pown (y - 2.0) 2 + 42.0
