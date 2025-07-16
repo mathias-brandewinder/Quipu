@@ -60,6 +60,10 @@ type NelderMead private (problem: Problem) =
         problem
         |> NelderMead.minimize
 
+    /// <summary>
+    /// Start the search for arguments that make the objective
+    /// function defined in the Problem equal to the target value.
+    /// </summary>
     static member goalSeek (target: float) (problem: Problem) =
         { problem with
             Objective =
