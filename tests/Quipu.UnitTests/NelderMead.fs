@@ -164,6 +164,27 @@ module NelderMead =
                     Expect.isTrue solverResult.HasSolution "goal seek"
                     Expect.equal solverResult.Solution.Status Status.Suboptimal "solution is sub-optimal"
                     }
+
+                test "solution should be within tolerance" {
+
+                    let tolerance = 0.1
+                    let f x = pown (x - 1.0) 2
+                    // Note: some values will pass the test, even if the
+                    // implementation is incorrect (ex: 16.0). The example
+                    // selected happens to work.
+                    let target = 0.2
+
+                    let solverResult =
+                        NelderMead.objective f
+                        |> NelderMead.withTolerance tolerance
+                        |> NelderMead.goalSeek target
+
+                    let solution = solverResult.Solution
+                    let value = solution.Candidate.Value
+
+                    Expect.isWithin tolerance value target "goal seek"
+                    Expect.equal solution.Status Status.Optimal "solution is optimal"
+                    }
             ]
 
     module Fluent =
