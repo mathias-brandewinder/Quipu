@@ -70,7 +70,7 @@ type NelderMead private (problem: Problem) =
                 { new IVectorFunction with
                     member this.Dimension = problem.Objective.Dimension
                     member this.Value (args: float []) =
-                        pown (target - problem.Objective.Value args) 2
+                        abs (target - problem.Objective.Value args)
                 }
         }
         |> NelderMead.minimize
@@ -78,13 +78,15 @@ type NelderMead private (problem: Problem) =
             | Successful solution ->
                 let value = problem.Objective.Value solution.Candidate.Arguments
                 let candidate = { solution.Candidate with Value = value}
-                if abs (value - target) <= Default.tolerance
-                then
-                    { solution with
-                        Candidate = candidate
-                    }
-                    |> Successful
-                else Abnormal { Simplex = solution.Simplex; Message = "No solution found" }
+                let status =
+                    if abs (value - target) <= Default.tolerance
+                    then Status.Optimal
+                    else Status.Suboptimal
+                { solution with
+                    Candidate = candidate
+                    Status = status
+                }
+                |> Successful
             | Abnormal simplex -> Abnormal simplex
 
     static member objective (f: IVectorFunction) =

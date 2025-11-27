@@ -152,7 +152,7 @@ module NelderMead =
                     Expect.isWithin tolerance value target "goal seek"
                     }
 
-                test "function, no solution" {
+                test "a function with no exact solution should have status suboptimal" {
 
                     let f (x) = pown (x - 1.0) 2 + 10.0
                     let target = -100.0
@@ -161,7 +161,8 @@ module NelderMead =
                         NelderMead.objective f
                         |> NelderMead.goalSeek target
 
-                    Expect.isFalse solverResult.HasSolution "goal seek"
+                    Expect.isTrue solverResult.HasSolution "goal seek"
+                    Expect.equal solverResult.Solution.Status Status.Suboptimal "solution is sub-optimal"
                     }
             ]
 
