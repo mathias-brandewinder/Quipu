@@ -13,7 +13,7 @@ module TestFunctions =
         let solverConfiguration =
             { Configuration.defaultValue with
                 MaximumIterations = None
-                Termination = Termination.tolerance tolerance
+                Tolerance = { Margin = tolerance }
             }
 
         testList "standard optimization test functions" [

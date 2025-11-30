@@ -26,14 +26,18 @@ type UpdateParameters = {
         Sigma = Default.sigma
         }
 
+type Tolerance = {
+    Margin: float
+    }
+
 type Configuration = {
     Updates: UpdateParameters
-    Termination: ITerminator
+    Tolerance: Tolerance
     MaximumIterations: Option<int>
     }
     with
     static member defaultValue = {
         Updates = UpdateParameters.defaultValue
-        Termination = Termination.tolerance Default.tolerance
+        Tolerance = { Margin = Default.tolerance }
         MaximumIterations = None
         }

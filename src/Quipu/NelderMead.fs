@@ -79,7 +79,7 @@ type NelderMead private (problem: Problem) =
                 let value = problem.Objective.Value solution.Candidate.Arguments
                 let candidate = { solution.Candidate with Value = value}
                 let status =
-                    if abs (value - target) <= Default.tolerance
+                    if abs (value - target) <= problem.Configuration.Tolerance.Margin
                     then Status.Optimal
                     else Status.Suboptimal
                 { solution with
@@ -151,6 +151,6 @@ type NelderMead private (problem: Problem) =
         { problem with
             Configuration = {
                 problem.Configuration with
-                    Termination = Termination.tolerance tolerance
+                    Tolerance = { Margin = tolerance }
                 }
         }
