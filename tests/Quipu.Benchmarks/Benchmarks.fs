@@ -12,7 +12,7 @@ type Benchmarks () =
     let solverConfiguration =
         { Configuration.defaultValue with
             MaximumIterations = None
-            Tolerance = { Margin = tolerance } //Termination.tolerance tolerance
+            Tolerance = tolerance
         }
 
     [<Benchmark(Description="Beale function")>]

@@ -8,7 +8,7 @@ module HappyPath =
     let tolerance = 0.01
     let config =
         { Configuration.defaultValue with
-            Tolerance = { Margin = tolerance }
+            Tolerance = tolerance
         }
 
     // Create a test case function in dimension d,

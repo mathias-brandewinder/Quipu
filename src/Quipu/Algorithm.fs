@@ -207,7 +207,7 @@ module Algorithm =
         match Validation.preCheck objective simplex with
         | Error result -> result
         | Ok candidates ->
-            let terminator = Termination.tolerance config.Tolerance.Margin
+            let terminator = Termination.tolerance config.Tolerance
             let mutable iter = 0
             try
                 // Is the starting simplex well-formed?

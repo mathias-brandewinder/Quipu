@@ -8,8 +8,7 @@ module NelderMead =
     let tolerance = 0.01
     let config =
         { Configuration.defaultValue with
-            Tolerance = { Margin = tolerance }
-            // Termination = Termination.tolerance tolerance
+            Tolerance = tolerance
         }
 
     module EdgeCaseFunctions =

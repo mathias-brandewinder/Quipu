@@ -8,7 +8,7 @@ module GoalSeek =
     let tolerance = 0.01
     let config =
         { Configuration.defaultValue with
-            Tolerance = { Margin = tolerance }
+            Tolerance = tolerance
         }
 
     [<Tests>]
